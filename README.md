@@ -44,7 +44,7 @@ The platform recommends products based on user preferences, browsing history, an
 ---
 
 ## Folder Structure
-
+```bash
 ├── client/ # React Frontend
 │ ├── src/
 │ │ ├── components/
@@ -60,7 +60,7 @@ The platform recommends products based on user preferences, browsing history, an
 ├── .env
 ├── package.json
 └── README.md
-
+```
 
 ---
 
