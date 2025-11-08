@@ -1,0 +1,52 @@
+# -------------------------------
+# Node.js Server .gitignore
+# -------------------------------
+
+# Node modules (contains all dependencies)
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary and cache files
+tmp/
+temp/
+.cache/
+dist/
+build/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+
+# Debug and coverage output
+coverage/
+*.pid
+*.seed
+*.pid.lock
+
+# System files
+*.swp
+*.swo
+
+# dotenv backup
+.env.backup
+.env.local
+.env.test
+.env.production
+
+# Lock files (optional if you use only npm or yarn)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
