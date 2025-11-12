@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 
 function Navbar() {
   const [profileImage, setProfileImage] = useState(null);
-  // const [userName, setUserName] = useState("Harshit");
-  // const [unreadCount, setUnreadCount] = useState(3);
+  const [userName, setUserName] = useState("Harshit");
+  const [unreadCount, setUnreadCount] = useState(3);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
