@@ -22,7 +22,7 @@ function Landing() {
             <br />
             STATIONARY
           </div>
-          <div className="absolute left-0 bottom-32 rotate-[-90deg] uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
+          <div className="absolute left-0 bottom-32 -rotate-90 uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
             Laptops Mobile Phone
           </div>
           <div className="absolute bottom-40 right-6 max-w-xs text-sm leading-relaxed text-[#7f5c3b]">
