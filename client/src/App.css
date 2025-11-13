@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Boldonse&family=DM+Serif+Display:ital@0;1&family=Gowun+Dodum&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rammetto+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import "tailwindcss";
+
+.nunito-bold {
+  font-family: "Nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
 
 .rammetto-one-regular {
   font-family: "Rammetto One", sans-serif;
@@ -39,7 +48,7 @@
 /*Gowun-dodum*/
 .gowun-dodum-regular {
   font-family: "Gowun Dodum", sans-serif;
-  font-weight: 400;
+  font-weight: 900;
   font-style: normal;
 }
 
