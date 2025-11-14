@@ -1,5 +1,6 @@
 import React from "react";
 import Hero from '../assets/hero-landing.png'
+import { Link } from "react-router-dom";
 
 function Landing() {
   return (
