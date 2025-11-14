@@ -1,13 +1,12 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import React from "react";
 import Navbar from "../components/Navbar";
-function Home(){
+function Studio(){
     return (
         <>
-        <section>
-            <Navbar/>
-        </section>
+        <Navbar/>
+
         </>
     )
 }
-export default Home;
+export default Studio;

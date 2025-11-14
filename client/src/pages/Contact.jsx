@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-function Cart(){
+import Navbar from "../components/Navbar";
+function Contact(){
     return (
         <>
         <section>
@@ -9,4 +10,4 @@ function Cart(){
         </>
     )
 }
-export default Cart;
+export default Contact;
