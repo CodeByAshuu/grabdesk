@@ -1,5 +1,6 @@
 import React from "react";
 import Hero from '../assets/hero-landing.png'
+import { Link } from "react-router-dom";
 import Hero2 from '../assets/hero2-landing.png'
 import Paper from '../assets/paper.png'
 
