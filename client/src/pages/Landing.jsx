@@ -100,7 +100,7 @@ function Landing() {
             </div>
 
             {/* Paragraph */}
-            <p className="text-xl leading-6 text-[#dab590] tracking-tighter">
+            <p className="text-xl leading-6 text-[#dab590] text-left tracking-tighter">
             to explore products you’ll actually love. 
             Every recommendation on GrabDesk is crafted from taste, trends,  
             and thoughtful design, giving you a shopping experience that respects 
