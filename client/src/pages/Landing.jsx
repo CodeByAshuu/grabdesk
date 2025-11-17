@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Hero2 from '../assets/hero2-landing.png'
 import Paper from '../assets/paper.png'
 import Button from '../components/Button'
+import { ButtonLight } from "../components/ButtonLight";
 
 function Landing() {
   return (
@@ -21,18 +22,9 @@ function Landing() {
           <div className="absolute top-6 left-8 uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#7d5834]">
             Shop Now Style 2005
           </div>
-          <div className="absolute top-6 right-8 text-right uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#7d5834]">
-            UNLOCK
-            <br />
-            STATIONARY
-          </div>
           <div className="absolute top-6 right-8 flex gap-4 pointer-events-auto">
-            <Link to="/login" className="w-30">
-              <Button labell="Login" />
-            </Link>
-
-            <Link to="/signup" className="w-30">
-              <Button labell="Sign Up" />
+            <Link to="/login" className="w-40">
+              <Button labell="Get Started" />
             </Link>
           </div>
           <div className="absolute left-0 bottom-32 -rotate-90 uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
@@ -61,7 +53,7 @@ function Landing() {
           </h1>
 
           {/* Centered hero image */}
-          <div className="absolute left-1/2 top-80       z-10 -translate-x-1/2 -translate-y-2/7">
+          <div className="absolute left-1/2 top-85 z-10 -translate-x-1/2 -translate-y-2/7">
             <img src={Hero} alt="hero" className="transform scale-175" />
           </div>
 
@@ -79,16 +71,46 @@ function Landing() {
           <div className="absolute left-120 top-50 z-20 -translate-x-1/2 -translate-y-2/7">
             <img src={Hero2} alt="hero2" className="transform scale-180" />
           </div>
-          <Button labell="Shop Now" className="px-8 py-3 text-xl" />
-          <div className="absolute right-15 font-sans text-lg leading-7 py-2 text-[#FFEAD5] text-right">
+          <div className="absolute top-6 right-8 text-right uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#FFEAD5]">
+            UNLOCK
+            <br />
+            STATIONARY
+          </div>
+          <div className="absolute top-120 right-16 flex gap-4 pointer-events-auto">
+            <Link to="/product">
+              <ButtonLight label="Explore" className="w-md"/>
+            </Link>
+          </div>
+          
+          {/* <div className="absolute right-15 font-sans text-lg leading-7 py-2 text-[#FFEAD5] text-right">
             <span className="text-[#FFFFF3] text-3xl">A smarter way</span> to explore products you’ll actually love. <br />
             Every recommendation on GrabDesk <br /> 
             is crafted from taste, trends, <br /> 
             and thoughtful design — giving you <br /> 
             a shopping experience that respects <br /> 
             your time and your style.
-          </div>
+          </div> */}
+          <div className="absolute top-55 right-15 text-right max-w-md">
+            {/* Title that text wraps around */}
+            <div className="editorial-shape">
+              <div className="text-5xl font-normal leading-none tracking-tighter ">
+                <span className="text-[#FFEAD5]">smarter</span><br />
+                <span className="text-[#F0A322] ml-1">way</span><br />
+              </div>
+            </div>
 
+            {/* Paragraph */}
+            <p className="text-xl leading-6 text-[#dab590] tracking-tighter">
+            to explore products you’ll actually love. 
+            Every recommendation on GrabDesk is crafted from taste, trends,  
+            and thoughtful design, giving you a shopping experience that respects 
+            your time and your style.
+            Instead of overwhelming you with countless choices, GrabDesk narrows 
+            the field to what truly matters.
+            From tech to lifestyle essentials, every product is hand-picked to enhance 
+            your workflow and reflect your personal taste.
+            </p>
+          </div>
       </div>
       <div className="relative h-96 w-full px-6 py-3 m-0 text-[#FFEAD5] bg-[#4a3020]">
           <div className="font-sans text-3xl leading-7 py-2">
