@@ -1,70 +1,364 @@
-import React from "react";
+import React, { useState } from "react";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
 import Nike1 from '../assets/Nike1.png';
 import Nike2 from '../assets/Nike2.png';
 import Nike3 from '../assets/Nike3.png';
+import Searchbar from "../components/Searchbar";
+import FilterPanel from "../components/FilterPannel";
 
 function Product() {
-    return (
-        <>
-            <section
-                className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
-                style={{
-                    backgroundColor: "#442314",
-                    backgroundImage:
-                        "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
-                    backgroundSize: "14px 14px",
-                }}
+  const [search, setSearch] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({});
+
+  // Complete product data with all necessary properties
+  const products = [
+    {
+      id: 1,
+      name: "Nike SE",
+      price: "₹ 10,257.00",
+      priceNumber: 10257,
+      rating: 4.56,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Fashion",
+      brand: "Nike",
+      discount: 10
+    },
+    {
+      id: 2,
+      name: "Nike Dunk Low Retro SE",
+      price: "₹ 10,257.00",
+      priceNumber: 10257,
+      rating: 4.56,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Fashion",
+      brand: "Nike",
+      discount: 20
+    },
+    {
+      id: 3,
+      name: "Nike Dunk Low Retro",
+      price: "₹ 9,999.00",
+      priceNumber: 9999,
+      rating: 4.3,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Fashion",
+      brand: "Nike",
+      discount: 15
+    },
+    {
+      id: 4,
+      name: "Nike Air Max",
+      price: "₹ 12,499.00",
+      priceNumber: 12499,
+      rating: 4.56,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Sports & Fitness",
+      brand: "Nike",
+      discount: 30
+    },
+    {
+      id: 5,
+      name: "Nike Jordan 1",
+      price: "₹ 15,999.00",
+      priceNumber: 15999,
+      rating: 4.8,
+      tag: "SALE",
+      images: [Nike1, Nike2, Nike3],
+      category: "Fashion",
+      brand: "Nike",
+      discount: 50
+    },
+    {
+      id: 6,
+      name: "Nike Blazer",
+      price: "₹ 8,499.00",
+      priceNumber: 8499,
+      rating: 4.3,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Fashion",
+      brand: "Nike",
+      discount: 10
+    },
+    {
+      id: 7,
+      name: "Apple iPhone 15 Pro",
+      price: "₹ 134,900.00",
+      priceNumber: 134900,
+      rating: 4.9,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Electronics",
+      brand: "Apple",
+      discount: 5
+    },
+    {
+      id: 8,
+      name: "Samsung Galaxy S24",
+      price: "₹ 79,999.00",
+      priceNumber: 79999,
+      rating: 4.7,
+      tag: "NEW DROP",
+      images: [Nike1, Nike2, Nike3],
+      category: "Electronics",
+      brand: "Samsung",
+      discount: 10
+    },
+    {
+      id: 9,
+      name: "Adidas Ultraboost",
+      price: "₹ 14,999.00",
+      priceNumber: 14999,
+      rating: 4.6,
+      tag: "SALE",
+      images: [Nike1, Nike2, Nike3],
+      category: "Sports & Fitness",
+      brand: "Adidas",
+      discount: 20
+    }
+  ];
+
+  // Handle filter changes from FilterPanel
+  const handleFilterChange = (filters) => {
+    console.log('Applied filters:', filters);
+    setActiveFilters(filters);
+  };
+
+  // Apply search and filters to products
+  const getFilteredProducts = () => {
+    let filtered = [...products];
+
+    // Apply search filter
+    if (search.trim()) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(search.toLowerCase()) ||
+        product.category.toLowerCase().includes(search.toLowerCase()) ||
+        product.brand.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (activeFilters.categories && activeFilters.categories.length > 0) {
+      filtered = filtered.filter(product =>
+        activeFilters.categories.includes(product.category)
+      );
+    }
+
+    // Apply brand filter
+    if (activeFilters.brands && activeFilters.brands.length > 0) {
+      filtered = filtered.filter(product =>
+        activeFilters.brands.includes(product.brand)
+      );
+    }
+
+    // Apply price range filter
+    if (activeFilters.priceRange) {
+      const [minPrice, maxPrice] = activeFilters.priceRange;
+      filtered = filtered.filter(product => {
+        return product.priceNumber >= minPrice && product.priceNumber <= maxPrice;
+      });
+    }
+
+    // Apply rating filter
+    if (activeFilters.rating) {
+      filtered = filtered.filter(product =>
+        product.rating >= activeFilters.rating
+      );
+    }
+
+    // Apply discount filter
+    if (activeFilters.discount) {
+      filtered = filtered.filter(product =>
+        product.discount >= activeFilters.discount
+      );
+    }
+
+    // Apply sort
+    if (activeFilters.sortBy) {
+      switch (activeFilters.sortBy) {
+        case 'Price: Low → High':
+          filtered.sort((a, b) => a.priceNumber - b.priceNumber);
+          break;
+        case 'Price: High → Low':
+          filtered.sort((a, b) => b.priceNumber - a.priceNumber);
+          break;
+        case 'Newest First':
+          filtered.sort((a, b) => b.id - a.id);
+          break;
+        default:
+          // Relevance - keep original order
+          break;
+      }
+    }
+
+    return filtered;
+  };
+
+  const filteredProducts = getFilteredProducts();
+
+  return (
+    <>
+      <section
+        className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
+        style={{
+          backgroundColor: "#442314",
+          backgroundImage:
+            "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
+          backgroundSize: "14px 14px",
+        }}
+      >
+        <Navbar />
+
+        {/* TITLE */}
+        <div className="my-8 sm:my-10 md:my-12 lg:my-14 mx-4 sm:mx-5">
+          <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
+            PRODUCTS
+          </h1>
+        </div>
+
+    
+        <div className="flex flex-col sm:flex-row gap-4 items-start px-4 md:px-6 lg:px-8 mt-5">
+          <div className="w-full flex justify-center items-center gap-3">
+            <div className="flex-1 max-w-2xl">
+              <Searchbar
+                value={search}
+                onChange={setSearch}
+                width="100%"
+                height="45px"
+                placeholder="Search products, categories, brands..."
+              />
+            </div>
+
+            
+            <button
+              onClick={() => {
+                console.log("Search clicked with:", search);
+              }}
+              className="hidden sm:flex h-12 rounded-md border-2 border-[#452215] shadow-[4px_4px_0_#8F5E41] bg-[#FFE9D5] items-center justify-center px-3 gap-2 hover:bg-[#f5dec9] 
+              active:shadow-none active:translate-x-1 active:translate-y-1 
+         transition-all duration-150"
             >
-                <Navbar />
+              <svg xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 text-[#452215]"
+                viewBox="0 -960 960 960"
+                fill="#452215">
+                <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109
+         0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5
+         T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+              </svg>
+              
+            </button>
 
-                {/* TITLE */}
-                <div className="my-12 mx-4">
-                    <h1 className="boldonse-bold text-[#E3D5C3] text-5xl sm:text-7xl md:text-8xl lg:text-9xl">
-                        PRODUCT
-                    </h1>
+            
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="sm:hidden bg-[#8F5E41] text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg 
+               border-2 border-[#452215] shadow-[2px_2px_0_#452215]
+               hover:bg-[#7A4F35] transition-all duration-200 font-semibold text-sm"
+            >
+              {isFilterOpen ? 'Filters' : 'Filters'}
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+
+          {/* Filter Panel - Desktop */}
+          <div className="hidden lg:block lg:w-80 shrink-0">
+            <FilterPanel
+              open={true}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
+
+          {/* Mobile Filter Panel - Only when toggled */}
+          {isFilterOpen && (
+            <div className="lg:hidden fixed inset-0 z-50 flex">
+              {/* Overlay */}
+              <div
+                className="flex-1 bg-black bg-opacity-50"
+                onClick={() => setIsFilterOpen(false)}
+              />
+
+              {/* Filter Panel Slide-in */}
+              <div className="w-4/5 max-w-xs h-full overflow-y-auto bg-[#FFE9D5]">
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-[#452215] font-bold text-2xl">Filters</h2>
+                    <button
+                      onClick={() => setIsFilterOpen(false)}
+                      className="text-[#8F5E41] hover:text-[#452215] transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <FilterPanel
+                    open={isFilterOpen}
+                    onFilterChange={handleFilterChange}
+                  />
                 </div>
+              </div>
+            </div>
+          )}
 
-                {/* RESPONSIVE CARDS GRID */}
-                <div
-                    className="
-                        m-10 
-                        grid 
-                        grid-cols-1 
-                        sm:grid-cols-2 
-                        lg:grid-cols-3 
-                        gap-10 
-                        justify-items-center
-                    "
-                >
-                    <ProductCard
-                        images={[Nike1, Nike2, Nike3]}
-                        tagg="NEW DROP"
-                        rating={4.56}
-                        namee="Nike Dunk Low Retro SE"
-                        pricee="₹ 10 257.00"
-                    />
+          {/* Product Cards Grid */}
+          <div className="flex-1">
+            {/* Results Count */}
+            <div className="mb-4 sm:mb-6 px-2">
+              <p className="text-[#E3D5C3] gowun-dodum-regular text-sm sm:text-base">
+                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+                {search && ` for "${search}"`}
+              </p>
+            </div>
 
-                    <ProductCard
-                        images={[Nike1, Nike2, Nike3]}
-                        tagg="NEW DROP"
-                        rating={4.56}
-                        namee="Nike Dunk Low Retro SE"
-                        pricee="₹ 10 257.00"
-                    />
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-[#E3D5C3] text-lg gowun-dodum-regular">
+                  No products found. Try adjusting your search or filters.
+                </p>
+              </div>
+            ) : (
+              <div className="
+                grid 
+                grid-cols-1 
+                sm:grid-cols-2 
+                lg:grid-cols-2 
+                xl:grid-cols-3 
+                gap-4 
+                sm:gap-6
+                lg:gap-6 
+                xl:gap-8 
+                justify-items-center
+              ">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    images={product.images}
+                    tagg={product.tag}
+                    rating={product.rating}
+                    namee={product.name}
+                    pricee={product.price}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-                    <ProductCard
-                        images={[Nike1, Nike2, Nike3]}
-                        tagg="NEW DROP"
-                        rating={4.56}
-                        namee="Nike Dunk Low Retro SE"
-                        pricee="₹ 10 257.00"
-                    />
-                </div>
-            </section>
-        </>
-    );
+        {/* Bottom spacing */}
+        <div className="h-8 sm:h-12 lg:h-16"></div>
+      </section>
+    </>
+  );
 }
 
 export default Product;
