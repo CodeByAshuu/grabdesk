@@ -24,7 +24,7 @@ function Home() {
                 <div className="relative w-full h-screen bg-cover bg-center bg-no-repeat text-[#FFEAD5] pt-16 pl-8"
                 style={{ backgroundImage: `url(${Hero})` }}
                 >   
-                    <div className="absolute inset-0 bg-gradient-to-b from-yellow-950/80 via-amber/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-b from-yellow-950/80 via-amber/40 to-transparent"></div>
                     <div className="absolute my-12 mx-4 z-10 top-2">
                         <h1 className="boldonse-bold text-[#F0A322] text-4xl sm:text-6xl md:text-7xl lg:text-9xl p-4 text-left"
                         style={{

@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CartCard from "../components/CartCard";
+import UPI from "../assets/upi.png";
+import Mastercard from "../assets/Mastercard.png";
+import NetBanking from "../assets/net.png";
+import Paypal from "../assets/paypal.png";
+import Button from "../components/Button";
+import { ButtonDark } from "../components/ButtonDark";
 
 function Cart() {
     // Sample real data - in production, you'd fetch this from an API
@@ -55,8 +61,8 @@ function Cart() {
 
     // Update quantity
     const UpdateQuantity = (itemId, newQuantity) => {
-        setCartProducts(prev => 
-            prev.map(item => 
+        setCartProducts(prev =>
+            prev.map(item =>
                 item.id === itemId ? { ...item, quantity: newQuantity } : item
             )
         );
@@ -92,7 +98,7 @@ function Cart() {
 
     // Format currency
     const formatCurrency = (amount) => {
-        return `$${amount.toFixed(2)}`;
+        return `₹${amount.toFixed(2)}`;
     };
 
     // Load cart data (in production, fetch from API)
@@ -113,9 +119,44 @@ function Cart() {
         localStorage.setItem('cart', JSON.stringify(cartProducts));
     }, [cartProducts]);
 
+    const paymentIcons = {
+        UPI: UPI,
+        Mastercard: Mastercard,
+        NetBanking: NetBanking,
+        Paypal: Paypal
+    };
+
+    // Sample related products data
+    const relatedProducts = [
+        { 
+            id: 1, 
+            name: "Coffee Mug Premium", 
+            price: 24.99, 
+            image: "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=400&h=300&fit=crop" 
+        },
+        { 
+            id: 2, 
+            name: "Espresso Cup Set", 
+            price: 34.99, 
+            image: "https://images.unsplash.com/photo-1510707577715-7370d3ff9ee9?w-400&h=300&fit=crop" 
+        },
+        { 
+            id: 3, 
+            name: "Travel Coffee Mug", 
+            price: 29.99, 
+            image: "https://images.unsplash.com/photo-1512568400610-62da28bc8a13?w=400&h=300&fit=crop" 
+        },
+        { 
+            id: 4, 
+            name: "Ceramic Coffee Mug", 
+            price: 19.99, 
+            image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=400&h=300&fit=crop" 
+        },
+    ];
+
     return (
         <>
-            <section 
+            <section
                 className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
                 style={{
                     backgroundColor: "#442314",
@@ -124,7 +165,7 @@ function Cart() {
                 }}
             >
                 <Navbar />
-                
+
                 <div className="my-8 sm:my-10 md:my-12 lg:my-14 mx-4 sm:mx-6 lg:mx-8">
                     <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                         CART
@@ -136,13 +177,13 @@ function Cart() {
                         {/* Cart Products */}
                         <div className="lg:col-span-2">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-semibold text-[#E3D5C3]">
+                                <h2 className="text-2xl font-semibold text-[#E3D5C3] gowun-dodum-regular">
                                     Your Items ({cartProducts.length})
                                 </h2>
                                 {cartProducts.length > 0 && (
                                     <button
                                         onClick={clearCart}
-                                        className="text-[#E3D5C3] hover:text-[#FFE9D5] text-sm transition-colors"
+                                        className="text-[#E3D5C3] hover:text-[#FFE9D5] text-sm transition-colors gowun-dodum-regular"
                                     >
                                         Clear All Items
                                     </button>
@@ -154,7 +195,23 @@ function Cart() {
                                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E3D5C3]"></div>
                                 </div>
                             ) : cartProducts.length > 0 ? (
-                                <div className="space-y-4">
+                                // Add wrapper div to show only 3 products at a time with scroll
+                                <div 
+                                    className="space-y-4 overflow-y-auto pr-2"
+                                    style={{
+                                        maxHeight: 'calc(3 * 256px)', // Adjust based on your card height
+                                        scrollbarWidth: 'none', // Firefox
+                                        msOverflowStyle: 'none', // IE/Edge
+                                    }}
+                                >
+                                    {/* Hide scrollbar for Chrome/Safari */}
+                                    <style>
+                                        {`
+                                            .overflow-y-auto::-webkit-scrollbar {
+                                                display: none;
+                                            }
+                                        `}
+                                    </style>
                                     {cartProducts.map((product) => (
                                         <CartCard
                                             key={product.id}
@@ -165,19 +222,18 @@ function Cart() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="bg-[#E3D5C3] bg-opacity-10 rounded-lg p-8 text-center">
-                                    <div className="text-6xl mb-4">🛒</div>
+                                <div className="bg-[#E3D5C3] bg-opacity-10 rounded-lg p-8 text-center gowun-dodum-regular">
+                                    <div className="text-6xl mb-4"></div>
                                     <h3 className="text-xl font-semibold text-[#E3D5C3] mb-2">
                                         Your cart is empty
                                     </h3>
-                                    <p className="text-[#FFE9D5] mb-6">
-                                        Add some delicious coffee products to get started!
+                                    <p className="txt-lg mb-6">
+                                        Add some products to get started!
                                     </p>
                                     <Link
-                                        to="/products"
-                                        className="inline-block bg-[#5b3d25] hover:bg-[#442314] text-[#E3D5C3] font-semibold py-3 px-6 rounded-lg transition-colors"
-                                    >
-                                        Browse Products
+                                        to="/product"    
+                                    className="" >
+                                       <Button labell={"Browse Products"} />
                                     </Link>
                                 </div>
                             )}
@@ -186,33 +242,33 @@ function Cart() {
                         {/* Order Summary */}
                         {cartProducts.length > 0 && (
                             <div className="lg:col-span-1">
-                                <div className="bg-[#E3D5C3] bg-opacity-10 backdrop-blur-sm rounded-lg p-6 sticky top-6">
-                                    <h2 className="font-bold text-2xl text-[#E3D5C3] mb-6">
+                                <div className="bg-[#E3D5C3] bg-opacity-10 backdrop-blur-sm rounded-lg p-6 sticky top-6 gowun-dodum-regular border-2 border-[#452215] shadow-[4px_4px_0_#8F5E41]">
+                                    <h2 className="font-bold text-4xl text-[#452215] mb-6 text-center nunito-exbold">
                                         Order Summary
                                     </h2>
 
                                     <div className="space-y-4 mb-6">
-                                        <div className="flex justify-between text-[#FFE9D5]">
+                                        <div className="flex justify-between text-[#452215]">
                                             <span>Subtotal</span>
                                             <span>{formatCurrency(calculateSubtotal())}</span>
                                         </div>
-                                        
-                                        <div className="flex justify-between text-[#FFE9D5]">
+
+                                        <div className="flex justify-between text-[#452215]">
                                             <span>Shipping</span>
                                             <span>
-                                                {calculateShipping() === 0 
-                                                    ? "FREE" 
+                                                {calculateShipping() === 0
+                                                    ? "FREE"
                                                     : formatCurrency(calculateShipping())}
                                             </span>
                                         </div>
-                                        
-                                        <div className="flex justify-between text-[#FFE9D5]">
+
+                                        <div className="flex justify-between text-[#452215]">
                                             <span>Tax</span>
                                             <span>{formatCurrency(calculateTax())}</span>
                                         </div>
-                                        
+
                                         <div className="border-t border-[#5b3d25] pt-4">
-                                            <div className="flex justify-between text-[#E3D5C3] font-bold text-xl">
+                                            <div className="flex justify-between text-[#452215] font-bold text-xl">
                                                 <span>Total</span>
                                                 <span>{formatCurrency(calculateTotal())}</span>
                                             </div>
@@ -229,42 +285,45 @@ function Cart() {
                                         </div>
                                     )}
 
-                                    <button className="w-full bg-[#5b3d25] hover:bg-[#442314] text-[#E3D5C3] font-bold py-3 rounded-lg transition-colors mb-4">
-                                        Proceed to Checkout
-                                    </button>
+                                    <Link to="/Checkout" className="">
+                                        <Button labell={"Proceed to Checkout"} />
+                                    </Link>
 
                                     <Link
-                                        to="/products"
-                                        className="block text-center text-[#FFE9D5] hover:text-[#E3D5C3] text-sm transition-colors"
+                                        to="/product"
+                                        className="block text-center text- hover:text-[#E3D5C3] text-sm transition-colors mt-3"
                                     >
                                         Continue Shopping
                                     </Link>
 
                                     <div className="mt-6 pt-6 border-t border-[#5b3d25] border-opacity-30">
-                                        <h3 className="text-[#E3D5C3] font-semibold mb-3">
+                                        <h3 className=" font-semibold mb-3">
                                             Secure Checkout
                                         </h3>
-                                        <div className="flex space-x-2">
-                                            {["visa", "mastercard", "paypal", "applepay"].map((method) => (
-                                                <div 
+                                        <div className="flex space-x-2 ">
+                                            {["UPI", "Mastercard", "NetBanking", "Paypal"].map((method) => (
+                                                <div
                                                     key={method}
-                                                    className="w-10 h-6 bg-[#FFE9D5] bg-opacity-20 rounded flex items-center justify-center"
+                                                    className="w-10 h-6 bg-[#FFE9D5] bg-opacity-20 rounded flex items-center justify-center overflow-hidden py-0.5"
                                                 >
-                                                    <span className="text-xs text-[#FFE9D5]">
-                                                        {method.charAt(0).toUpperCase()}
-                                                    </span>
+                                                    <img
+                                                        src={paymentIcons[method]}
+                                                        alt={method}
+                                                        className="w-full h-full object-contain"
+                                                    />
                                                 </div>
                                             ))}
+
                                         </div>
-                                        <p className="text-xs text-[#FFE9D5] mt-3">
+                                        <p className="text-xs mt-3">
                                             Your payment information is encrypted and secure
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Promo Code Section */}
-                                <div className="mt-6 bg-[#E3D5C3] bg-opacity-10 backdrop-blur-sm rounded-lg p-6">
-                                    <h3 className="font-semibold text-[#E3D5C3] mb-3">
+                                <div className="mt-6 bg-[#E3D5C3] bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border-2 border-[#452215] shadow-[4px_4px_0_#8F5E41]">
+                                    <h3 className="font-semibold mb-3">
                                         Have a promo code?
                                     </h3>
                                     <div className="flex">
@@ -285,18 +344,36 @@ function Cart() {
                     {/* Recommended Products (Optional) */}
                     {cartProducts.length > 0 && (
                         <div className="mt-12">
-                            <h3 className="text-2xl font-semibold text-[#E3D5C3] mb-6">
+                            <h3 className="text-2xl font-semibold text-[#E3D5C3] mb-6 gowun-dodum-regular ">
                                 You might also like
                             </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {[1, 2, 3, 4].map((item) => (
-                                    <div 
-                                        key={item}
-                                        className="bg-[#E3D5C3] bg-opacity-10 rounded-lg p-4 hover:bg-opacity-20 transition-all cursor-pointer"
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 gowun-dodum-regular">
+                                {relatedProducts.map((product) => (
+                                    <div
+                                        key={product.id}
+                                        className="bg-[#E3D5C3] bg-opacity-10 rounded-lg p-4 hover:bg-opacity-20 transition-all cursor-pointer group"
+                                        onClick={() => {
+                                            console.log('Product selected:', product);
+                                          
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                console.log('Product selected:', product);
+                                            }
+                                        }}
                                     >
-                                        <div className="h-32 bg-[#5b3d25] bg-opacity-20 rounded mb-3"></div>
-                                        <p className="text-[#FFE9D5] text-sm">Coffee Mug</p>
-                                        <p className="text-[#E3D5C3] font-semibold">$19.99</p>
+                                        <div className="h-32 bg-gray-100 bg-opacity-20 rounded mb-3 overflow-hidden flex items-center justify-center">
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                        <p className="text-sm mb-1 nunito-bold">{product.name}</p>
+                                        <p className="font-semibold ">₹{product.price.toFixed(2)}</p>
                                     </div>
                                 ))}
                             </div>
