@@ -117,79 +117,31 @@ function Home() {
                   "4px 4px 0 #5b3d25, 8px 8px 0 rgba(91, 61, 37, 0.45)",
               }}
             >
-              GRABDESK
-            </h1>
-            <p className="mt-6 text-lg md:text-xl max-w-md font-medium text-[#5b3d25]">
-              Your curated vintage and workspace essentials. Find desks, chairs,
-              lighting, and unique decor that tell a story.
-            </p>
-            <div className="mt-8">
-              <Link to="/product">
-                <Button labell="START SHOPPING" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Hero Image */}
-          <div className="w-full md:w-1/2 relative flex justify-center items-center">
-            <div className="relative w-[280px] sm:w-[400px] md:w-[500px] lg:w-[600px]">
-              <div className="absolute inset-0 bg-[#f0a224] rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
-              <img
-                src={Hero}
-                alt="Hero Banner"
-                className="relative z-10 w-full h-auto object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* ========== TRENDING CATEGORIES ========== */}
-        <section className="py-16 px-6 max-w-7xl mx-auto">
-          <h2 className="boldonse-bold text-3xl md:text-5xl mb-10 text-center text-[#5b3d25]">
-            TRENDING <span className="text-[#f0a224]">CATEGORIES</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categories.map((cat, index) => (
-              <Link
-                to="/product"
-                key={index}
-                className="group relative h-64 rounded-xl overflow-hidden cursor-pointer shadow-[4px_4px_0_#8F5E41] hover:shadow-xl transition-all"
-              >
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 group-hover:bg-black/10 transition-colors"></div>
-                {/* <div className="absolute inset-0 flex items-center justify-center">
-                  <h3 className="text-[#f3eadc] text-xl font-bold uppercase tracking-wider border-2 border-[#f3eadc] px-4 py-2">
-                    {cat.name}
-                  </h3>
-                </div> */}
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ========== PERSONALIZED RECOMMENDATIONS ========== */}
-        <section className="py-16 bg-[#442314] text-[#f3eadc] overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex justify-between items-end mb-8">
-              <div>
-                <h2 className="boldonse-bold text-3xl md:text-5xl mb-2">
-                  RECOMMENDED FOR YOU
-                </h2>
-                <p className="text-[#dab590] text-sm md:text-base">
-                  Curated picks based on your style.
-                </p>
-              </div>
-              <Link
-                to="/product"
-                className="hidden md:block text-[#f0a224] hover:underline"
-              >
-                View All
-              </Link>
-            </div>
+                <Navbar />
+                <div className="relative w-full h-screen bg-cover bg-center bg-no-repeat text-[#FFEAD5] pt-16 pl-8"
+                style={{ backgroundImage: `url(${Hero})` }}
+                >   
+                    <div className="absolute inset-0 bg-linear-to-b from-yellow-950/80 via-amber/40 to-transparent"></div>
+                    <div className="absolute my-12 mx-4 z-10 top-2">
+                        <h1 className="boldonse-bold text-[#F0A322] text-4xl sm:text-6xl md:text-7xl lg:text-9xl p-4 text-left"
+                        style={{
+                            textShadow:
+                            "12px 12px 0 #5b3d25, 24px 24px 0 rgba(91, 61, 37, 0.45)",  
+                        }}>
+                            GRABDESK
+                        </h1>
+                        <p className="absolute left-8 top-45 text-left w-1/3 text-[#f4bc62]" >
+                            Your curated vintage and workspace essentials. Find desks, chairs, 
+                            lighting and unique decor that tell a story.
+                        </p>
+                    </div>
+                    {/* OPEN CATALOG BUTTON  */}
+                    <div className="absolute top-90 left-18 flex gap-4 pointer-events-auto z-10">
+                        <Link to="/product">
+                            <Button labell="OPEN CATALOG" className="w-md"/>
+                        </Link>
+                    </div>
+                </div>
 
             {/* Horizontal Scroll Container */}
             <div
