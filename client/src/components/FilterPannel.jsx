@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 
-const FilterPanel = ({ open, onFilterChange }) => {
+const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
   const [filters, setFilters] = useState({
-    categories: [],
+    categories: initialFilters?.categories || [],
     brands: [],
     priceRange: [100, 200000],
     rating: null,
@@ -12,7 +12,7 @@ const FilterPanel = ({ open, onFilterChange }) => {
   });
 
   const [collapsedSections, setCollapsedSections] = useState({
-    categories: true, // Collapsed by default
+    categories: !initialFilters?.categories?.length, // Open if initial filters exist
     brands: false,
     priceRange: false, // Always false since price range is not collapsible
     rating: false,
@@ -57,18 +57,18 @@ const FilterPanel = ({ open, onFilterChange }) => {
     setCollapsedSections(prev => {
       const newState = { ...prev };
       const isCurrentlyCollapsed = newState[section];
-      
+
       if (!isCurrentlyCollapsed) {
         // We're about to collapse this section
         const currentlyCollapsedCount = Object.values(newState).filter(val => val === true).length;
-        
+
         if (currentlyCollapsedCount >= 3) {
           // Find the first collapsed section (excluding the one we're trying to collapse)
           const collapsibleSections = ['categories', 'brands', 'rating', 'discount', 'sort'];
           for (const s of collapsibleSections) {
             if (s !== section && newState[s] === true) {
               newState[s] = false; // Open the first found collapsed section
-              
+
               // Update collapse order
               const index = collapseOrder.current.indexOf(s);
               if (index > -1) {
@@ -78,20 +78,20 @@ const FilterPanel = ({ open, onFilterChange }) => {
             }
           }
         }
-        
+
         newState[section] = true;
         collapseOrder.current.push(section);
       } else {
         // We're expanding this section
         newState[section] = false;
-        
+
         // Remove from collapse order
         const index = collapseOrder.current.indexOf(section);
         if (index > -1) {
           collapseOrder.current.splice(index, 1);
         }
       }
-      
+
       return newState;
     });
   };
@@ -102,7 +102,7 @@ const FilterPanel = ({ open, onFilterChange }) => {
       const newCategories = prev.categories.includes(category)
         ? prev.categories.filter(c => c !== category)
         : [...prev.categories, category];
-      
+
       return { ...prev, categories: newCategories };
     });
   };
@@ -113,7 +113,7 @@ const FilterPanel = ({ open, onFilterChange }) => {
       const newBrands = prev.brands.includes(brand)
         ? prev.brands.filter(b => b !== brand)
         : [...prev.brands, brand];
-      
+
       return { ...prev, brands: newBrands };
     });
   };
@@ -203,15 +203,15 @@ const FilterPanel = ({ open, onFilterChange }) => {
           <span>Category</span>
           {collapsedSections.categories ? (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M200-440v-80h560v80H200Z"/>
+              <path d="M200-440v-80h560v80H200Z" />
             </svg>
           )}
         </button>
-        
+
         <div className={`gowun-dodum-regular overflow-hidden transition-all duration-300 ${collapsedSections.categories ? 'max-h-0' : 'max-h-96'}`}>
           <div className="space-y-2">
             {categories.map(category => (
@@ -240,15 +240,15 @@ const FilterPanel = ({ open, onFilterChange }) => {
           <span>Brand</span>
           {collapsedSections.brands ? (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M200-440v-80h560v80H200Z"/>
+              <path d="M200-440v-80h560v80H200Z" />
             </svg>
           )}
         </button>
-        
+
         <div className={`gowun-dodum-regular overflow-hidden transition-all duration-300 ${collapsedSections.brands ? 'max-h-0' : 'max-h-96'}`}>
           <input
             type="text"
@@ -311,15 +311,15 @@ const FilterPanel = ({ open, onFilterChange }) => {
           <span>Customer Rating</span>
           {collapsedSections.rating ? (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M200-440v-80h560v80H200Z"/>
+              <path d="M200-440v-80h560v80H200Z" />
             </svg>
           )}
         </button>
-        
+
         <div className={`gowun-dodum-regular overflow-hidden transition-all duration-300 ${collapsedSections.rating ? 'max-h-0' : 'max-h-96'}`}>
           <div className="space-y-2 pt-1">
             {ratings.map(rating => (
@@ -349,15 +349,15 @@ const FilterPanel = ({ open, onFilterChange }) => {
           <span>Discount</span>
           {collapsedSections.discount ? (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M200-440v-80h560v80H200Z"/>
+              <path d="M200-440v-80h560v80H200Z" />
             </svg>
           )}
         </button>
-        
+
         <div className={`gowun-dodum-regular overflow-hidden transition-all duration-300 ${collapsedSections.discount ? 'max-h-0' : 'max-h-96'}`}>
           <div className="space-y-2 pt-1">
             {discounts.map(discount => (
@@ -387,15 +387,15 @@ const FilterPanel = ({ open, onFilterChange }) => {
           <span>Sort By</span>
           {collapsedSections.sort ? (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#452215">
-              <path d="M200-440v-80h560v80H200Z"/>
+              <path d="M200-440v-80h560v80H200Z" />
             </svg>
           )}
         </button>
-        
+
         <div className={`overflow-hidden transition-all duration-300 ${collapsedSections.sort ? 'max-h-0' : 'max-h-96'}`}>
           <select
             value={filters.sortBy}

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
 import Nike1 from '../assets/Nike1.png';
@@ -10,7 +11,14 @@ import FilterPanel from "../components/FilterPannel";
 function Product() {
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState({});
+  const location = useLocation();
+  const initialCategory = location.state?.category;
+
+  const initialFilters = useMemo(() => ({
+    categories: initialCategory ? [initialCategory] : []
+  }), [initialCategory]);
+
+  const [activeFilters, setActiveFilters] = useState(initialFilters);
 
   // Complete product data with all necessary properties
   const products = [
@@ -222,7 +230,7 @@ function Product() {
           </h1>
         </div>
 
-    
+
         <div className="flex flex-col sm:flex-row gap-4 items-start px-4 md:px-6 lg:px-8 mt-5">
           <div className="w-full flex justify-center items-center gap-3">
             <div className="flex-1 max-w-2xl">
@@ -235,7 +243,7 @@ function Product() {
               />
             </div>
 
-            
+
             <button
               onClick={() => {
                 console.log("Search clicked with:", search);
@@ -252,10 +260,10 @@ function Product() {
          0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5
          T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
               </svg>
-              
+
             </button>
 
-            
+
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className="sm:hidden bg-[#8F5E41] text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg 
@@ -275,6 +283,7 @@ function Product() {
             <FilterPanel
               open={true}
               onFilterChange={handleFilterChange}
+              initialFilters={initialFilters}
             />
           </div>
 
@@ -304,6 +313,7 @@ function Product() {
                   <FilterPanel
                     open={isFilterOpen}
                     onFilterChange={handleFilterChange}
+                    initialFilters={initialFilters}
                   />
                 </div>
               </div>

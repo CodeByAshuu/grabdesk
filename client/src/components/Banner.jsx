@@ -42,29 +42,29 @@ function Banner() {
             <section className="flex flex-wrap justify-between gap-4 px-6 mb-12 max-w-7xl mx-auto">
                 {/* Banner Box 3 */}
                 <div
-                    className="flex flex-col justify-center items-start bg-cover bg-center min-h-[30vh] min-w-[30%] flex-1 p-6 rounded-xl shadow-md border border-[#452215]/30 transform hover:scale-[1.02] transition-all"
+                    className="flex flex-col justify-center items-start bg-cover bg-center min-h-[30vh] w-full md:w-[30%] flex-1 p-6 rounded-xl shadow-md border border-[#452215]/30 transform hover:scale-[1.02] transition-all"
                     style={{ backgroundImage: `url(${b7})` }}
                 >
-                    <h2 className="text-white text-xl font-black mb-1 boldonse-bold">SEASONAL SALE</h2>
-                    <h3 className="text-[#ec544e] text-lg font-extrabold">Winter Collection -50% OFF</h3>
+                    <h2 className="text-white text-lg md:text-2xl font-black mb-1 boldonse-bold">SEASONAL SALE</h2>
+                    <h3 className="text-[#ec544e] text-base md:text-lg font-extrabold">Winter Collection -50% OFF</h3>
                 </div>
 
                 {/* Banner Box 4 */}
                 <div
-                    className="flex flex-col justify-center items-start bg-cover bg-center min-h-[30vh] min-w-[30%] flex-1 p-6 rounded-xl shadow-md border border-[#452215]/30 transform hover:scale-[1.02] transition-all"
+                    className="flex flex-col justify-center items-start bg-cover bg-center min-h-[30vh] w-full md:w-[30%] flex-1 p-6 rounded-xl shadow-md border border-[#452215]/30 transform hover:scale-[1.02] transition-all"
                     style={{ backgroundImage: `url(${b4})` }}
                 >
-                    <h2 className="text-white lg:text-xl sm:text-xs font-black mb-1 boldonse-bold">NEW FOOTWEAR COLLECTION</h2>
-                    <h3 className="text-[#ec544e] text-lg font-extrabold">Spring / Summer 2025</h3>
+                    <h2 className="text-white text-lg md:text-2xl font-black mb-1 boldonse-bold">NEW FOOTWEAR COLLECTION</h2>
+                    <h3 className="text-[#ec544e] text-base md:text-lg font-extrabold">Spring / Summer 2025</h3>
                 </div>
 
                 {/* Banner Box 5 */}
                 <div
-                    className="flex flex-col justify-center items-start bg-cover bg-center min-h-[30vh] min-w-[30%] flex-1 p-6 rounded-xl shadow-md border border-[#452215]/30 transform hover:scale-[1.02] transition-all"
+                    className="flex flex-col justify-center items-start bg-cover bg-center min-h-[30vh] w-full md:w-[30%] flex-1 p-6 rounded-xl shadow-md border border-[#452215]/30 transform hover:scale-[1.02] transition-all"
                     style={{ backgroundImage: `url(${b18})` }}
                 >
-                    <h2 className="text-white text-xl font-black mb-1 boldonse-bold">T-SHIRTS</h2>
-                    <h3 className="text-[#ec544e] text-lg font-extrabold">New Trendy Prints</h3>
+                    <h2 className="text-white text-lg md:text-2xl font-black mb-1 boldonse-bold">T-SHIRTS</h2>
+                    <h3 className="text-[#ec544e] text-base md:text-lg font-extrabold">New Trendy Prints</h3>
                 </div>
             </section>
 
