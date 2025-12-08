@@ -188,7 +188,84 @@ function Landing() {
         </div>
       </div>
 
-      <div className="relative w-full h-96 bg-cover bg-center bg-no-repeat text-[#FFEAD5] pt-16 pl-8"
+      
+      {/* ========== WHY GRABDESK? ========== */}
+        <section className="py-20 bg-[#e8dcc8] px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="boldonse-bold text-3xl md:text-5xl mb-16 text-center text-[#5b3d25]">
+              WHY <span className="text-[#f0a224]">GRABDESK?</span>
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Card 1 */}
+              <div className="bg-[#f3eadc] p-8 rounded-2xl shadow-md hover:-translate-y-2 transition-transform duration-300 border border-[#d4c5b0]">
+                <div className="w-16 h-16 bg-[#5b3d25] rounded-full flex items-center justify-center mb-6 text-[#f0a224]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="32"
+                    viewBox="0 -960 960 960"
+                    width="32"
+                    fill="currentColor"
+                  >
+                    <path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-[#5b3d25]">
+                  Smart Shopping
+                </h3>
+                <p className="text-[#7f5c3b]">
+                  Products curated to match your lifestyle. We filter the noise
+                  so you find exactly what you need.
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-[#f3eadc] p-8 rounded-2xl shadow-md hover:-translate-y-2 transition-transform duration-300 border border-[#d4c5b0]">
+                <div className="w-16 h-16 bg-[#5b3d25] rounded-full flex items-center justify-center mb-6 text-[#f0a224]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="32"
+                    viewBox="0 -960 960 960"
+                    width="32"
+                    fill="currentColor"
+                  >
+                    <path d="M240-160h360v-80H200v-280h440v240h80v-440h-80v120H200v-120h-80v480h120v80Z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-[#5b3d25]">
+                  Fast Checkout
+                </h3>
+                <p className="text-[#7f5c3b]">
+                  Smooth, secure, and effortless buying. Experience a seamless
+                  checkout process designed for speed.
+                </p>
+              </div>
+
+              {/* Card 3 */}
+              <div className="bg-[#f3eadc] p-8 rounded-2xl shadow-md hover:-translate-y-2 transition-transform duration-300 border border-[#d4c5b0]">
+                <div className="w-16 h-16 bg-[#5b3d25] rounded-full flex items-center justify-center mb-6 text-[#f0a224]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="32"
+                    viewBox="0 -960 960 960"
+                    width="32"
+                    fill="currentColor"
+                  >
+                    <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-32q0-34 17.5-62.5T224-306q54-27 109-40.5T480-360q57 0 111 13.5T700-306q31 17 48.5 45.5T766-192v32H160Z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-[#5b3d25]">
+                  Personalized Experience
+                </h3>
+                <p className="text-[#7f5c3b]">
+                  Less noise, more relevance. Get recommendations that actually
+                  matter to you.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="relative w-full h-96 bg-cover bg-center bg-no-repeat text-[#FFEAD5] pt-16 pl-8"
         style={{ backgroundImage: `url(${Paper})` }}
       >
         <div className="boldonse-bold text-7xl leading-normal ">
