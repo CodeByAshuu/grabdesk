@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import Nike1 from "../assets/Nike1.png";
 import Nike2 from "../assets/Nike2.png";
 import Nike3 from "../assets/Nike3.png";
-import Hero from "../assets/hero-banner.png";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import beauty from "../assets/Home-slider/beauty.jpg";
+import books from "../assets/Home-slider/books.jpg";
+import electronic from "../assets/Home-slider/electronic.jpg";
+import fashion from "../assets/Home-slider/fashion.jpg";
+import fitness from "../assets/Home-slider/fitness.jpg";
+import home from "../assets/Home-slider/home.jpg";
 import Button from "../components/Button";
 import Banner from "../components/Banner";
 
@@ -94,15 +99,30 @@ const topDeals = [
 ];
 
 function Home() {
-  const heroImages = [Hero, Nike1, Nike2, Nike3];
+  const navigate = useNavigate();
+
+  const heroSlides = [
+    { img: fashion, title: "Fashion", category: "Fashion" },
+    { img: home, title: "Home & Living", category: "Home & Living" },
+    { img: beauty, title: "Beauty & Personal Care", category: "Beauty & Personal Care" },
+    { img: books, title: "Books & Stationery", category: "Books & Stationery" },
+    { img: electronic, title: "Electronics", category: "Electronics" },
+    { img: fitness, title: "Sports & Fitness", category: "Sports & Fitness" }
+    
+  ];
+
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
+      setCurrentHeroIndex((prev) => (prev + 1) % heroSlides.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroSlides.length]);
+
+  const handleHeroClick = (category) => {
+    navigate('/product', { state: { category } });
+  };
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden text-[#5b3d25] bg-[#f3eadc]">
@@ -116,41 +136,46 @@ function Home() {
         }}
       >
         <Navbar />
-        {/* ========== HERO SECTION ========== */}
-        <section className="relative w-full min-h-[600px] md:h-screen flex flex-col md:flex-row items-center justify-center px-6 pt-20 md:pt-0">
-          {/* Text Content */}
-          <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left mb-10 md:mb-0">
-            <h1
-              className="boldonse-bold text-[#F0A322] text-[15vw] md:text-[10vw] lg:text-[8rem] leading-[0.8]"
-              style={{
-                textShadow:
-                  "4px 4px 0 #5b3d25, 8px 8px 0 rgba(91, 61, 37, 0.45)",
-              }}
+        {/* ========== HERO SECTION (FULL SCREEN SLIDER) ========== */}
+        <section className="relative w-full h-screen overflow-hidden">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out cursor-pointer ${index === currentHeroIndex ? "opacity-100 z-0 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
+                }`}
+              onClick={() => handleHeroClick(slide.category)}
             >
-              GRABDESK
-            </h1>
-            <p className="mt-6 text-lg md:text-xl max-w-md font-medium text-[#5b3d25]">
-              Your curated vintage and workspace essentials. Find desks, chairs,
-              lighting, and unique decor that tell a story.
-            </p>
-            <div className="mt-8">
-              <Link to="/product">
-                <Button labell="START SHOPPING" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Hero Image */}
-          <div className="w-full md:w-1/2 relative flex justify-center items-center">
-            <div className="relative w-[280px] sm:w-[400px] md:w-[500px] lg:w-[600px]">
-              <div className="absolute inset-0 bg-[#f0a224] rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
               <img
-                src={heroImages[currentHeroIndex]}
-                alt="Hero Banner"
-                className="relative z-10 w-full h-auto object-contain drop-shadow-2xl transform hover:scale-105 transition-all duration-500"
-                key={currentHeroIndex}
+                src={slide.img}
+                alt={`Hero Slide ${index + 1}`}
+                className="w-full h-full object-cover z-0"
               />
+
+              {/* Text Overlay */}
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center transition-all hover:bg-black/20 z-10">
+                <div className="text-center">
+                  <h2 className="text-[#f3eadc] text-4xl md:text-6xl boldonse-bold drop-shadow-lg tracking-wider mb-4 opacity-200 animate-fadeIn"
+                    style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+                    {slide.title}
+                  </h2>
+                  <button className="px-6 py-2 border-2 border-[#f3eadc] text-[#f3eadc] font-bold uppercase tracking-widest hover:bg-[#f3eadc] hover:text-[#5b3d25] transition-all">
+                    Shop Now
+                  </button>
+                </div>
+              </div>
             </div>
+          ))}
+
+          {/* Slider Indicators */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentHeroIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all ${index === currentHeroIndex ? "bg-[#f0a224] scale-125" : "bg-white/50 hover:bg-white"
+                  }`}
+              />
+            ))}
           </div>
         </section>
 
