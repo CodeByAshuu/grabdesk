@@ -46,7 +46,7 @@ function Landing() {
             className="boldonse-bold relative top-45 rotate-[-4deg] z-0 text-[14vw] leading-[0.8] text-[#f0a224] lg:text-[12rem]"
             style={{
               textShadow:
-                "12px 12px 0 #5b3d25, 24px 24px 0 rgba(91, 61, 37, 0.45)",  
+                "12px 12px 0 #5b3d25, 24px 24px 0 rgba(91, 61, 37, 0.45)",
             }}
           >
             GRABDESK
@@ -68,21 +68,21 @@ function Landing() {
             "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
           backgroundSize: "14px 24px",
         }}>
-          <div className="absolute left-120 top-50 z-20 -translate-x-1/2 -translate-y-2/7">
-            <img src={Hero2} alt="hero2" className="transform scale-180" />
-          </div>
-          <div className="absolute top-6 right-8 text-right uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#FFEAD5]">
-            UNLOCK
-            <br />
-            STATIONARY
-          </div>
-          <div className="absolute top-120 right-16 flex gap-4 pointer-events-auto">
-            <Link to="/product">
-              <ButtonLight label="Explore" className="w-md"/>
-            </Link>
-          </div>
-          
-          {/* <div className="absolute right-15 font-sans text-lg leading-7 py-2 text-[#FFEAD5] text-right">
+        <div className="absolute left-120 top-50 z-20 -translate-x-1/2 -translate-y-2/7">
+          <img src={Hero2} alt="hero2" className="transform scale-180" />
+        </div>
+        <div className="absolute top-6 right-8 text-right uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#FFEAD5]">
+          UNLOCK
+          <br />
+          STATIONARY
+        </div>
+        <div className="absolute top-120 right-16 flex gap-4 pointer-events-auto">
+          <Link to="/product">
+            <ButtonLight label="Explore" className="w-md" />
+          </Link>
+        </div>
+
+        {/* <div className="absolute right-15 font-sans text-lg leading-7 py-2 text-[#FFEAD5] text-right">
             <span className="text-[#FFFFF3] text-3xl">A smarter way</span> to explore products you’ll actually love. <br />
             Every recommendation on GrabDesk <br /> 
             is crafted from taste, trends, <br /> 
@@ -90,58 +90,58 @@ function Landing() {
             a shopping experience that respects <br /> 
             your time and your style.
           </div> */}
-          <div className="absolute top-55 right-15 text-right max-w-md">
-            {/* Title that text wraps around */}
-            <div className="editorial-shape">
-              <div className="text-5xl font-normal leading-none tracking-tighter ">
-                <span className="text-[#FFEAD5]">smarter</span><br />
-                <span className="text-[#F0A322] ml-1">way</span><br />
-              </div>
+        <div className="absolute top-55 right-15 text-right max-w-md">
+          {/* Title that text wraps around */}
+          <div className="editorial-shape">
+            <div className="text-5xl font-normal leading-none tracking-tighter ">
+              <span className="text-[#FFEAD5]">smarter</span><br />
+              <span className="text-[#F0A322] ml-1">way</span><br />
             </div>
-
-            {/* Paragraph */}
-            <p className="text-xl leading-6 text-[#dab590] text-left tracking-tighter">
-            to explore products you’ll actually love. 
-            Every recommendation on GrabDesk is crafted from taste, trends,  
-            and thoughtful design, giving you a shopping experience that respects 
-            your time and your style.
-            Instead of overwhelming you with countless choices, GrabDesk narrows 
-            the field to what truly matters.
-            From tech to lifestyle essentials, every product is hand-picked to enhance 
-            your workflow and reflect your personal taste.
-            </p>
           </div>
+
+          {/* Paragraph */}
+          <p className="text-xl leading-6 text-[#dab590] text-left tracking-tighter">
+            to explore products you’ll actually love.
+            Every recommendation on GrabDesk is crafted from taste, trends,
+            and thoughtful design, giving you a shopping experience that respects
+            your time and your style.
+            Instead of overwhelming you with countless choices, GrabDesk narrows
+            the field to what truly matters.
+            From tech to lifestyle essentials, every product is hand-picked to enhance
+            your workflow and reflect your personal taste.
+          </p>
+        </div>
       </div>
       <div className="relative h-96 w-full px-6 py-3 m-0 text-[#FFEAD5] bg-[#4a3020]">
-          <div className="font-sans text-3xl leading-7 py-2">
-            OUR MISSION IS TO BUILD A SHOPPING <br/>
-            EXPERIENCE THAT FEELS PERSONAL,<br/>
-            EFFORTLESS, AND INTUITIVE.
-          </div>
-          <div className="text-xs font-sans font-light">
-            GrabDesk is designed to help users <br />
-            discover products that match their taste,
-            <br />needs, and lifestyle without endless scrolling.
-          </div>
-          <div className="absolute text-xs font-sans font-light bottom-4 left-6"> 
-            At GrabDesk, we believe that shopping should be simple. <br />
-            Every product suggestion is thoughtfully curated using user behavior, <br />
-            preferences, and real-time trends — turning online <br />
-            shopping into a tailored experience for every individual.
-          </div>
-          <div className="absolute text-right text-3xl font-sans leading-7 bottom-4 right-6">
-            CREATING A PLATFORM THAT CONNECTS USERS <br/>
-            WITH THE PRODUCTS THEY ACTUALLY <br/>
-            WANT WHEN THEY WANT THEM.
-          </div>
-          <div className="absolute top-4 right-46 text-xs tracking-tighter font-sans font-normal uppercase">
-            Best Emerging E-Commerce<br />
-            Brand 2025
-          </div>
-          <div className="absolute top-4 right-6 text-xs tracking-tighter font-sans font-normal">
-            ESTABLISHED IN <br />
-            2025
-          </div>
+        <div className="font-sans text-3xl leading-7 py-2">
+          OUR MISSION IS TO BUILD A SHOPPING <br />
+          EXPERIENCE THAT FEELS PERSONAL,<br />
+          EFFORTLESS, AND INTUITIVE.
+        </div>
+        <div className="text-xs font-sans font-light">
+          GrabDesk is designed to help users <br />
+          discover products that match their taste,
+          <br />needs, and lifestyle without endless scrolling.
+        </div>
+        <div className="absolute text-xs font-sans font-light bottom-4 left-6">
+          At GrabDesk, we believe that shopping should be simple. <br />
+          Every product suggestion is thoughtfully curated using user behavior, <br />
+          preferences, and real-time trends — turning online <br />
+          shopping into a tailored experience for every individual.
+        </div>
+        <div className="absolute text-right text-3xl font-sans leading-7 bottom-4 right-6">
+          CREATING A PLATFORM THAT CONNECTS USERS <br />
+          WITH THE PRODUCTS THEY ACTUALLY <br />
+          WANT WHEN THEY WANT THEM.
+        </div>
+        <div className="absolute top-4 right-46 text-xs tracking-tighter font-sans font-normal uppercase">
+          Best Emerging E-Commerce<br />
+          Brand 2025
+        </div>
+        <div className="absolute top-4 right-6 text-xs tracking-tighter font-sans font-normal">
+          ESTABLISHED IN <br />
+          2025
+        </div>
       </div>
 
       <div
@@ -189,7 +189,7 @@ function Landing() {
       </div>
 
       <div className="relative w-full h-96 bg-cover bg-center bg-no-repeat text-[#FFEAD5] pt-16 pl-8"
-      style={{ backgroundImage: `url(${Paper})` }}
+        style={{ backgroundImage: `url(${Paper})` }}
       >
         <div className="boldonse-bold text-7xl leading-normal ">
           THANKS <br />
