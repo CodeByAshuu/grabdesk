@@ -18,34 +18,28 @@ import Banner from "../components/Banner";
 // Mock Data
 const categories = [
   {
-    name: "Electronics",
-    image:
-      "../src/assets/cat-electronics.png",
+    name: "Electronic",
+    image: "/src/assets/trending-cat/cat-electronic.avif",
   },
   {
     name: "Home",
-    image:
-      "../src/assets/cat-home.png",
+    image: "/src/assets/trending-cat/cat-furniture.avif",
   },
   {
     name: "Fashion",
-    image:
-      "../src/assets/cat-electronics.png",
+    image: "/src/assets/trending-cat/cat-fashion.jpg",
   },
   {
     name: "Beauty",
-    image:
-      "../src/assets/cat-electronics.png",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Fitness",
-    image:
-      "../src/assets/cat-electronics.png",
+    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600&q=80",
   },
   {
     name: "Books",
-    image:
-      "../src/assets/cat-electronics.png",
+    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=600&q=80",
   },
 ];
 
@@ -108,7 +102,7 @@ function Home() {
     { img: books, title: "Books & Stationery", category: "Books & Stationery" },
     { img: electronic, title: "Electronics", category: "Electronics" },
     { img: fitness, title: "Sports & Fitness", category: "Sports & Fitness" }
-    
+
   ];
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
@@ -137,7 +131,7 @@ function Home() {
       >
         <Navbar />
         {/* ========== HERO SECTION (FULL SCREEN SLIDER) ========== */}
-        <section className="relative w-full h-screen overflow-hidden">
+        <section className="relative w-full h-[90vh] overflow-hidden">
           {heroSlides.map((slide, index) => (
             <div
               key={index}
@@ -196,12 +190,12 @@ function Home() {
                   alt={cat.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 group-hover:bg-black/10 transition-colors"></div>
-                {/* <div className="absolute inset-0 flex items-center justify-center">
-                  <h3 className="text-[#f3eadc] text-xl font-bold uppercase tracking-wider border-2 border-[#f3eadc] px-4 py-2">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-4 left-4">
+                  <h3 className="text-[#f3eadc] text-xl md:text-2xl boldonse-bold tracking-wider drop-shadow-md">
                     {cat.name}
                   </h3>
-                </div> */}
+                </div>
               </Link>
             ))}
           </div>
