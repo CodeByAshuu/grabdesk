@@ -31,15 +31,15 @@ const categories = [
   },
   {
     name: "Beauty",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=600&q=80",
+    image: "/src/assets/trending-cat/cat-beauty.avif",
   },
   {
     name: "Fitness",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600&q=80",
+    image: "/src/assets/trending-cat/cat-fitness.avif",
   },
   {
     name: "Books",
-    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=600&q=80",
+    image: "/src/assets/trending-cat/cat-books.jpg",
   },
 ];
 
