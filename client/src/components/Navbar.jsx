@@ -15,7 +15,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full  nunito-bold p-3  flex flex-col md:flex-row md:justify-between md:items-center  ">
+      <nav className="w-full nunito-bold px-6 py-2 flex flex-col md:flex-row md:justify-between md:items-center bg-[#442314]/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-[#ccafa5]/20 transition-all duration-300">
         {/* Logo and Mobile Icons Container */}
         <div className="flex justify-between items-center w-full md:w-auto">
           {/* Logo */}
@@ -76,19 +76,16 @@ function Navbar() {
               onClick={() => setMenuOpen(!menuOpen)}
             >
               <div
-                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${
-                  menuOpen ? "rotate-45 translate-y-1.5" : ""
-                }`}
+                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${menuOpen ? "rotate-45 translate-y-1.5" : ""
+                  }`}
               />
               <div
-                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${
-                  menuOpen ? "opacity-0" : ""
-                }`}
+                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${menuOpen ? "opacity-0" : ""
+                  }`}
               />
               <div
-                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${
-                  menuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                }`}
+                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${menuOpen ? "-rotate-45 -translate-y-1.5" : ""
+                  }`}
               />
             </button>
           </div>
@@ -96,9 +93,8 @@ function Navbar() {
 
         {/* Navigation Links + Icons (for desktop and mobile menu) */}
         <div
-          className={`flex-col md:flex-row md:flex items-center gap-8 mt-4 md:mt-0 ${
-            menuOpen ? "flex" : "hidden md:flex"
-          }`}
+          className={`flex-col md:flex-row md:flex items-center gap-8 mt-4 md:mt-0 ${menuOpen ? "flex" : "hidden md:flex"
+            }`}
         >
           {/* Nav Links */}
           {/* <div className="flex flex-col md:flex-row items-center gap-6 text-[#b8a180] tracking-widest sm:text-left">
@@ -113,22 +109,22 @@ function Navbar() {
             ))}
           </div> */}
           <div className="flex flex-col md:flex-row items-center gap-6 text-[#b8a180] tracking-widest sm:text-left">
-  {[
-      { name: "HOME", path: "/home" },
-      { name: "PRODUCT", path: "/product" },
-      { name: "STUDIO", path: "/studio" },
-      { name: "CONTACT", path: "/contact" },
-    ].map((item) => (
-    <Link
-      to={item.path}
-      key={item.name}
-      className="relative text-lg cursor-pointer group"
-    >
-      {item.name}
-      <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-[#fbdec0] transition-all duration-300 ease-in-out group-hover:w-full group-hover:left-0"></span>
-    </Link>
-  ))}
-</div>
+            {[
+              { name: "HOME", path: "/home" },
+              { name: "PRODUCT", path: "/product" },
+              { name: "STUDIO", path: "/studio" },
+              { name: "CONTACT", path: "/contact" },
+            ].map((item) => (
+              <Link
+                to={item.path}
+                key={item.name}
+                className="relative text-lg cursor-pointer group"
+              >
+                {item.name}
+                <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-[#fbdec0] transition-all duration-300 ease-in-out group-hover:w-full group-hover:left-0"></span>
+              </Link>
+            ))}
+          </div>
 
 
           {/* Desktop Icons (hidden on mobile) */}
