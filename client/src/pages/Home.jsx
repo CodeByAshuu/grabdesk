@@ -19,27 +19,27 @@ import Banner from "../components/Banner";
 const categories = [
   {
     name: "Electronic",
-    image: "/src/assets/trending-cat/cat-electronic.avif",
+    image: "client/src/assets/trending-cat/cat-electronic.avif",
   },
   {
     name: "Home",
-    image: "/src/assets/trending-cat/cat-furniture.avif",
+    image: "client/src/assets/trending-cat/cat-furniture.avif",
   },
   {
     name: "Fashion",
-    image: "/src/assets/trending-cat/cat-fashion.jpg",
+    image: "client/src/assets/trending-cat/cat-fashion.jpg",
   },
   {
     name: "Beauty",
-    image: "/src/assets/trending-cat/cat-beauty.avif",
+    image: "client/src/assets/trending-cat/cat-beauty.avif",
   },
   {
     name: "Fitness",
-    image: "/src/assets/trending-cat/cat-fitness.avif",
+    image: "client/src/assets/trending-cat/cat-fitness.avif",
   },
   {
     name: "Books",
-    image: "/src/assets/trending-cat/cat-books.jpg",
+    image: "client/src/assets/trending-cat/cat-books.jpg",
   },
 ];
 
