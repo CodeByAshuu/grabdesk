@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Button from "./Button";
 
 function Notification({ message, onClose }) { // ADDED onClose prop
-  // Sample notifications data (8 total, divided by date)
+
   const [notifications] = useState([
     {
       id: 1,
@@ -117,7 +117,7 @@ function Notification({ message, onClose }) { // ADDED onClose prop
   const [currentGroup, setCurrentGroup] = useState("Today");
   const notificationRef = useRef(null); // ADDED for click-outside detection
 
-  // Group notifications by date
+ 
   const groupedNotifications = notifications.reduce((groups, notification) => {
     const date = notification.date;
     if (!groups[date]) {
@@ -127,19 +127,19 @@ function Notification({ message, onClose }) { // ADDED onClose prop
     return groups;
   }, {});
 
-  // Get visible notifications based on current group
+  
   const visibleNotifications = Object.keys(groupedNotifications).flatMap(date => 
     groupedNotifications[date].slice(0, date === currentGroup ? 4 : 0)
   ).slice(0, visibleCount);
 
   const handleViewMore = () => {
-    // Redirect to full messages page
+    
     window.location.href = "/messages";
   };
 
   const handleScroll = (direction) => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 120; // Height of one notification card
+      const scrollAmount = 120; 
       const newScrollTop = scrollContainerRef.current.scrollTop + 
                           (direction === 'up' ? -scrollAmount : scrollAmount);
       
@@ -150,7 +150,7 @@ function Notification({ message, onClose }) { // ADDED onClose prop
     }
   };
 
-  // Auto-scroll every 8 seconds if content overflows
+ 
   useEffect(() => {
     if (visibleCount < notifications.length) {
       const interval = setInterval(() => {
@@ -158,13 +158,13 @@ function Notification({ message, onClose }) { // ADDED onClose prop
           const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
           
           if (scrollTop + clientHeight >= scrollHeight - 10) {
-            // Reached bottom, scroll to top
+            
             scrollContainerRef.current.scrollTo({
               top: 0,
               behavior: 'smooth'
             });
           } else {
-            // Scroll down one item
+            
             scrollContainerRef.current.scrollBy({
               top: 120,
               behavior: 'smooth'
@@ -177,7 +177,7 @@ function Notification({ message, onClose }) { // ADDED onClose prop
     }
   }, [visibleCount, notifications.length]);
 
-  // ADDED: Enhanced click-outside-to-close functionality (FIXED scroll bug)
+  
   useEffect(() => {
     const handleInteractionOutside = (event) => {
       if (notificationRef.current && 
@@ -187,12 +187,12 @@ function Notification({ message, onClose }) { // ADDED onClose prop
       }
     };
 
-    // Add event listeners for click/touch interactions only
+
     document.addEventListener('mousedown', handleInteractionOutside);
     document.addEventListener('touchstart', handleInteractionOutside);
     document.addEventListener('pointerdown', handleInteractionOutside);
 
-    // Cleanup
+
     return () => {
       document.removeEventListener('mousedown', handleInteractionOutside);
       document.removeEventListener('touchstart', handleInteractionOutside);
@@ -200,7 +200,7 @@ function Notification({ message, onClose }) { // ADDED onClose prop
     };
   }, [onClose]);
 
-  // Handle escape key to close
+
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape' && onClose) {
