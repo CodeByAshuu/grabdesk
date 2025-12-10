@@ -2,6 +2,7 @@
 import Landing from './pages/Landing'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Product from './pages/Product';
+import ProductDetail from './pages/ProductDetail';
 import Home from './pages/Home';
 import Checkout from './pages/Checkout';
 import Cart from './pages/Cart';
@@ -17,17 +18,18 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Landing />} />
-          <Route path='/auth' element={<Login/>}/>
-          <Route path='/home' element={<Home/>}/>
+          <Route path='/auth' element={<Login />} />
+          <Route path='/home' element={<Home />} />
           <Route path='/product' element={<Product />} />
-          <Route path='/checkout' element={<Checkout/>}/>
-          <Route path='/cart' element={<Cart/>} />
-          <Route path='/profile' element={<Profile/>}/> 
-          <Route path='/contact' element={<Contact/>}/>
-          <Route path='/studio' element={<Studio/>}/>
+          <Route path='/product/:id' element={<ProductDetail />} />
+          <Route path='/checkout' element={<Checkout />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/profile' element={<Profile />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/studio' element={<Studio />} />
         </Routes>
       </BrowserRouter>
-      
+
 
     </>
   )
