@@ -352,6 +352,7 @@ function Product() {
                 {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
+                    id={product.id}
                     images={product.images}
                     tagg={product.tag}
                     rating={product.rating}
