@@ -75,7 +75,7 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Main Image */}
-                        <div className="flex-1 relative h-[400px] lg:h-[600px] bg-white rounded-2xl overflow-hidden group cursor-zoom-in border border-[#e6d0bc]">
+                        <div className="flex-1 relative h-[400px] lg:h-[589px] bg-white rounded-2xl overflow-hidden group cursor-zoom-in border border-[#e6d0bc]">
                             <div
                                 className="w-full h-full overflow-hidden"
                                 onMouseMove={handleZoom}
@@ -96,7 +96,7 @@ const ProductDetail = () => {
                     <div className="w-full lg:w-2/5 flex flex-col gap-6">
                         {/* Title & Rating */}
                         <div>
-                            <h1 className="text-3xl lg:text-4xl font-bold text-[#452215] mb-2">{product.title}</h1>
+                            <h1 className="text-3xl lg:text-4xl nunnito-bold font-bold text-[#452215] mb-2">{product.title}</h1>
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="flex text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
@@ -182,7 +182,7 @@ const ProductDetail = () => {
                         </button>
 
                         {/* Shipping Card */}
-                        <div className="bg-white p-4 rounded-xl border border-[#e6d0bc] mt-2">
+                        {/* <div className="bg-white p-4 rounded-xl border border-[#e6d0bc] mt-2">
                             <h3 className="font-semibold text-[#452215] flex items-center gap-2 mb-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -200,7 +200,7 @@ const ProductDetail = () => {
                                 <button className="text-sm font-semibold text-[#8F5E41] hover:text-[#452215]">Check</button>
                             </div>
                             <p className="text-xs text-[#6b4c35]">Please enter pincode to check delivery time & Pay on Delivery Availability</p>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
@@ -256,7 +256,7 @@ const ProductDetail = () => {
                 {/* Related Products */}
                 <div className="mt-16 mb-8">
                     <h2 className="text-3xl font-bold text-[#452215] mb-8">You May Also Like</h2>
-                    <div className="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x">
+                    <div className="flex gap-8 px-6 py-6 scrollbar-hide snap-x">
                         {relatedProducts.map(prod => (
                             <div key={prod.id} className="min-w-[280px] snap-center">
                                 <ProductCard
