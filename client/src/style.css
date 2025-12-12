@@ -1,0 +1,79 @@
+/* ------------ FONTS ------------ */
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
+
+@font-face {
+  font-family: "Boldonse";
+  src: url("/fonts/Boldonse.ttf") format("truetype");
+}
+
+/* ------------ FOOTER MAIN ------------ */
+
+.footer {
+  background: #442314;
+  padding: 40px 20px;
+  color: #ffffff;
+  font-family: "Gowun Dodum", sans-serif;
+}
+
+.footer-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* ------------ IMAGE + SOCIAL TEXT ------------ */
+.footer-img-wrapper {
+  position: relative;
+}
+
+.footer-img {
+  width: 250px;
+  border-radius: 8px;
+}
+
+.footer-social {
+  display: flex;
+  margin-top: 10px;
+}
+
+.footer-social span {
+  font-size: 14px;
+  color: #ffeadd;
+  margin-right: 20px;
+  font-family: "Gowun Dodum", sans-serif;
+}
+
+/* ------------ MENU COLUMNS ------------ */
+
+.footer-columns {
+  display: flex;
+  gap: 80px;
+}
+
+.footer-column {
+  line-height: 28px;
+}
+
+.footer-column h4 {
+  font-family: "Boldonse", sans-serif;
+  margin-bottom: 10px;
+  color: #f7cd82;
+}
+
+.footer-column p {
+  color: #ffffff;
+  cursor: pointer;
+  margin: 4px 0;
+}
+
+/* ------------ LOGO ------------ */
+
+.footer-logo {
+  font-family: "Boldonse", sans-serif;
+  font-size: 45px;
+  color: #f7cd82;
+  margin-top: 20px;
+}
