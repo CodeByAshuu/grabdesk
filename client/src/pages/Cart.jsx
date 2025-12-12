@@ -197,7 +197,7 @@ function Cart() {
                             ) : cartProducts.length > 0 ? (
                                 // Add wrapper div to show only 3 products at a time with scroll
                                 <div 
-                                    className="space-y-4 overflow-y-auto pr-2"
+                                    className="space-y-4 overflow-y-auto p-2"
                                     style={{
                                         maxHeight: 'calc(3 * 256px)', // Adjust based on your card height
                                         scrollbarWidth: 'none', // Firefox
@@ -295,8 +295,22 @@ function Cart() {
                                     >
                                         Continue Shopping
                                     </Link>
+                                    
 
                                     <div className="mt-6 pt-6 border-t border-[#5b3d25] border-opacity-30">
+                                        <h3 className="font-semibold mb-3">
+                                        Have a promo code?
+                                    </h3>
+                                    <div className="flex pb-6">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter code"
+                                            className="flex-1 bg-transparent border border-[#5b3d25] text-[#E3D5C3] px-4 py-2 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-[#FFE9D5]"
+                                        />
+                                        <button className="bg-[#5b3d25] hover:bg-[#442314] text-[#E3D5C3] px-4 py-2 rounded-r-lg transition-colors">
+                                            Apply
+                                        </button>
+                                    </div>
                                         <h3 className=" font-semibold mb-3">
                                             Secure Checkout
                                         </h3>
@@ -322,21 +336,9 @@ function Cart() {
                                 </div>
 
                                 {/* Promo Code Section */}
-                                <div className="mt-6 bg-[#E3D5C3] bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border-2 border-[#452215] shadow-[4px_4px_0_#8F5E41]">
-                                    <h3 className="font-semibold mb-3">
-                                        Have a promo code?
-                                    </h3>
-                                    <div className="flex">
-                                        <input
-                                            type="text"
-                                            placeholder="Enter code"
-                                            className="flex-1 bg-transparent border border-[#5b3d25] text-[#E3D5C3] px-4 py-2 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-[#FFE9D5]"
-                                        />
-                                        <button className="bg-[#5b3d25] hover:bg-[#442314] text-[#E3D5C3] px-4 py-2 rounded-r-lg transition-colors">
-                                            Apply
-                                        </button>
-                                    </div>
-                                </div>
+                                {/* <div className="mt-6 bg-[#E3D5C3] bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border-2 border-[#452215] shadow-[4px_4px_0_#8F5E41]">
+                                    
+                                </div> */}
                             </div>
                         )}
                     </div>
