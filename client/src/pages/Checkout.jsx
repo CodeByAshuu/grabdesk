@@ -301,8 +301,8 @@ function Checkout() {
                                 </div>
                             </div>
 
-                            {/* Coupon Code */}
-                            <div className="mt-6 pt-4 border-t border-[#5b3d25] border-opacity-20">
+                            {/* Coupon Code - already hai cart pe */}
+                            {/* <div className="mt-6 pt-4 border-t border-[#5b3d25] border-opacity-20">
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
@@ -313,7 +313,7 @@ function Checkout() {
                                         Apply
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className="mt-8">
                                 <Button
