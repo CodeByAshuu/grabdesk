@@ -1,21 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import Notification from "./Notification";
 
 function Navbar() {
   const [profileImage, setProfileImage] = useState(null);
   const [userName, setUserName] = useState("Harshit");
   const [unreadCount, setUnreadCount] = useState(3);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState(null);
 
   useEffect(() => {
     const storedImage = localStorage.getItem("profileImage");
     if (storedImage) setProfileImage(storedImage);
   }, []);
 
+  const handleNotificationClick = () => {
+    // Create a sample notification message when clicked
+    setNotificationMessage({
+      title: "New Notification",
+      description: "You have new updates to check out!",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" height="28" width="28" viewBox="0 -960 960 960" fill="white">
+          <path d="M480-80q-83 0-156-31.5T196-196q-54-54-85-127T80-480q0-83 
+          31.5-156T196-764q54-54 127-85t157-31q83 0 156 31t127 85q54 54 
+          85 127t31 157q0 83-31 156t-85 127q-54 54-127 85T480-80Zm0-80q134 
+          0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93T160-480q0 
+          134 93 227t227 93Zm0-120q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 
+          0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm0-120q17 0 28.5-11.5T520-440v-200q0-17-11.5-28.5T480-680q-17 
+          0-28.5 11.5T440-640v200q0 17 11.5 28.5T480-520Z" />
+        </svg>
+      )
+    });
+    setNotificationOpen(!notificationOpen);
+    
+    // Optional: Mark notifications as read when clicked
+    if (unreadCount > 0) {
+      setUnreadCount(0);
+    }
+  };
+
   return (
     <>
-      <nav className="w-full  nunito-bold p-3  flex flex-col md:flex-row md:justify-between md:items-center  ">
+      <nav className="w-full nunito-bold px-6 py-2 flex flex-col md:flex-row md:justify-between md:items-center bg-[#442314]/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-[#ccafa5]/20 transition-all duration-300">
         {/* Logo and Mobile Icons Container */}
         <div className="flex justify-between items-center w-full md:w-auto">
           {/* Logo */}
@@ -26,7 +53,7 @@ function Navbar() {
           {/* Mobile Icons (visible only on small screens) */}
           <div className="flex items-center gap-4 md:hidden">
             {/* Notification Icon */}
-            <div className="relative">
+            <div className="relative cursor-pointer" onClick={handleNotificationClick}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="28px"
@@ -76,19 +103,16 @@ function Navbar() {
               onClick={() => setMenuOpen(!menuOpen)}
             >
               <div
-                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${
-                  menuOpen ? "rotate-45 translate-y-1.5" : ""
-                }`}
+                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${menuOpen ? "rotate-45 translate-y-1.5" : ""
+                  }`}
               />
               <div
-                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${
-                  menuOpen ? "opacity-0" : ""
-                }`}
+                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${menuOpen ? "opacity-0" : ""
+                  }`}
               />
               <div
-                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${
-                  menuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                }`}
+                className={`w-6 h-0.5 bg-[#b8a180] transition-all ${menuOpen ? "-rotate-45 -translate-y-1.5" : ""
+                  }`}
               />
             </button>
           </div>
@@ -96,45 +120,32 @@ function Navbar() {
 
         {/* Navigation Links + Icons (for desktop and mobile menu) */}
         <div
-          className={`flex-col md:flex-row md:flex items-center gap-8 mt-4 md:mt-0 ${
-            menuOpen ? "flex" : "hidden md:flex"
-          }`}
+          className={`flex-col md:flex-row md:flex items-center gap-8 mt-4 md:mt-0 ${menuOpen ? "flex" : "hidden md:flex"
+            }`}
         >
           {/* Nav Links */}
-          {/* <div className="flex flex-col md:flex-row items-center gap-6 text-[#b8a180] tracking-widest sm:text-left">
-            {["HOME", "PRODUCT", "STUDIO", "CONTACT"].map((item) => (
-              <a
-                key={item}
+          <div className="flex flex-col md:flex-row items-center gap-6 text-[#b8a180] tracking-widest sm:text-left">
+            {[
+              { name: "HOME", path: "/home" },
+              { name: "PRODUCT", path: "/product" },
+              { name: "STUDIO", path: "/studio" },
+              { name: "CONTACT", path: "/contact" },
+            ].map((item) => (
+              <Link
+                to={item.path}
+                key={item.name}
                 className="relative text-lg cursor-pointer group"
               >
-                {item}
+                {item.name}
                 <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-[#fbdec0] transition-all duration-300 ease-in-out group-hover:w-full group-hover:left-0"></span>
-              </a>
+              </Link>
             ))}
-          </div> */}
-          <div className="flex flex-col md:flex-row items-center gap-6 text-[#b8a180] tracking-widest sm:text-left">
-  {[
-      { name: "HOME", path: "/home" },
-      { name: "PRODUCT", path: "/product" },
-      { name: "STUDIO", path: "/studio" },
-      { name: "CONTACT", path: "/contact" },
-    ].map((item) => (
-    <Link
-      to={item.path}
-      key={item.name}
-      className="relative text-lg cursor-pointer group"
-    >
-      {item.name}
-      <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-[#fbdec0] transition-all duration-300 ease-in-out group-hover:w-full group-hover:left-0"></span>
-    </Link>
-  ))}
-</div>
-
+          </div>
 
           {/* Desktop Icons (hidden on mobile) */}
           <div className="hidden md:flex items-center gap-6">
             {/* Notification Icon */}
-            <div className="relative">
+            <div className="relative cursor-pointer" onClick={handleNotificationClick}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="28px"
@@ -153,6 +164,7 @@ function Navbar() {
             </div>
 
             {/* Bag Icon */}
+            <Link to='/cart'>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="28px"
@@ -162,8 +174,10 @@ function Navbar() {
             >
               <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
             </svg>
+            </Link>
 
             {/* Profile Avatar */}
+            <Link to='/profile'>
             <div className="w-14 h-14 rounded-full overflow-hidden bg-white flex items-center justify-center border border-[#b8a180]">
               {profileImage ? (
                 <img
@@ -177,9 +191,17 @@ function Navbar() {
                 </span>
               )}
             </div>
+            </Link>
           </div>
         </div>
       </nav>
+
+      {/* Notification Component */}
+      {notificationOpen && (
+        <div className="fixed top-20 right-6 z-50">
+          <Notification onClose={() => setNotificationOpen(false)} />
+        </div>
+      )}
     </>
   );
 }
