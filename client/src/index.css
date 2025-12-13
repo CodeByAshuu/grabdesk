@@ -1,0 +1,13 @@
+:root {
+  --grabdesk-shadow: 
+    12px 12px 0 #5b3d25,
+    24px 24px 0 rgba(91, 61, 37, 0.45);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --grabdesk-shadow:
+      6px 6px 0 #5b3d25,
+      12px 12px 0 rgba(91, 61, 37, 0.45);
+  }
+}

@@ -135,7 +135,7 @@ const ProductDetail = () => {
                                 <button
                                     key={idx}
                                     onClick={() => setSelectedImage(idx)}
-                                    className={`relative flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-[#8F5E41]' : 'border-transparent'
+                                    className={`relative shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-[#8F5E41]' : 'border-transparent'
                                         }`}
                                 >
                                     <img src={img} alt={`View ${idx}`} className="w-full h-full object-cover" />

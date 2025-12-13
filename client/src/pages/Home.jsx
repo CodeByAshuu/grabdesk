@@ -190,7 +190,7 @@ function Home() {
                   alt={cat.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
                 <div className="absolute bottom-4 left-4">
                   <h3 className="text-[#f3eadc] text-xl md:text-2xl boldonse-bold tracking-wider drop-shadow-md">
                     {cat.name}
