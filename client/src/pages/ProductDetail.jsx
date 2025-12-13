@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ProductReviews from '../components/ProductReviews';
 import ProductCard from '../components/ProductCard';
@@ -7,14 +8,17 @@ import Nike2 from '../assets/Nike2.png';
 import Nike3 from '../assets/Nike3.png';
 
 const ProductDetail = () => {
+    const navigate = useNavigate();
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState('M');
     const [selectedColor, setSelectedColor] = useState('brown');
     const [pincode, setPincode] = useState('');
     const [showDescription, setShowDescription] = useState(true);
+    const [showToast, setShowToast] = useState(false);
 
     const product = {
+        id: 101,
         title: "Nike Dunk Low Retro SE",
         shortDesc: "Created for the hardwood but taken to the streets, the Nike Dunk Low Retro returns with crisp overlays and original team colors.",
         price: 10257,
@@ -50,9 +54,74 @@ const ProductDetail = () => {
         image.style.transformOrigin = `${x}% ${y}%`;
     };
 
+    const addToCartLogic = () => {
+        const cartItem = {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            originalPrice: product.originalPrice,
+            image: product.images[0],
+            color: selectedColor,
+            size: selectedSize,
+            quantity: quantity,
+            inStock: true,
+            maxQuantity: 10
+        };
+
+        // Get existing cart
+        const savedCart = localStorage.getItem('cart');
+        let cart = [];
+        if (savedCart) {
+            try {
+                cart = JSON.parse(savedCart);
+            } catch (e) {
+                console.error("Error parsing cart", e);
+            }
+        }
+
+        // Check if item already exists (same ID, size, color)
+        const existingItemIndex = cart.findIndex(item =>
+            item.id === cartItem.id &&
+            item.size === cartItem.size &&
+            item.color === cartItem.color
+        );
+
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += quantity;
+        } else {
+            cart.push(cartItem);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+    };
+
+    const handleAddToCart = () => {
+        addToCartLogic();
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const handleBuyNow = () => {
+        addToCartLogic();
+        navigate('/cart');
+    };
+
     return (
-        <section className="min-h-screen w-full bg-[#f9f5f0] text-[#5b3d25] pb-20">
+        <section className="min-h-screen w-full bg-[#f9f5f0] text-[#5b3d25] pb-20 relative">
             <Navbar />
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="fixed top-24 right-5 z-50 bg-[#452215] text-[#E3D5C3] px-6 py-4 rounded-lg shadow-xl flex items-center gap-3 animate-bounce-in transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div>
+                        <h4 className="font-bold">Added to Cart!</h4>
+                        <p className="text-sm opacity-90">{product.title} ({quantity})</p>
+                    </div>
+                </div>
+            )}
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
                 {/* Product Main Section */}
@@ -66,7 +135,7 @@ const ProductDetail = () => {
                                 <button
                                     key={idx}
                                     onClick={() => setSelectedImage(idx)}
-                                    className={`relative flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-[#8F5E41]' : 'border-transparent'
+                                    className={`relative shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-[#8F5E41]' : 'border-transparent'
                                         }`}
                                 >
                                     <img src={img} alt={`View ${idx}`} className="w-full h-full object-cover" />
@@ -144,8 +213,8 @@ const ProductDetail = () => {
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`w-12 h-10 rounded-md border text-sm font-medium transition-all ${selectedSize === size
-                                                    ? 'bg-[#452215] text-[#E3D5C3] border-[#452215]'
-                                                    : 'bg-white text-[#5b3d25] border-[#e6d0bc] hover:border-[#8F5E41]'
+                                                ? 'bg-[#452215] text-[#E3D5C3] border-[#452215]'
+                                                : 'bg-white text-[#5b3d25] border-[#e6d0bc] hover:border-[#8F5E41]'
                                                 }`}
                                         >
                                             {size}
@@ -168,7 +237,10 @@ const ProductDetail = () => {
                                     className="px-3 py-2 text-[#452215] hover:bg-[#e6d0bc]/20"
                                 >+</button>
                             </div>
-                            <button className="flex-1 bg-[#452215] text-[#E3D5C3] py-3 rounded-lg font-bold hover:bg-[#5b3d25] transition-all shadow-lg active:scale-95">
+                            <button
+                                onClick={handleAddToCart}
+                                className="flex-1 bg-[#452215] text-[#E3D5C3] py-3 rounded-lg font-bold hover:bg-[#5b3d25] transition-all shadow-lg active:scale-95"
+                            >
                                 Add to Cart
                             </button>
                             <button className="p-3 border border-[#8F5E41] rounded-lg text-[#8F5E41] hover:bg-[#8F5E41] hover:text-white transition-all">
@@ -177,30 +249,12 @@ const ProductDetail = () => {
                                 </svg>
                             </button>
                         </div>
-                        <button className="w-full py-3 bg-[#E3D5C3] text-[#452215] font-bold rounded-lg hover:bg-[#d4c3b0] transition-all">
+                        <button
+                            onClick={handleBuyNow}
+                            className="w-full py-3 bg-[#E3D5C3] text-[#452215] font-bold rounded-lg hover:bg-[#d4c3b0] transition-all"
+                        >
                             Buy Now
                         </button>
-
-                        {/* Shipping Card */}
-                        {/* <div className="bg-white p-4 rounded-xl border border-[#e6d0bc] mt-2">
-                            <h3 className="font-semibold text-[#452215] flex items-center gap-2 mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                                </svg>
-                                Delivery Options
-                            </h3>
-                            <div className="flex gap-2 mb-3">
-                                <input
-                                    type="text"
-                                    placeholder="Enter Pincode"
-                                    value={pincode}
-                                    onChange={(e) => setPincode(e.target.value)}
-                                    className="flex-1 border border-[#e6d0bc] rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#8F5E41]"
-                                />
-                                <button className="text-sm font-semibold text-[#8F5E41] hover:text-[#452215]">Check</button>
-                            </div>
-                            <p className="text-xs text-[#6b4c35]">Please enter pincode to check delivery time & Pay on Delivery Availability</p>
-                        </div> */}
                     </div>
                 </div>
 
@@ -255,22 +309,40 @@ const ProductDetail = () => {
 
                 {/* Related Products */}
                 <div className="mt-16 mb-8">
-                    <h2 className="text-3xl font-bold text-[#452215] mb-8">You May Also Like</h2>
-                    <div className="flex gap-8 px-6 py-6 scrollbar-hide snap-x">
-                        {relatedProducts.map(prod => (
-                            <div key={prod.id} className="min-w-[280px] snap-center">
-                                <ProductCard
-                                    namee={prod.name}
-                                    pricee={prod.price}
-                                    images={prod.images}
-                                    rating={prod.rating}
-                                    tagg={prod.tag}
-                                />
-                            </div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#452215] mb-6 sm:mb-8">
+                        You May Also Like
+                    </h2>
+
+                    <div
+                        className="
+                        flex lg:grid
+                        grid-cols-4
+                        gap-4 sm:gap-6 lg:gap-8
+                        px-4 sm:px-6 py-4
+                        overflow-x-auto lg:overflow-visible
+                        snap-x lg:snap-none
+                        scrollbar-hide
+                        "
+                    >
+                        {relatedProducts.map((prod) => (
+                        <div
+                            key={prod.id}
+                            className="
+                            min-w-[220px] sm:min-w-[260px] lg:min-w-0
+                            snap-center
+                            "
+                        >
+                            <ProductCard
+                            namee={prod.name}
+                            pricee={prod.price}
+                            images={prod.images}
+                            rating={prod.rating}
+                            tagg={prod.tag}
+                            />
+                        </div>
                         ))}
                     </div>
                 </div>
-
             </div>
         </section>
     );

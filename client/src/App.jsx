@@ -11,14 +11,20 @@ import Studio from './pages/Studio';
 import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ScrollToTop from './components/ScrollToTop';
+
+
 function App() {
 
   return (
     <>
       <BrowserRouter>
+      <ScrollToTop />
         <Routes>
           <Route path='/' element={<Landing />} />
-          <Route path='/auth' element={<Login />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
           <Route path='/home' element={<Home />} />
           <Route path='/product' element={<Product />} />
           <Route path='/product/:id' element={<ProductDetail />} />

@@ -10,7 +10,7 @@ function Landing() {
   return (
     <>
       <div
-        className="relative min-h-screen w-full px-6 py-0 text-[#5b3d25]"
+        className="relative lg:min-h-screen h-screen w-full px-6 py-0 text-[#5b3d25]"
         style={{
           backgroundColor: "#f3eadc",
           backgroundImage:
@@ -19,18 +19,18 @@ function Landing() {
         }}
       >
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-6 left-8 uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#7d5834]">
+          <div className="absolute lg:top-6 lg:left-8 top-6 left-6 uppercase tracking-[0.45em] text-[0.4rem] lg:text-[0.7rem] font-semibold text-[#7d5834]">
             Shop Now Style 2005
           </div>
-          <div className="absolute top-6 right-8 flex gap-4 pointer-events-auto">
-            <Link to="/login" className="w-40">
-              <Button labell="Get Started" />
+          <div className="absolute top-6 right-8 z-50 flex gap-4 pointer-events-auto">
+            <Link to="/login" className="w-25">
+              <Button labell="Login" />
             </Link>
           </div>
-          <div className="absolute left-0 bottom-32 -rotate-90 uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
+          <div className="absolute lg:-left-20 lg:bottom-32 -left-25 bottom-40 -rotate-90 uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
             Laptops Mobile Phone
           </div>
-          <div className="absolute bottom-40 right-6 max-w-xs text-sm leading-relaxed text-[#7f5c3b]">
+          <div className="absolute lg:bottom-40 lg:right-6 bottom-70 right-10 max-w-xs text-sm leading-relaxed text-[#7f5c3b]">
             A mannequin muse styled with olive tailoring, gold accents, and a
             caramel satchel — the 2005 icon reimagined for today's creative
             desk scene.
@@ -43,32 +43,29 @@ function Landing() {
         <div className="relative mx-auto flex min-h-[80vh] max-w-6xl justify-center">
           {/* GRABDESK text */}
           <h1
-            className="boldonse-bold relative top-45 rotate-[-4deg] z-0 text-[14vw] leading-[0.8] text-[#f0a224] lg:text-[12rem]"
-            style={{
-              textShadow:
-                "12px 12px 0 #5b3d25, 24px 24px 0 rgba(91, 61, 37, 0.45)",
-            }}
+            className="boldonse-bold relative lg:top-45 top-70 lg:rotate-[-4deg] z-0 text-[14vw] leading-[0.8] text-[#f0a224] lg:text-[12rem]"
+            style={{ textShadow: "var(--grabdesk-shadow)" }}
           >
             GRABDESK
           </h1>
 
           {/* Centered hero image */}
-          <div className="absolute left-1/2 top-85 z-10 -translate-x-1/2 -translate-y-2/7">
-            <img src={Hero} alt="hero" className="transform scale-175" />
+          <div className="absolute lg:left-1/2 left-1/2 lg:top-90  top-85 z-10 -translate-x-1/2 -translate-y-2/7 hidden md:block">
+            <img src={Hero} alt="hero" className="transform lg:scale-175 scale-275" />
           </div>
 
           {/* Hero2 image */}
         </div>
       </div>
 
-      <div className="relative min-h-screen w-full px-6 m-0 text-[#5b3d25]"
+      <div className="relative lg:min-h-screen h-140 w-full px-6 m-0 text-[#5b3d25]"
         style={{
           backgroundColor: "#442314",
           backgroundImage:
             "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
           backgroundSize: "14px 24px",
         }}>
-        <div className="absolute left-120 top-50 z-20 -translate-x-1/2 -translate-y-2/7">
+        <div className="absolute left-120 top-50 z-20 -translate-x-1/2 -translate-y-2/7 hidden md:block">
           <img src={Hero2} alt="hero2" className="transform scale-180" />
         </div>
         <div className="absolute top-6 right-8 text-right uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#FFEAD5]">
@@ -76,9 +73,9 @@ function Landing() {
           <br />
           STATIONARY
         </div>
-        <div className="absolute top-120 right-16 flex gap-4 pointer-events-auto">
+        <div className="absolute lg:top-120 lg:right-16 top-120 right-4 flex gap-4 pointer-events-auto">
           <Link to="/product">
-            <ButtonLight label="Explore" className="w-md" />
+            <ButtonLight label="Explore" className="lg:w-md w-sm" />
           </Link>
         </div>
 
@@ -90,7 +87,7 @@ function Landing() {
             a shopping experience that respects <br /> 
             your time and your style.
           </div> */}
-        <div className="absolute top-55 right-15 text-right max-w-md">
+        <div className="absolute lg:top-55 lg:right-15 top-40 text-right max-w-md">
           {/* Title that text wraps around */}
           <div className="editorial-shape">
             <div className="text-5xl font-normal leading-none tracking-tighter ">
@@ -100,7 +97,7 @@ function Landing() {
           </div>
 
           {/* Paragraph */}
-          <p className="text-xl leading-6 text-[#dab590] text-left tracking-tighter">
+          <p className="md:text-xl text-lg leading-6 text-[#dab590] text-left tracking-tighter lg:p-0 p-2">
             to explore products you’ll actually love.
             Every recommendation on GrabDesk is crafted from taste, trends,
             and thoughtful design, giving you a shopping experience that respects
@@ -112,33 +109,33 @@ function Landing() {
           </p>
         </div>
       </div>
-      <div className="relative h-96 w-full px-6 py-3 m-0 text-[#FFEAD5] bg-[#4a3020]">
-        <div className="font-sans text-3xl leading-7 py-2">
+      <div className="relative lg:h-96 h-120 w-full px-6 py-3 m-0 text-[#FFEAD5] bg-[#4a3020]">
+        <div className="font-sans lg:text-3xl text-sm lg:leading-7 leading-4 py-2">
           OUR MISSION IS TO BUILD A SHOPPING <br />
           EXPERIENCE THAT FEELS PERSONAL,<br />
           EFFORTLESS, AND INTUITIVE.
         </div>
-        <div className="text-xs font-sans font-light">
+        <div className="lg:text-xs text-[0.6rem] font-sans font-light">
           GrabDesk is designed to help users <br />
           discover products that match their taste,
           <br />needs, and lifestyle without endless scrolling.
         </div>
-        <div className="absolute text-xs font-sans font-light bottom-4 left-6">
+        <div className="absolute lg:text-xs text-[0.6rem] font-sans font-light lg:bottom-4 lg:left-6 bottom-4 right-6 text-right lg:text-left">
           At GrabDesk, we believe that shopping should be simple. <br />
           Every product suggestion is thoughtfully curated using user behavior, <br />
           preferences, and real-time trends — turning online <br />
           shopping into a tailored experience for every individual.
         </div>
-        <div className="absolute text-right text-3xl font-sans leading-7 bottom-4 right-6">
+        <div className="absolute text-right lg:text-3xl text-sm font-sans lg:leading-7 leading-4 lg:bottom-4 lg:right-6 bottom-20 right-6">
           CREATING A PLATFORM THAT CONNECTS USERS <br />
           WITH THE PRODUCTS THEY ACTUALLY <br />
           WANT WHEN THEY WANT THEM.
         </div>
-        <div className="absolute top-4 right-46 text-xs tracking-tighter font-sans font-normal uppercase">
+        <div className="absolute lg:text-left text-right lg:top-4 lg:right-46 top-65 right-6  lg:text-xs text-[0.6rem] tracking-tighter font-sans font-normal uppercase">
           Best Emerging E-Commerce<br />
           Brand 2025
         </div>
-        <div className="absolute top-4 right-6 text-xs tracking-tighter font-sans font-normal">
+        <div className="absolute lg:text-left text-right lg:top-4 lg:right-6 top-50 right-6 lg:text-xs text-[0.6rem] tracking-tighter font-sans font-normal">
           ESTABLISHED IN <br />
           2025
         </div>
@@ -153,19 +150,8 @@ function Landing() {
           backgroundSize: "14px 24px",
         }}
       >
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-6 left-8 uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#7d5834]">
-            {/* Shop Now Style 2005 */}
-          </div>
-          <div className="absolute top-6 right-8 text-right uppercase tracking-[0.45em] text-[0.7rem] font-semibold text-[#7d5834]">
-            {/* UNLOCK */}
-            <br />
-            {/* STATIONARY */}
-          </div>
-          <div className="absolute left-0 bottom-32 -rotate-90 uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
-            {/* Laptops Mobile Phone */}
-          </div>
-          <div className="absolute top-154 right-63 max-w-xs font-sans font-normal text-sm leading-3.5 text-[#694230] tracking-tight">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute lg:top-154 lg:right-63 top-130 right-40 max-w-xs font-sans font-normal text-xs lg:text-sm leading-3.5 text-[#694230] tracking-tight">
             Instead of overwhelming <br />
             shoppers with endless <br />
             choices, GD offers <br />
@@ -173,15 +159,15 @@ function Landing() {
             approach to discovery.
           </div>
           <div
-            className="absolute boldonse-bold top-45 -right-30 rotate-90 text-[8.5rem] text-[#f4bc62] leading-snug">
+            className="absolute boldonse-bold top-45 -right-30 rotate-90 text-[6.5rem] lg:text-[8.5rem] text-[#f4bc62] leading-snug">
             MODERN <br />
             DESIGN
           </div>
-          <div className="absolute top-148 left-10 font-sans text-7xl text-[#442314] leading-14 tracking-tighter">
+          <div className="absolute lg:top-148 lg:left-10 top-180 left-12 font-sans text-5xl lg:text-7xl text-[#442314] leading-14 tracking-tighter">
             the new <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vintage
           </div>
           <div
-            className="absolute boldonse-bold bottom-50 -left-35 -rotate-90 text-[8.5rem] text-[#f4bc62] leading-snug">
+            className="absolute boldonse-bold lg:bottom-50 lg:-left-35 bottom-50 -left-31 -rotate-90 text-[6.5rem] lg:text-[8.5rem] text-[#f4bc62] leading-snug">
             CURATED <br />
             BUYING
           </div>
@@ -268,7 +254,7 @@ function Landing() {
         <div className="relative w-full h-96 bg-cover bg-center bg-no-repeat text-[#FFEAD5] pt-16 pl-8"
         style={{ backgroundImage: `url(${Paper})` }}
       >
-        <div className="boldonse-bold text-7xl leading-normal ">
+        <div className="boldonse-bold text-5xl lg:text-7xl leading-normal ">
           THANKS <br />
           FOR WATCHING
         </div>
