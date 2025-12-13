@@ -221,7 +221,7 @@ const AdminManager = () => {
 
   return (
     <div 
-      className=" pb-5 w-full overflow-hidden text-[#5b3d25]"
+      className=" pb-2 w-full overflow-hidden text-[#5b3d25]"
         style={{
           backgroundColor: "#442314",
           backgroundImage:
@@ -268,11 +268,12 @@ const AdminManager = () => {
 
       {/* FIXED HEIGHT WRAPPER FOR SIDEBAR + MAIN CONTENT */}
       <div
-        className="text-[#E3D5C3] flex-1 min-h-0"
+        className="text-[#E3D5C3] flex-1 min-h-screen p-1 lg:-mt-6"
         style={{
           height: contentHeight ? `${contentHeight}px` : undefined,
         }}
       >
+      
         <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 h-full">
           {/* MOBILE HORIZONTAL TABS - Improved for small screens */}
           <div className="lg:hidden mb-4">
@@ -298,7 +299,7 @@ const AdminManager = () => {
           <div className="flex flex-col lg:flex-row gap-4 sm:gap-5 md:gap-6 lg:gap-8 h-full ">
             
             {/* LEFT SIDEBAR - Desktop only - NO CHANGES */}
-            <div className="hidden lg:block lg:w-[200px] xl:w-[220px] shrink-0 h-full ">
+            <div className="hidden lg:block lg:w-[200px] xl:w-[220px] shrink-0 ">
               <div className="bg-[#FFE9D5] relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 mx-auto text-[#452215] cursor-pointer backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 h-full overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Admin Profile Section */}
                 <div className="mb-6 flex flex-col items-center">
@@ -337,21 +338,15 @@ const AdminManager = () => {
               <div className="h-full  flex flex-col">
                 
                 {/* Content Header - Improved spacing for mobile */}
-                <div className="p-3 sm:p-4 border-b border-[#5b3d25]/10 shrink-0">
+                <div className="p-1.5 sm:p-2 border-b border-[#5b3d25]/10 shrink-0">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#E3D5C3]">
+                      <h2 className="text-lg sm:text-xl md:text-4xl font-semibold text-[#E3D5C3]">
                         {sections.find(s => s.id === activeSection)?.label || "Dashboard"}
                       </h2>
                       <p className="text-xs sm:text-sm text-[#5b3d25]/60 mt-1">
                         Manage your {sections.find(s => s.id === activeSection)?.label.toLowerCase()}
                       </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button className="text-xs sm:text-sm px-3 py-1.5 sm:py-2 bg-[#5b3d25]/10 hover:bg-[#5b3d25]/20 rounded-lg transition-colors flex items-center gap-1">
-                        <Icons.Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span>Export</span>
-                      </button>
                     </div>
                   </div>
                 </div>
