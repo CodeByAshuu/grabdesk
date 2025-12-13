@@ -20,7 +20,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Landing />} />
-          <Route path='/auth' element={<Login />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
           <Route path='/home' element={<Home />} />
           <Route path='/product' element={<Product />} />
           <Route path='/product/:id' element={<ProductDetail />} />
