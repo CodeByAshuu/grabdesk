@@ -329,7 +329,7 @@ function Notification({ message, onClose }) { // ADDED onClose prop
 
 
         <div className="px-6 py-4 border-t border-[#ccafa5]/30 gradient-to-r from-[#f3eadc] to-[#e8ddcd]">
-         <Link to='/mymessage'>
+         <Link to='/profile#message'>
          <Button labell={"View All Messages"}/>
          </Link>
           <p className="text-xs text-center text-[#5b3d25]/60 mt-2 nunito">
