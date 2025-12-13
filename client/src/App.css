@@ -140,3 +140,6 @@ input[type="number"] {
   appearance: textfield;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari */
+}

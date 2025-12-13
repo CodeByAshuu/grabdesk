@@ -13,6 +13,7 @@ import './App.css'
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ScrollToTop from './components/ScrollToTop';
+import AdminDashbord from './admin/AdminDashboard';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path='/profile' element={<Profile />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/studio' element={<Studio />} />
+          <Route path='/admindashbord' element={<AdminDashbord/>}/>
         </Routes>
       </BrowserRouter>
 

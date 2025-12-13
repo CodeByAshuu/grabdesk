@@ -10,7 +10,7 @@ function Landing() {
   return (
     <>
       <div
-        className="relative lg:min-h-screen w-full px-6 py-0 text-[#5b3d25]"
+        className="relative lg:min-h-screen h-screen w-full px-6 py-0 text-[#5b3d25]"
         style={{
           backgroundColor: "#f3eadc",
           backgroundImage:
@@ -22,7 +22,7 @@ function Landing() {
           <div className="absolute lg:top-6 lg:left-8 top-6 left-6 uppercase tracking-[0.45em] text-[0.4rem] lg:text-[0.7rem] font-semibold text-[#7d5834]">
             Shop Now Style 2005
           </div>
-          <div className="absolute top-6 right-8 flex gap-4 pointer-events-auto">
+          <div className="absolute top-6 right-8 z-50 flex gap-4 pointer-events-auto">
             <Link to="/login" className="w-25">
               <Button labell="Login" />
             </Link>
@@ -163,7 +163,7 @@ function Landing() {
             MODERN <br />
             DESIGN
           </div>
-          <div className="absolute lg:top-148 lg:left-10 top-180 left-9 font-sans text-5xl lg:text-7xl text-[#442314] leading-14 tracking-tighter">
+          <div className="absolute lg:top-148 lg:left-10 top-180 left-12 font-sans text-5xl lg:text-7xl text-[#442314] leading-14 tracking-tighter">
             the new <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vintage
           </div>
           <div

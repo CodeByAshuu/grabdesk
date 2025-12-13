@@ -44,7 +44,7 @@ const categories = [
 ];
 
 const recommendations = [
-  { id: 1, name: "Vintage Lamp", price: "₹ 4,500", rating: 4.8, image: Nike1 },
+  { id: 1, name: "Vintage Lamp", price: "₹ 4,500", rating: 4.8, image: Nike1, Nike2, Nike3 },
   { id: 2, name: "Ergo Chair", price: "₹ 12,000", rating: 4.9, image: Nike2 },
   { id: 3, name: "Wooden Desk", price: "₹ 25,000", rating: 4.7, image: Nike3 },
   {
@@ -229,6 +229,7 @@ function Home() {
                   className="w-full flex justify-center"
                 >
                   <ProductCard
+                    id={item.id}
                     images={[item.image, item.image, item.image]}
                     tagg="FOR YOU"
                     rating={item.rating}
@@ -250,6 +251,7 @@ function Home() {
             {topDeals.map((item) => (
               <ProductCard
                 key={item.id}
+                id={item.id}
                 images={[item.image, item.image, item.image]}
                 tagg={item.tag}
                 rating={item.rating}
