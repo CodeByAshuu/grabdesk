@@ -4,7 +4,7 @@ import AuthLayout from '../components/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import Button from '../components/Button';
 import Hero from '../assets/hero-landing.png';
-import { ButtonLight } from '../components/ButtonLight';
+import api from '../api/axios';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -15,6 +15,7 @@ const Login = () => {
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState('');
 
     const validate = () => {
         const newErrors = {};
@@ -41,20 +42,42 @@ const Login = () => {
         if (errors[id]) {
             setErrors(prev => ({ ...prev, [id]: null }));
         }
+        if (serverError) setServerError('');
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         if (!validate()) return;
 
         setLoading(true);
-        // Simulating API call
-        setTimeout(() => {
+        setServerError('');
+
+        try {
+            const response = await api.post('/auth/login', {
+                email: formData.email,
+                password: formData.password
+            });
+
+            if (response.data.success) {
+                // Store token and user data
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+
+                console.log('Login successful', response.data);
+
+                // Redirect logic
+                if (response.data.user.role === 'admin') {
+                    navigate('/admindashbord');
+                } else {
+                    navigate('/home');
+                }
+            }
+        } catch (err) {
+            console.error('Login Error:', err);
+            setServerError(err.response?.data?.message || 'Invalid email or password');
+        } finally {
             setLoading(false);
-            console.log('Login successful', formData);
-            // Navigate to home or dashboard
-            navigate('/home');
-        }, 1500);
+        }
     };
 
     return (
@@ -64,6 +87,11 @@ const Login = () => {
             image={Hero}
         >
             <form onSubmit={handleLogin} className="flex flex-col gap-5">
+                {serverError && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center font-medium border border-red-200">
+                        {serverError}
+                    </div>
+                )}
                 <AuthInput
                     id="email"
                     label="Email Address"

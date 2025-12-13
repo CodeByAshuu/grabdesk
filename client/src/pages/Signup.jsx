@@ -4,6 +4,7 @@ import AuthLayout from '../components/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import Button from '../components/Button';
 import Hero2 from '../assets/hero2-landing.png';
+import api from '../api/axios';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ const Signup = () => {
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState('');
 
     const validate = () => {
         const newErrors = {};
@@ -61,20 +63,38 @@ const Signup = () => {
         if (errors[id]) {
             setErrors(prev => ({ ...prev, [id]: null }));
         }
+        if (serverError) setServerError('');
     };
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
         if (!validate()) return;
 
         setLoading(true);
-        // simulating API call
-        setTimeout(() => {
+        setServerError('');
+
+        try {
+            const response = await api.post('/auth/signup', {
+                name: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone || '0000000000' // Default if empty or handle in backend
+            });
+
+            if (response.data.success) {
+                // Store token and user data
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+
+                console.log('Signup successful', response.data);
+                navigate('/home');
+            }
+        } catch (err) {
+            console.error('Signup Error:', err);
+            setServerError(err.response?.data?.message || 'Something went wrong. Please try again.');
+        } finally {
             setLoading(false);
-            console.log('Signup successful', formData);
-            // Redirect to login or home
-            navigate('/home');
-        }, 1500);
+        }
     };
 
     return (
@@ -84,6 +104,11 @@ const Signup = () => {
             image={Hero2}
         >
             <form onSubmit={handleSignup} className="flex flex-col gap-4">
+                {serverError && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center font-medium border border-red-200">
+                        {serverError}
+                    </div>
+                )}
                 <AuthInput
                     id="email"
                     label="Email Address"
