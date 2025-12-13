@@ -7,27 +7,27 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
     <> 
       {/* UNIFIED BACKDROP WRAPPER (handles outside click) */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-fadeIn flex items-center justify-center px-4"
+        className="fixed inset-0  backdrop-blur-sm z-40 animate-fadeIn flex items-center justify-center px-4 gowun-dodum-regular"
         onClick={onClose}  // CLICK OUTSIDE WILL CLOSE
       >
 
-        {/* MODAL BOX */}
+        
         <div
-          className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#5b3d25]/20 overflow-hidden animate-scaleIn relative"
+          className="w-full max-w-md bg-[#442314] text-[#E3D5C3] rounded-2xl shadow-2xl border border-[#452215]  overflow-hidden animate-scaleIn relative"
           onClick={(e) => e.stopPropagation()}  // PREVENT CLICK INSIDE FROM CLOSING
         >
 
           {/* FLOATING CLOSE BUTTON */}
           <button
-            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md shadow-md border border-[#5b3d25]/20 text-[#5b3d25] text-lg hover:bg-[#5b3d25]/10 transition"
+            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[#5b3d25] text-lg  transition"
             onClick={onClose}
           >
             ✕
           </button>
 
           {/* HEADER */}
-          <div className="p-5 bg-linear-to-r from-[#5b3d25] to-[#3a2718] text-white shadow-md rounded-t-2xl">
-            <h2 className="text-lg font-semibold tracking-wide">
+          <div className="p-5  bg-[#F0A322] rounded-t-2xl shadow-[4px_4px_0_#8F5E41]">
+            <h2 className="text-lg font-semibold tracking-wide nunito-exbold ">
               Product Details
             </h2>
           </div>
@@ -37,7 +37,7 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
             <div className="p-5 space-y-5 max-h-[75vh] overflow-y-auto">
               
               {/* IMAGE */}
-              <div className="overflow-hidden rounded-xl border border-[#5b3d25]/20 shadow-md">
+              <div className="overflow-hidden rounded-lg relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] ">
                 <img
                   src={product.image || "https://via.placeholder.com/200"}
                   className="w-full h-48 sm:h-56 object-cover rounded-xl transition-transform duration-300 hover:scale-105"
@@ -45,12 +45,12 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
               </div>
 
               {/* TITLE */}
-              <h3 className="text-2xl font-bold text-[#5b3d25] leading-tight drop-shadow-sm">
+              <h3 className="text-2xl font-bold text-[#E3D5C3] leading-tight drop-shadow-sm">
                 {product.name}
               </h3>
 
               {/* DESCRIPTION */}
-              <p className="text-[#5b3d25]/70 text-sm leading-relaxed">
+              <p className="text-[#E3D5C3]/70 text-sm leading-relaxed">
                 {product.description || "No description available."}
               </p>
 
@@ -58,7 +58,7 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {[
                   ["Category", product.category],
-                  ["Price", `₹ ${product.price}`],
+                  ["Price", `${product.price}`],
                   ["Stock", product.stock],
                   [
                     "Status",
@@ -75,10 +75,10 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
                 ].map(([label, value], index) => (
                   <div
                     key={index}
-                    className="p-3 bg-[#5b3d25]/5 rounded-xl border border-[#5b3d25]/10 shadow-sm"
+                    className="p-3 bg-[#F0A322] rounded-xl border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]"
                   >
-                    <p className="text-[12px] text-[#5b3d25]/60">{label}</p>
-                    <p className="font-semibold mt-1">{value}</p>
+                    <p className="text-[14px] text-[#452215] nunito-bold">{label}</p>
+                    <p className="font-semibold mt-1 ">{value}</p>
                   </div>
                 ))}
               </div>

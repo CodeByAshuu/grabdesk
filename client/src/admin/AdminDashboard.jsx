@@ -229,10 +229,7 @@ const AdminManager = () => {
           backgroundSize: "14px 14px",
         }}
     >
-      {/* wrap Navbar so we can measure its height */}
-      <div ref={navbarRef}>
-        <Navbar/>
-      </div>
+
       
       {/* Page Header - measured via headerRef */}
       <div ref={headerRef} className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 shrink-0">
@@ -307,7 +304,7 @@ const AdminManager = () => {
                 </div>
 
                 {/* Navigation Items - Enhanced for wider sidebar */}
-                <h3 className="text-sm font-semibold mb-3 text-[#5b3d25] text-center lg:text-left">Management</h3>
+                <h3 className="text-lg font-bold mb-3 text-[#5b3d25] text-center lg:text-left">Management</h3>
                 <div className="space-y-1.5 flex-1 nunito-exbold">
                   {sections.map(section => (
                     <button
@@ -341,10 +338,10 @@ const AdminManager = () => {
                 <div className="p-1.5 sm:p-2 border-b border-[#5b3d25]/10 shrink-0">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <h2 className="text-lg sm:text-xl md:text-4xl font-semibold text-[#E3D5C3]">
+                      <h2 className="text-lg sm:text-xl md:text-4xl font-semibold text-[#E3D5C3] nunito-exbold">
                         {sections.find(s => s.id === activeSection)?.label || "Dashboard"}
                       </h2>
-                      <p className="text-xs sm:text-sm text-[#5b3d25]/60 mt-1">
+                      <p className="text-xs mt-1 gowun-dodum-regular">
                         Manage your {sections.find(s => s.id === activeSection)?.label.toLowerCase()}
                       </p>
                     </div>

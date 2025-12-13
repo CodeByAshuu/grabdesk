@@ -44,24 +44,19 @@ const BulkUploadModal = ({ isOpen, onClose, onUpload }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white w-[95%] max-w-2xl rounded-xl p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#FFE9D5] w-[95%] max-w-2xl rounded-xl p-6 shadow-xl max-h-[90vh] overflow-y-auto text-[#452215] gowun-dodum-regular">
 
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-[#5b3d25]">Bulk Upload</h2>
-          <button
-            onClick={onClose}
-            className="text-[#5b3d25] hover:text-[#3a2818] text-lg font-bold"
-          >
-            ✕
-          </button>
+          <h2 className="text-xl font-bold nunito-exbold">Bulk Upload</h2>
+          
         </div>
 
         {/* FILE INPUT */}
         <div className="border border-[#5b3d25]/40 rounded-lg p-4 text-center cursor-pointer">
           <label className="cursor-pointer block">
-            <div className="text-[#5b3d25] font-medium">Upload .csv or .xlsx File</div>
-            <div className="mt-2 px-4 py-2 inline-block bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors">
+            <div className="font-medium gowun-dodum-regular">Upload .csv or .xlsx File</div>
+            <div className="mt-2 px-4 py-2 inline-block  text-[#452215] rounded-lg border  bg-[#F0A322]  relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] cursor-pointer">
               Choose File
             </div>
             <input type="file" accept=".csv,.xlsx" className="hidden" onChange={handleFile} />
@@ -119,7 +114,7 @@ const BulkUploadModal = ({ isOpen, onClose, onUpload }) => {
         {/* CLOSE BUTTON */}
         {!rows.length && (
           <button
-            className="mt-4 px-4 py-2 border border-[#5b3d25] rounded-lg text-[#5b3d25] hover:bg-[#5b3d25]/10 transition-colors"
+            className="mt-4 px-4 py-2  rounded-lg text-[#5b3d25] border relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={onClose}
           >
             Close

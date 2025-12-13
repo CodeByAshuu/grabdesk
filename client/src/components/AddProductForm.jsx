@@ -51,15 +51,15 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-[95%] max-w-3xl p-6">
+      <div className="bg-[#FFE9D5] rounded-xl w-[95%] max-w-3xl p-6 text-[#452215] gowun-dodum-regular">
 
-        <h2 className="text-xl font-bold mb-4 text-[#5b3d25]">Add Product</h2>
+        <h2 className="text-xl font-bold mb-4 nunito-exbold">Add Product</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
           {/* LEFT SIDE — MULTIPLE IMAGES */}
           <div className="border border-[#5b3d25]/30 rounded-xl p-4 space-y-4">
-            <p className="text-center font-semibold text-[#5b3d25]">
+            <p className="text-center font-semibold text-[#5b3d25] gowun-dodum-regular">
               Upload Minimum 3 Images
             </p>
 
@@ -67,7 +67,7 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
               {images.map((img, index) => (
                 <div
                   key={index}
-                  className="w-20 h-20 sm:w-24 sm:h-24 border border-[#5b3d25]/30 rounded-lg flex items-center justify-center bg-[#5b3d25]/5 cursor-pointer"
+                  className="w-20 h-20 sm:w-24 sm:h-24  rounded-lg flex items-center justify-center bg-[#5b3d25]/5  relative border border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41]  cursor-pointer"
                   onClick={() =>
                     document.getElementById(`uploadImage${index}`).click()
                   }
@@ -135,14 +135,14 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
         {/* SUBMIT BUTTON */}
         <div className="flex justify-end gap-3 mt-6">
           <button
-            className="px-4 py-2 bg-gray-300 rounded-lg"
+            className="px-4 py-2 rounded-lg relative border border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={onClose}
           >
             Cancel
           </button>
 
           <button
-            className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg"
+            className="px-4 py-2  text-[#452215] border rounded-lg bg-[#F0A322]  relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={handleSubmit}
           >
             Add Product
