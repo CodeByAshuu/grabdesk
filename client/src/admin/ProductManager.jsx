@@ -95,7 +95,7 @@ const ProductManagement = ({ products, setProducts }) => {
   const [previewProduct, setPreviewProduct] = useState(null);
   const [showBulkModal, setShowBulkModal] = useState(false);
 
-  // ✅ ADDED STATE FOR ADD PRODUCT FORM
+ 
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (
@@ -103,21 +103,21 @@ const ProductManagement = ({ products, setProducts }) => {
 
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl sm:text-2xl font-semibold text-[#5b3d25]">
+        <h2 className="text-xl sm:text-2xl font-semibold text-[#E3D5C3] nunito-bold ">
           Product Management
         </h2>
 
         <div className="flex gap-2">
-          {/* 🔥 ADD PRODUCT BUTTON NOW WORKS */}
+         
           <button
-            className="px-3 py-2 bg-[#5b3d25] text-white rounded-lg flex items-center gap-1"
+            className="px-3 py-2 bg-[#F0A322]  border nunito-bold rounded-lg flex items-center relative border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215]  gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={() => setShowAddForm(true)}
           >
             <Icons.Plus /> Add Product
           </button>
 
           <button
-            className="px-3 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg flex items-center gap-1"
+            className="px-3 py-2 bg-[#F0A322]  border nunito-bold rounded-lg flex items-center border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215] cursor-pointer gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1"
             onClick={() => setShowBulkModal(true)}
           >
             <Icons.Upload /> Bulk Upload
@@ -140,9 +140,7 @@ const ProductManagement = ({ products, setProducts }) => {
         ))}
       </div>
 
-      {/* --- MODALS + DRAWERS --- */}
-
-      {/* ✳ EDIT PRODUCT MODAL */}
+     
       <EditProductModal
         isOpen={!!editProduct}
         product={editProduct}
@@ -178,7 +176,6 @@ const ProductManagement = ({ products, setProducts }) => {
         }}
       />
 
-      {/* ✳ ADD PRODUCT FORM (NEW) */}
       <AddProductForm
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}
