@@ -85,19 +85,19 @@ const Icons = {
 };
 const AdminProductCard = ({ product, onEdit, onDelete, onPreview }) => {
   return (
-    <div className="bg-white border border-[#5b3d25]/20 rounded-xl p-4 flex items-center justify-between hover:shadow-md transition">
+    <div className=" gowun-dodum-regular bg-[#FFE9D5]  border rounded-xl p-4 flex items-center justify-between  transition relative  border-[#452215] shadow-[4px_4px_0_#8F5E41]  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] cursor-pointer">
       
       {/* Image + Basic Info */}
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-full overflow-hidden border border-[#5b3d25]/20">
+        <div className="w-24 h-24 rounded-full overflow-hidden border border-[#5b3d25]/20">
           <img 
             src={product.image || "https://via.placeholder.com/150"} 
             className="w-full h-full object-cover"
           />
         </div>
         <div>
-          <p className="font-semibold">{product.name}</p>
-          <p className="text-sm text-[#5b3d25]/70">{product.price}</p>
+          <p className="font-semibold text-lg lg:text-xl">{product.name}</p>
+          <p className="text-sm ">{product.price}</p>
         </div>
       </div>
 
@@ -107,7 +107,7 @@ const AdminProductCard = ({ product, onEdit, onDelete, onPreview }) => {
         <p className="text-sm">Status: {product.status}</p>
       </div>
 
-      {/* Icon Buttons */}
+      
       <div className="flex gap-3">
         <button onClick={onEdit} className="text-[#5b3d25] hover:text-[#4a3120]">
           <Icons.Edit />
