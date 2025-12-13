@@ -64,7 +64,7 @@ const topDeals = [
     price: "₹ 8,999",
     rating: 4.8,
     tag: "HOT",
-    image: Nike3,
+    image: Nike1,
   },
   {
     id: 2,

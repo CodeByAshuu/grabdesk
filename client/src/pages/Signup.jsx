@@ -105,14 +105,14 @@ const Signup = () => {
                     <AuthInput
                         id="phone"
                         label="Phone Number"
-                        type="tel"
+                        type="number"
                         placeholder="(+91) XXXXX-XXXXX"
                         value={formData.phone}
                         onChange={handleChange}
                         error={errors.phone}
                     />
                 </div>
-                
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <AuthInput

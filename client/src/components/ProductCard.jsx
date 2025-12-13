@@ -23,8 +23,49 @@ function ProductCard(props) {
 
     const handleBuyClick = (e) => {
         e.stopPropagation();
-        // Add buy logic here
-        console.log("Buy clicked");
+
+        // Parse price string to number (e.g., "₹ 4,500" -> 4500)
+        let priceValue = 0;
+        if (typeof props.pricee === 'string') {
+            priceValue = parseFloat(props.pricee.replace(/[^0-9.]/g, ''));
+        } else if (typeof props.pricee === 'number') {
+            priceValue = props.pricee;
+        }
+
+        const newProduct = {
+            id: props.id || Date.now(), // Fallback ID if missing
+            title: props.namee || "Unknown Product",
+            price: priceValue,
+            image: props.images && props.images.length > 0 ? props.images[0] : '',
+            quantity: 1,
+            inStock: true,
+            maxQuantity: 10
+        };
+
+        // Get existing cart
+        const existingCartJson = localStorage.getItem('cart');
+        let cart = [];
+        if (existingCartJson) {
+            try {
+                cart = JSON.parse(existingCartJson);
+            } catch (err) {
+                cart = [];
+            }
+        }
+
+        // Check if item exists in cart
+        const existingItemIndex = cart.findIndex(item => item.id === newProduct.id);
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += 1;
+        } else {
+            cart.push(newProduct);
+        }
+
+        // Save updated cart
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // Navigate to Cart
+        navigate('/cart');
     };
 
     return (
@@ -62,7 +103,6 @@ function ProductCard(props) {
                 <h3 className="text-[18px] nunito-exbold">{props.namee}</h3>
 
                 <div className="flex flex-col">
-                    <p className="text-sm">Price</p>
                     <p className="mb-2">{props.pricee}</p>
                     <div onClick={(e) => e.stopPropagation()}>
                         <Button labell="Buy Now" onClick={handleBuyClick} />
