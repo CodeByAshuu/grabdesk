@@ -24,47 +24,53 @@ function ProductCard(props) {
     const handleBuyClick = (e) => {
         e.stopPropagation();
 
-        // Parse price string to number (e.g., "₹ 4,500" -> 4500)
-        let priceValue = 0;
-        if (typeof props.pricee === 'string') {
-            priceValue = parseFloat(props.pricee.replace(/[^0-9.]/g, ''));
-        } else if (typeof props.pricee === 'number') {
-            priceValue = props.pricee;
-        }
+        // Parse price string to number (remove ₹, commas, etc)
+        const parsePrice = (priceStr) => {
+            if (typeof priceStr === 'number') return priceStr;
+            if (!priceStr) return 0;
+            return parseFloat(priceStr.replace(/[^0-9.]/g, ''));
+        };
 
-        const newProduct = {
-            id: props.id || Date.now(), // Fallback ID if missing
-            title: props.namee || "Unknown Product",
-            price: priceValue,
-            image: props.images && props.images.length > 0 ? props.images[0] : '',
+        const price = parsePrice(props.pricee);
+        const image = props.images && props.images.length > 0 ? props.images[0] : "";
+
+        const newItem = {
+            id: props.id,
+            title: props.namee,
+            price: price,
+            image: image,
             quantity: 1,
             inStock: true,
-            maxQuantity: 10
+            maxQuantity: 10, // Default max limit
+            color: "Standard", // Default values to match CartCard expectations
+            size: "Standard"
         };
 
         // Get existing cart
         const existingCartJson = localStorage.getItem('cart');
         let cart = [];
-        if (existingCartJson) {
-            try {
-                cart = JSON.parse(existingCartJson);
-            } catch (err) {
-                cart = [];
-            }
+        try {
+            cart = existingCartJson ? JSON.parse(existingCartJson) : [];
+        } catch (err) {
+            console.error("Error parsing cart data", err);
+            cart = [];
         }
 
-        // Check if item exists in cart
-        const existingItemIndex = cart.findIndex(item => item.id === newProduct.id);
+        // Check if item already exists
+        const existingItemIndex = cart.findIndex(item => item.id === newItem.id);
+
         if (existingItemIndex > -1) {
+            // Increment quantity
             cart[existingItemIndex].quantity += 1;
         } else {
-            cart.push(newProduct);
+            // Add new item
+            cart.push(newItem);
         }
 
-        // Save updated cart
+        // Save back to localStorage
         localStorage.setItem('cart', JSON.stringify(cart));
 
-        // Navigate to Cart
+        // Redirect to Cart
         navigate('/cart');
     };
 
