@@ -12,7 +12,7 @@ import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-
+import ScrollToTop from './components/ScrollToTop';
 
 
 function App() {
@@ -20,6 +20,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+      <ScrollToTop />
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/login' element={<Login />} />
