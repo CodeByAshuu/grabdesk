@@ -56,7 +56,10 @@ function Cart() {
         }
     ];
 
-    const [cartProducts, setCartProducts] = useState(initialCartProducts);
+    const [cartProducts, setCartProducts] = useState(() => {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : initialCartProducts;
+    });
     const [loading, setLoading] = useState(false);
 
     // Remove item from cart
@@ -107,17 +110,17 @@ function Cart() {
     };
 
     // Load cart data (in production, fetch from API)
-    useEffect(() => {
-        // Example: Fetch cart data from localStorage or API
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            try {
-                setCartProducts(JSON.parse(savedCart));
-            } catch (error) {
-                console.error('Error loading cart:', error);
-            }
-        }
-    }, []);
+    // useEffect(() => {
+    //     // Example: Fetch cart data from localStorage or API
+    //     const savedCart = localStorage.getItem('cart');
+    //     if (savedCart) {
+    //         try {
+    //             setCartProducts(JSON.parse(savedCart));
+    //         } catch (error) {
+    //             console.error('Error loading cart:', error);
+    //         }
+    //     }
+    // }, []);
 
     // Save cart data (in production, sync with API)
     useEffect(() => {
@@ -180,7 +183,7 @@ function Cart() {
                                 </div>
                             ) : cartProducts.length > 0 ? (
                                 // Add wrapper div to show only 3 products at a time with scroll
-                                <div 
+                                <div
                                     className="space-y-4 overflow-y-auto p-2"
                                     style={{
                                         maxHeight: 'calc(3 * 256px)', // Adjust based on your card height
@@ -215,9 +218,9 @@ function Cart() {
                                         Add some products to get started!
                                     </p>
                                     <Link
-                                        to="/product"    
-                                    className="" >
-                                       <Button labell={"Browse Products"} />
+                                        to="/product"
+                                        className="" >
+                                        <Button labell={"Browse Products"} />
                                     </Link>
                                 </div>
                             )}
@@ -279,22 +282,22 @@ function Cart() {
                                     >
                                         Continue Shopping
                                     </Link>
-                                    
+
 
                                     <div className="mt-6 pt-6 border-t border-[#5b3d25] border-opacity-30">
                                         <h3 className="font-semibold mb-3">
-                                        Have a promo code?
-                                    </h3>
-                                    <div className="flex pb-6">
-                                        <input
-                                            type="text"
-                                            placeholder="Enter code"
-                                            className="flex-1 bg-transparent border border-[#5b3d25] text-[#E3D5C3] px-4 py-2 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-[#FFE9D5]"
-                                        />
-                                        <button className="bg-[#5b3d25] hover:bg-[#442314] text-[#E3D5C3] px-4 py-2 rounded-r-lg transition-colors">
-                                            Apply
-                                        </button>
-                                    </div>
+                                            Have a promo code?
+                                        </h3>
+                                        <div className="flex pb-6">
+                                            <input
+                                                type="text"
+                                                placeholder="Enter code"
+                                                className="flex-1 bg-transparent border border-[#5b3d25] text-[#E3D5C3] px-4 py-2 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-[#FFE9D5]"
+                                            />
+                                            <button className="bg-[#5b3d25] hover:bg-[#442314] text-[#E3D5C3] px-4 py-2 rounded-r-lg transition-colors">
+                                                Apply
+                                            </button>
+                                        </div>
                                         <h3 className=" font-semibold mb-3">
                                             Secure Checkout
                                         </h3>
@@ -340,7 +343,7 @@ function Cart() {
                                         className="bg-[#E3D5C3] bg-opacity-10 rounded-lg p-4 hover:bg-opacity-20 transition-all cursor-pointer group"
                                         onClick={() => {
                                             console.log('Product selected:', product);
-                                          
+
                                         }}
                                         role="button"
                                         tabIndex={0}
