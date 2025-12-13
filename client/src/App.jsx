@@ -33,6 +33,7 @@ function App() {
           <Route path='/profile' element={<Profile />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/studio' element={<Studio />} />
+          <Route path='/admindashbord' element={<AdminDashbord/>}/>
         </Routes>
       </BrowserRouter>
 
