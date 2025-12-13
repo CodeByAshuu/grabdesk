@@ -23,8 +23,55 @@ function ProductCard(props) {
 
     const handleBuyClick = (e) => {
         e.stopPropagation();
-        // Add buy logic here
-        console.log("Buy clicked");
+
+        // Parse price string to number (remove ₹, commas, etc)
+        const parsePrice = (priceStr) => {
+            if (typeof priceStr === 'number') return priceStr;
+            if (!priceStr) return 0;
+            return parseFloat(priceStr.replace(/[^0-9.]/g, ''));
+        };
+
+        const price = parsePrice(props.pricee);
+        const image = props.images && props.images.length > 0 ? props.images[0] : "";
+
+        const newItem = {
+            id: props.id,
+            title: props.namee,
+            price: price,
+            image: image,
+            quantity: 1,
+            inStock: true,
+            maxQuantity: 10, // Default max limit
+            color: "Standard", // Default values to match CartCard expectations
+            size: "Standard"
+        };
+
+        // Get existing cart
+        const existingCartJson = localStorage.getItem('cart');
+        let cart = [];
+        try {
+            cart = existingCartJson ? JSON.parse(existingCartJson) : [];
+        } catch (err) {
+            console.error("Error parsing cart data", err);
+            cart = [];
+        }
+
+        // Check if item already exists
+        const existingItemIndex = cart.findIndex(item => item.id === newItem.id);
+
+        if (existingItemIndex > -1) {
+            // Increment quantity
+            cart[existingItemIndex].quantity += 1;
+        } else {
+            // Add new item
+            cart.push(newItem);
+        }
+
+        // Save back to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // Redirect to Cart
+        navigate('/cart');
     };
 
     return (
@@ -62,7 +109,6 @@ function ProductCard(props) {
                 <h3 className="text-[18px] nunito-exbold">{props.namee}</h3>
 
                 <div className="flex flex-col">
-                    <p className="text-sm">Price</p>
                     <p className="mb-2">{props.pricee}</p>
                     <div onClick={(e) => e.stopPropagation()}>
                         <Button labell="Buy Now" onClick={handleBuyClick} />
