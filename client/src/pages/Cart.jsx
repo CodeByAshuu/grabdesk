@@ -7,7 +7,12 @@ import Mastercard from "../assets/Mastercard.png";
 import NetBanking from "../assets/net.png";
 import Paypal from "../assets/paypal.png";
 import Button from "../components/Button";
+import Footer from '../components/Footer';
 import { ButtonDark } from "../components/ButtonDark";
+import ProductCard from '../components/ProductCard';
+import Nike1 from '../assets/Nike1.png';
+import Nike2 from '../assets/Nike2.png';
+import Nike3 from '../assets/Nike3.png';
 
 function Cart() {
     // Sample real data - in production, you'd fetch this from an API
@@ -126,33 +131,12 @@ function Cart() {
         Paypal: Paypal
     };
 
-    // Sample related products data
     const relatedProducts = [
-        { 
-            id: 1, 
-            name: "Coffee Mug Premium", 
-            price: 24.99, 
-            image: "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=400&h=300&fit=crop" 
-        },
-        { 
-            id: 2, 
-            name: "Espresso Cup Set", 
-            price: 34.99, 
-            image: "https://images.unsplash.com/photo-1510707577715-7370d3ff9ee9?w-400&h=300&fit=crop" 
-        },
-        { 
-            id: 3, 
-            name: "Travel Coffee Mug", 
-            price: 29.99, 
-            image: "https://images.unsplash.com/photo-1512568400610-62da28bc8a13?w=400&h=300&fit=crop" 
-        },
-        { 
-            id: 4, 
-            name: "Ceramic Coffee Mug", 
-            price: 19.99, 
-            image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=400&h=300&fit=crop" 
-        },
-    ];
+            { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
+            { id: 2, name: "Nike Jordan 1", price: "₹ 15,999.00", images: [Nike3], rating: 4.8, tag: "SALE" },
+            { id: 3, name: "Nike Blazer", price: "₹ 8,499.00", images: [Nike1], rating: 4.3, tag: "HOT" },
+            { id: 4, name: "Nike Zoom", price: "₹ 11,299.00", images: [Nike2], rating: 4.6, tag: "NEW" },
+        ];
 
     return (
         <>
@@ -344,7 +328,7 @@ function Cart() {
                     </div>
 
                     {/* Recommended Products (Optional) */}
-                    {cartProducts.length > 0 && (
+                    {/* {cartProducts.length > 0 && (
                         <div className="mt-12">
                             <h3 className="text-2xl font-semibold text-[#E3D5C3] mb-6 gowun-dodum-regular ">
                                 You might also like
@@ -380,8 +364,45 @@ function Cart() {
                                 ))}
                             </div>
                         </div>
-                    )}
+                    )} */}
+                    {/* Related Products */}
+                    <div className="mt-16 mb-8">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-[#E3D5C3] mb-6 sm:mb-8">
+                            You May Also Like
+                        </h2>
+
+                        <div
+                            className="
+                            flex lg:grid
+                            grid-cols-4
+                            gap-4 sm:gap-6 lg:gap-8
+                            px-4 sm:px-6 py-4
+                            overflow-x-auto lg:overflow-visible
+                            snap-x lg:snap-none
+                            scrollbar-hide
+                            "
+                        >
+                            {relatedProducts.map((prod) => (
+                            <div
+                                key={prod.id}
+                                className="
+                                min-w-[220px] sm:min-w-[260px] lg:min-w-0
+                                snap-center
+                                "
+                            >
+                                <ProductCard
+                                namee={prod.name}
+                                pricee={prod.price}
+                                images={prod.images}
+                                rating={prod.rating}
+                                tagg={prod.tag}
+                                />
+                            </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
+                <Footer />
             </section>
         </>
     );
