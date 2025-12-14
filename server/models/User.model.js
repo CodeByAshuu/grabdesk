@@ -54,7 +54,15 @@ const userSchema = new mongoose.Schema({
     lastLogin: {
         type: Date,
         default: Date.now
-    }
+    },
+    messages: [
+        {
+            title: { type: String, required: true },
+            description: { type: String, required: true },
+            read: { type: Boolean, default: false },
+            createdAt: { type: Date, default: Date.now }
+        }
+    ]
 }, {
     timestamps: true
 });
