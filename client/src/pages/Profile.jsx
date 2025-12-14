@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
-
+import { getInitials } from "../utils/stringUtils";
+import { useState, useEffect, useRef } from "react";
 const Profile = () => {
   const navigate = useNavigate();
 
@@ -81,7 +81,7 @@ const Profile = () => {
         email: user.email,
         phone: user.phone || "Not set",
         avatar: user.profilePhotoUrl || "https://via.placeholder.com/350",
-        joinDate: `Member since ${formattedDate}`
+        joinDate: `${formattedDate}`
       });
 
       // Set Addresses
@@ -946,16 +946,19 @@ const Profile = () => {
           {/* Profile Sidebar - Improved mobile layout */}
           <div className="lg:w-1/3 flex flex-col items-center overflow-y-auto lg:overflow-visible lg:shrink-0">
             <div className="relative mb-4 sm:mb-6">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25]">
-                <img
-                  src={userData.avatar}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='350' viewBox='0 0 350 350'%3E%3Crect width='350' height='350' fill='%235b3d25'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dy='.3em'%3EJD%3C/text%3E%3C/svg%3E";
-                  }}
-                />
+              <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25] flex items-center justify-center bg-white text-[#5b3d25]">
+                {userData.avatar ? (
+                  <img
+                    src={userData.avatar}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                ) : (
+                  <span className="text-4xl sm:text-5xl lg:text-8xl font-bold text-[#5b3d25]">
+                    {getInitials(userData.name)}
+                  </span>
+                )}
               </div>
               <button className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-[#5b3d25] text-white p-1.5 sm:p-2 rounded-full hover:bg-[#4a3120] transition-colors">
                 <Icons.Edit2 />
@@ -966,11 +969,12 @@ const Profile = () => {
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 wrap-break-word px-2">{userData.name}</h2>
               <p className="text-[#5b3d25]/70 wrap-break-word px-2">{userData.email}</p>
               <div className="mt-3 sm:mt-4 space-y-4">
-                <span className="inline-block px-3 sm:px-4 py-1 bg-[#5b3d25]/10 rounded-full text-xs sm:text-sm">
+                {/* <span className="inline-block px-3 sm:px-4 py-1 bg-[#5b3d25]/10 rounded-full text-xs sm:text-sm">
                   {userData.joinDate}
-                </span>
+                </span> */}
+                {/* double joindate hogya , unnecessary shit */}
 
-                {/* Logout Button REMOVED from Sidepanel as per request */}
+                {/* Logout Button REMOVED from Sidepanel kyuki ganda lg rha tha */}
               </div>
             </div>
           </div>
