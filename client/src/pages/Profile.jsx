@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import api from "../api/axios"; // Import mapped axios instance
+import api from "../api/axios";
 
 const Profile = () => {
   const navigate = useNavigate();
+
   // User data state
   const [userData, setUserData] = useState({
     name: "",
@@ -14,37 +15,27 @@ const Profile = () => {
     joinDate: ""
   });
 
-  const [address, setAddress] = useState({
-    street: "123 Main Street",
-    city: "New York",
-    state: "NY",
-    zipCode: "10001",
-    country: "USA"
+  const [addresses, setAddresses] = useState([]);
+  const [primaryAddress, setPrimaryAddress] = useState({
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: ""
   });
 
-  const [orders, setOrders] = useState([
-    { id: 1, date: "2024-01-15", total: "125.50", status: "Delivered" },
-    { id: 2, date: "2024-01-10", total: "89.99", status: "Processing" },
-    { id: 3, date: "2023-12-28", total: "210.00", status: "Delivered" },
-  ]);
-
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "Support", subject: "Order Confirmation", date: "2024-01-15", read: true },
-    { id: 2, sender: "Admin", subject: "New Features", date: "2024-01-12", read: false },
-    { id: 3, sender: "System", subject: "Password Updated", date: "2024-01-10", read: true },
-    { id: 4, sender: "Billing", subject: "Invoice #12345", date: "2024-01-08", read: true },
-    { id: 5, sender: "Support", subject: "Ticket #67890", date: "2024-01-05", read: false },
-    { id: 6, sender: "Newsletter", subject: "Weekly Updates", date: "2024-01-01", read: true },
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [messages, setMessages] = useState([]);
 
   const [activeTab, setActiveTab] = useState("account");
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // NEW: Address editing states
+  // Address editing states
   const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [editAddressForm, setEditAddressForm] = useState(address);
+  const [editAddressIndex, setEditAddressIndex] = useState(null);
+  const [editAddressForm, setEditAddressForm] = useState({});
   const [showAddAddress, setShowAddAddress] = useState(false);
   const [newAddressForm, setNewAddressForm] = useState({
     street: "",
@@ -60,57 +51,87 @@ const Profile = () => {
   const tabContentRef = useRef(null);
   const addressFormRef = useRef(null);
 
-  // Fetch user data on component mount
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          navigate('/login');
-          return;
-        }
-
-        setIsLoading(true);
-        const response = await api.get('/auth/me');
-        const user = response.data;
-
-        // Format Date: "Member since Month Year"
-        const date = new Date(user.createdAt);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long'
-        });
-
-        // Set user data
-        setUserData({
-          name: user.name,
-          email: user.email,
-          phone: user.phone || "Not set",
-          avatar: user.profilePhotoUrl || "https://via.placeholder.com/350",
-          joinDate: `Member since ${formattedDate}`
-        });
-
-        // Initialize edit form with fetched data
-        setEditForm({
-          name: user.name,
-          email: user.email,
-          phone: user.phone || ""
-        });
-
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        // Clear auth data and redirect if unauthorized
-        if (error.response?.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/login');
-        }
-      } finally {
-        setIsLoading(false);
+  const fetchProfileData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
       }
-    };
 
-    fetchUserData();
+      setIsLoading(true);
+
+      // Fetch User Data (including addresses and messages)
+      const userRes = await api.get('/users/me');
+      const user = userRes.data;
+
+      // Fetch Orders
+      const ordersRes = await api.get('/orders/my');
+
+      // Format Date
+      const date = new Date(user.createdAt);
+      const formattedDate = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long'
+      });
+
+      // Set User Data
+      setUserData({
+        name: user.name,
+        email: user.email,
+        phone: user.phone || "Not set",
+        avatar: user.profilePhotoUrl || "https://via.placeholder.com/350",
+        joinDate: `Member since ${formattedDate}`
+      });
+
+      // Set Addresses
+      setAddresses(user.addresses || []);
+      const primary = user.addresses?.find(a => a.isPrimary) || user.addresses?.[0] || {
+        street: "", city: "", state: "", zipCode: "", country: ""
+      };
+      setPrimaryAddress(primary);
+
+      // Set Messages
+      const formattedMessages = (user.messages || []).map(msg => ({
+        id: msg._id,
+        sender: "System", // Or derive from message type if available
+        subject: msg.title,
+        description: msg.description,
+        date: new Date(msg.createdAt).toLocaleDateString(),
+        read: msg.read
+      }));
+      setMessages(formattedMessages);
+
+      // Set Orders
+      const formattedOrders = ordersRes.data.map(order => ({
+        id: order._id,
+        date: new Date(order.createdAt).toISOString().split('T')[0],
+        total: order.total.toFixed(2),
+        status: order.status.charAt(0).toUpperCase() + order.status.slice(1)
+      }));
+      setOrders(formattedOrders);
+
+      // Initialize edit form
+      setEditForm({
+        name: user.name,
+        email: user.email,
+        phone: user.phone || ""
+      });
+
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData();
   }, [navigate]);
 
   // Real-time updates for edit form
@@ -124,37 +145,25 @@ const Profile = () => {
     }
   }, [isEditing, userData]);
 
-  // Logout handler
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
-
-  // NEW: Initialize address form when editing
+  // Address form initialization
   useEffect(() => {
-    if (isEditingAddress) {
-      setEditAddressForm(address);
+    if (isEditingAddress && editAddressIndex !== null) {
+      setEditAddressForm(addresses[editAddressIndex] || {});
     }
-  }, [isEditingAddress, address]);
+  }, [isEditingAddress, editAddressIndex, addresses]);
 
-  // ADD THIS: Effect to handle hash fragment navigation
+  // Hash navigation
   useEffect(() => {
-    // Check if the URL has a hash fragment
     const hash = window.location.hash;
 
     if (hash === '#message') {
-      // Switch to messages tab
       setActiveTab("messages");
 
-      // Wait for the DOM to be fully rendered
       setTimeout(() => {
-        // Scroll the tab content to top
         if (tabContentRef.current) {
           tabContentRef.current.scrollTop = 0;
         }
 
-        // Also scroll to messages section within the tab
         setTimeout(() => {
           const messagesSection = document.getElementById('message');
           if (messagesSection) {
@@ -163,7 +172,6 @@ const Profile = () => {
               block: 'start'
             });
 
-            // Optional: Add a visual highlight effect
             messagesSection.style.transition = 'background-color 0.5s';
             messagesSection.style.backgroundColor = 'rgba(91, 61, 37, 0.1)';
 
@@ -178,24 +186,28 @@ const Profile = () => {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
   const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    // Optimistic update
+  const handleSave = async () => {
+    // TODO: Implement User Profile Update API if needed
+    // For now, optimistic update or just log
     setUserData(prev => ({
       ...prev,
       ...editForm
     }));
     setIsEditing(false);
-    // TODO: Add API call to update profile in backend
-    console.log("Updated user data:", editForm);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset form to current user data
     setEditForm({
       name: userData.name,
       email: userData.email,
@@ -203,31 +215,50 @@ const Profile = () => {
     });
   };
 
-  // NEW: Address editing handlers
-  const handleEditAddress = () => {
+  // Address Handlers
+  const handleEditAddress = (index) => {
+    setEditAddressIndex(index);
     setIsEditingAddress(true);
   };
 
-  const handleSaveAddress = () => {
-    setAddress(editAddressForm);
-    setIsEditingAddress(false);
-    console.log("Updated address:", editAddressForm);
+  const handleSaveAddress = async () => {
+    try {
+      const res = await api.put(`/users/address/${editAddressIndex}`, editAddressForm);
+      setAddresses(res.data);
+
+      // Update primary for display if needed
+      const primary = res.data.find(a => a.isPrimary) || res.data[0] || {
+        street: "", city: "", state: "", zipCode: "", country: ""
+      };
+      setPrimaryAddress(primary);
+
+      setIsEditingAddress(false);
+      setEditAddressIndex(null);
+    } catch (error) {
+      console.error("Error updating address:", error);
+      alert("Failed to update address");
+    }
   };
 
   const handleCancelAddress = () => {
     setIsEditingAddress(false);
+    setEditAddressIndex(null);
   };
 
-  const handleDeleteAddress = () => {
+  const handleDeleteAddress = async (index) => {
     if (window.confirm("Are you sure you want to delete this address?")) {
-      setAddress({
-        street: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        country: ""
-      });
-      console.log("Address deleted");
+      try {
+        const res = await api.delete(`/users/address/${index}`);
+        setAddresses(res.data);
+
+        const primary = res.data.find(a => a.isPrimary) || res.data[0] || {
+          street: "", city: "", state: "", zipCode: "", country: ""
+        };
+        setPrimaryAddress(primary);
+      } catch (error) {
+        console.error("Error deleting address:", error);
+        alert("Failed to delete address");
+      }
     }
   };
 
@@ -235,21 +266,29 @@ const Profile = () => {
     setShowAddAddress(true);
   };
 
-  const handleSaveNewAddress = () => {
-    if (newAddressForm.isPrimary) {
-      setAddress(newAddressForm);
+  const handleSaveNewAddress = async () => {
+    try {
+      const res = await api.post('/users/address', newAddressForm);
+      setAddresses(res.data);
+
+      const primary = res.data.find(a => a.isPrimary) || res.data[0] || {
+        street: "", city: "", state: "", zipCode: "", country: ""
+      };
+      setPrimaryAddress(primary);
+
+      setShowAddAddress(false);
+      setNewAddressForm({
+        street: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        country: "",
+        isPrimary: false
+      });
+    } catch (error) {
+      console.error("Error adding address:", error);
+      alert("Failed to add address");
     }
-    // In a real app, you would add to addresses array
-    setShowAddAddress(false);
-    setNewAddressForm({
-      street: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
-      isPrimary: false
-    });
-    console.log("New address added:", newAddressForm);
   };
 
   const handleCancelNewAddress = () => {
@@ -288,22 +327,29 @@ const Profile = () => {
     }));
   };
 
-  // Smooth tab switching
   const handleTabSwitch = (tabId) => {
     setActiveTab(tabId);
-
     if (tabContentRef.current) {
       tabContentRef.current.scrollTop = 0;
     }
   };
 
-  // NEW: Mark all messages as read
-  const handleMarkAllAsRead = () => {
-    const updatedMessages = messages.map(message => ({
-      ...message,
-      read: true
-    }));
-    setMessages(updatedMessages);
+  const handleMarkAllAsRead = async () => {
+    try {
+      const res = await api.put('/users/messages/mark-read');
+      // Update local state
+      const formattedMessages = (res.data || []).map(msg => ({
+        id: msg._id,
+        sender: "System",
+        subject: msg.title,
+        description: msg.description,
+        date: new Date(msg.createdAt).toLocaleDateString(),
+        read: msg.read
+      }));
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error("Mark read error:", error);
+    }
   };
 
   const Icons = {
@@ -416,12 +462,20 @@ const Profile = () => {
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <h3 className="text-xl font-semibold ">Personal Information</h3>
-                  <button
-                    onClick={handleEdit}
-                    className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
-                  >
-                    <Icons.Edit2 /> Edit Profile
-                  </button>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <button
+                      onClick={handleLogout}
+                      className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
+                    >
+                      <Icons.LogOut /> Logout
+                    </button>
+                    <button
+                      onClick={handleEdit}
+                      className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
+                    >
+                      <Icons.Edit2 /> Edit Profile
+                    </button>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -628,36 +682,38 @@ const Profile = () => {
                 </div>
               </div>
             ) : (
-              /* Display Address Card */
+              /* Display Address List */
               <div className="grid grid-cols-1 gap-6">
-                {address.street ? (
-                  <div className="p-4 sm:p-6 border border-[#5b3d25] rounded-lg">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Icons.MapPin />
-                      <h4 className="font-semibold">Primary Address</h4>
+                {addresses.length > 0 ? (
+                  addresses.map((addr, index) => (
+                    <div key={index} className={`p-4 sm:p-6 border ${addr.isPrimary ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'} rounded-lg`}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Icons.MapPin />
+                        <h4 className="font-semibold">{addr.isPrimary ? 'Primary Address' : `Address ${index + 1}`}</h4>
+                      </div>
+                      <p className="mb-1 wrap-break-word">{addr.street}</p>
+                      <p className="mb-1 wrap-break-word">{addr.city}, {addr.state} {addr.zipCode}</p>
+                      <p className="wrap-break-word">{addr.country}</p>
+                      <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                        <button
+                          onClick={() => handleEditAddress(index)}
+                          className="px-4 py-2 text-sm border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Icons.Edit2 /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAddress(index)}
+                          className="px-4 py-2 text-sm border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Icons.Trash2 /> Remove
+                        </button>
+                      </div>
                     </div>
-                    <p className="mb-1 wrap-break-word">{address.street}</p>
-                    <p className="mb-1 wrap-break-word">{address.city}, {address.state} {address.zipCode}</p>
-                    <p className="wrap-break-word">{address.country}</p>
-                    <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                      <button
-                        onClick={handleEditAddress}
-                        className="px-4 py-2 text-sm border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2"
-                      >
-                        <Icons.Edit2 /> Edit
-                      </button>
-                      <button
-                        onClick={handleDeleteAddress}
-                        className="px-4 py-2 text-sm border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
-                      >
-                        <Icons.Trash2 /> Remove
-                      </button>
-                    </div>
-                  </div>
+                  ))
                 ) : (
                   <div className="p-6 border border-dashed border-[#5b3d25]/50 rounded-lg text-center">
                     <Icons.MapPin className="w-12 h-12 mx-auto mb-4 text-[#5b3d25]/50" />
-                    <p className="text-[#5b3d25]/70 mb-4">No addresses saved yet</p>
+                    <p className="text-[#5b3d25]/70 mb-4">No address stored. Please add an address to deliver your orders.</p>
                     <button
                       onClick={handleAddAddress}
                       className="px-6 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2 mx-auto"
@@ -675,64 +731,69 @@ const Profile = () => {
         return (
           <div className="space-y-6 gowun-dodum-regular">
             <h3 className="text-xl font-semibold">Recent Orders</h3>
-            <div className="overflow-x-auto -mx-4 sm:mx-0">
-              <div className="min-w-full inline-block align-middle">
-                <div className="overflow-hidden border border-[#5b3d25]/30 rounded-lg">
-                  <table className="min-w-full divide-y divide-[#5b3d25]/30">
-                    <thead>
-                      <tr className="bg-[#5b3d25]/5">
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Order ID</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Total</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#5b3d25]/30">
-                      {orders.map(order => (
-                        <tr key={order.id} className="hover:bg-[#5b3d25]/5 transition-colors">
-                          <td className="px-4 py-3 whitespace-nowrap text-sm">#{order.id}</td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm">{order.date}</td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">{order.total}</td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'Delivered'
-                              ? 'bg-green-100 text-green-800'
-                              : order.status === 'Processing'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-blue-100 text-blue-800'
-                              }`}>
-                              {order.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm">
-                            <Link
-                              to={`/orders/${order.id}`}
-                              className="text-[#5b3d25] hover:underline font-medium"
-                            >
-                              View Details
-                            </Link>
-                          </td>
+            {orders.length > 0 ? (
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="min-w-full inline-block align-middle">
+                  <div className="overflow-hidden border border-[#5b3d25]/30 rounded-lg">
+                    <table className="min-w-full divide-y divide-[#5b3d25]/30">
+                      <thead>
+                        <tr className="bg-[#5b3d25]/5">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Order ID</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Date</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Total</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Status</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-[#5b3d25] uppercase tracking-wider">Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#5b3d25]/30">
+                        {orders.map(order => (
+                          <tr key={order.id} className="hover:bg-[#5b3d25]/5 transition-colors">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">#{order.id.substring(orders.id.length - 6).toUpperCase()}</td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">{order.date}</td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">{order.total}</td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'Delivered'
+                                ? 'bg-green-100 text-green-800'
+                                : order.status === 'Processing'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-blue-100 text-blue-800'
+                                }`}>
+                                {order.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">
+                              <Link
+                                to={`/orders/${order.id}`}
+                                className="text-[#5b3d25] hover:underline font-medium"
+                              >
+                                View Details
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="text-center">
-              <Link
-                to="/orders"
-                className="inline-block px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors"
-              >
-                View All Orders
-              </Link>
-            </div>
+            ) : (
+              <div className="p-6 border border-dashed border-[#5b3d25]/50 rounded-lg text-center">
+                <Icons.Package className="w-12 h-12 mx-auto mb-4 text-[#5b3d25]/50" />
+                <p className="text-[#5b3d25]/70 mb-4">No orders yet. Order something.</p>
+                <Link
+                  to="/product"
+                  className="px-6 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors inline-flex items-center justify-center gap-2 mx-auto"
+                >
+                  Start Shopping
+                </Link>
+              </div>
+            )}
           </div>
         );
 
       case "messages":
 
-        const hasMoreMessages = messages.length > 4;
+        // const hasMoreMessages = messages.length > 4;
 
         return (
           <div className="space-y-6" >
@@ -745,51 +806,60 @@ const Profile = () => {
                 Mark All as Read
               </button>
             </div>
-            <div
-              ref={messagesContainerRef}
-              className="space-y-4"
-              style={{
-                maxHeight: hasMoreMessages ? '400px' : 'none',
-                overflowY: 'auto',
-                scrollBehavior: 'smooth',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-              }}
-            >
+            {messages.length > 0 ? (
+              <div
+                ref={messagesContainerRef}
+                className="space-y-4"
+                style={{
+                  // maxHeight: hasMoreMessages ? '400px' : 'none',
+                  overflowY: 'auto',
+                  scrollBehavior: 'smooth',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                }}
+              >
 
-              <div className="space-y-4 pr-2" id="message">
-                {messages.map(message => (
-                  <div
-                    key={message.id}
-                    className={`p-4 border rounded-lg cursor-pointer hover:bg-[#5b3d25]/5 transition-colors ${!message.read ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'
-                      }`}
-                    onClick={() => {
-                      // Mark message as read when clicked
-                      const updatedMessages = messages.map(m =>
-                        m.id === message.id ? { ...m, read: true } : m
-                      );
-                      setMessages(updatedMessages);
-                    }}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full shrink-0 ${!message.read ? 'bg-[#5b3d25]' : 'bg-transparent'}`}></span>
-                          <h4 className="font-semibold text-base wrap-break-word">{message.subject}</h4>
+                <div className="space-y-4 pr-2" id="message">
+                  {messages.map(message => (
+                    <div
+                      key={message.id}
+                      className={`p-4 border rounded-lg cursor-pointer hover:bg-[#5b3d25]/5 transition-colors ${!message.read ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'
+                        }`}
+                      onClick={() => {
+                        // Mark message as read when clicked (Optimistic)
+                        const updatedMessages = messages.map(m =>
+                          m.id === message.id ? { ...m, read: true } : m
+                        );
+                        setMessages(updatedMessages);
+                      }}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${!message.read ? 'bg-[#5b3d25]' : 'bg-transparent'}`}></span>
+                            <h4 className="font-semibold text-base wrap-break-word">{message.subject}</h4>
+                          </div>
+                          <p className="text-sm text-[#5b3d25]/70 mt-1 wrap-break-word">{message.description}</p>
+                          <p className="text-xs text-[#5b3d25]/50 mt-1 wrap-break-word">From: {message.sender}</p>
                         </div>
-                        <p className="text-sm text-[#5b3d25]/70 mt-1 wrap-break-word">From: {message.sender}</p>
+                        <span className="text-sm text-[#5b3d25]/70 whitespace-nowrap sm:text-right">{message.date}</span>
                       </div>
-                      <span className="text-sm text-[#5b3d25]/70 whitespace-nowrap sm:text-right">{message.date}</span>
                     </div>
-                  </div>
-                ))}
-                {messages.length > 4 && (
-                  <div className="text-center py-2 text-sm text-[#5b3d25]/70 opacity-50 gowun-dodum-regular">
-                    Scroll for more ↓
-                  </div>
-                )}
+                  ))}
+                  {messages.length > 4 && (
+                    <div className="text-center py-2 text-sm text-[#5b3d25]/70 opacity-50 gowun-dodum-regular">
+                      Scroll for more ↓
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="p-6 border border-dashed border-[#5b3d25]/50 rounded-lg text-center">
+                <Icons.MessageSquare className="w-12 h-12 mx-auto mb-4 text-[#5b3d25]/50" />
+                <p className="text-[#5b3d25]/70">No messages at the moment.</p>
+              </div>
+            )}
+
             {messages.some(m => !m.read) && (
               <div className="text-center sm:hidden">
                 <button
@@ -896,17 +966,11 @@ const Profile = () => {
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 wrap-break-word px-2">{userData.name}</h2>
               <p className="text-[#5b3d25]/70 wrap-break-word px-2">{userData.email}</p>
               <div className="mt-3 sm:mt-4 space-y-4">
-                <div>
-                  <button
-                    onClick={handleLogout}
-                    className="px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25] hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto"
-                  >
-                    <Icons.LogOut /> Logout
-                  </button>
-                </div>
                 <span className="inline-block px-3 sm:px-4 py-1 bg-[#5b3d25]/10 rounded-full text-xs sm:text-sm">
                   {userData.joinDate}
                 </span>
+
+                {/* Logout Button REMOVED from Sidepanel as per request */}
               </div>
             </div>
           </div>
