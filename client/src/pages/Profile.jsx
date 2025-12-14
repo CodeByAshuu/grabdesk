@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
+import api from "../api/axios"; // Import mapped axios instance
+
 const Profile = () => {
   const navigate = useNavigate();
   // User data state
   const [userData, setUserData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    avatar: "https://via.placeholder.com/350",
-    joinDate: "January 2023"
+    name: "",
+    email: "",
+    phone: "",
+    avatar: "",
+    joinDate: ""
   });
 
   const [address, setAddress] = useState({
@@ -38,9 +39,9 @@ const Profile = () => {
 
   const [activeTab, setActiveTab] = useState("account");
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState(userData);
-  const [isLoading, setIsLoading] = useState(false);
-  
+  const [editForm, setEditForm] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
   // NEW: Address editing states
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [editAddressForm, setEditAddressForm] = useState(address);
@@ -59,24 +60,76 @@ const Profile = () => {
   const tabContentRef = useRef(null);
   const addressFormRef = useRef(null);
 
-  // Fetch user data on component mount (simulated)
+  // Fetch user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
-      setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        setIsLoading(true);
+        const response = await api.get('/auth/me');
+        const user = response.data;
+
+        // Format Date: "Member since Month Year"
+        const date = new Date(user.createdAt);
+        const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long'
+        });
+
+        // Set user data
+        setUserData({
+          name: user.name,
+          email: user.email,
+          phone: user.phone || "Not set",
+          avatar: user.profilePhotoUrl || "https://via.placeholder.com/350",
+          joinDate: `Member since ${formattedDate}`
+        });
+
+        // Initialize edit form with fetched data
+        setEditForm({
+          name: user.name,
+          email: user.email,
+          phone: user.phone || ""
+        });
+
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        // Clear auth data and redirect if unauthorized
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login');
+        }
+      } finally {
         setIsLoading(false);
-      }, 500);
+      }
     };
+
     fetchUserData();
-  }, []);
+  }, [navigate]);
 
   // Real-time updates for edit form
   useEffect(() => {
     if (isEditing) {
-      setEditForm(userData);
+      setEditForm({
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone === "Not set" ? "" : userData.phone
+      });
     }
   }, [isEditing, userData]);
+
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   // NEW: Initialize address form when editing
   useEffect(() => {
@@ -89,31 +142,31 @@ const Profile = () => {
   useEffect(() => {
     // Check if the URL has a hash fragment
     const hash = window.location.hash;
-    
+
     if (hash === '#message') {
       // Switch to messages tab
       setActiveTab("messages");
-      
+
       // Wait for the DOM to be fully rendered
       setTimeout(() => {
         // Scroll the tab content to top
         if (tabContentRef.current) {
           tabContentRef.current.scrollTop = 0;
         }
-        
+
         // Also scroll to messages section within the tab
         setTimeout(() => {
           const messagesSection = document.getElementById('message');
           if (messagesSection) {
-            messagesSection.scrollIntoView({ 
+            messagesSection.scrollIntoView({
               behavior: 'smooth',
               block: 'start'
             });
-            
+
             // Optional: Add a visual highlight effect
             messagesSection.style.transition = 'background-color 0.5s';
             messagesSection.style.backgroundColor = 'rgba(91, 61, 37, 0.1)';
-            
+
             setTimeout(() => {
               if (messagesSection) {
                 messagesSection.style.backgroundColor = 'transparent';
@@ -126,20 +179,28 @@ const Profile = () => {
   }, []);
 
   const handleEdit = () => {
-    setEditForm(userData);
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    // Real-time update with immediate feedback
-    setUserData(editForm);
+    // Optimistic update
+    setUserData(prev => ({
+      ...prev,
+      ...editForm
+    }));
     setIsEditing(false);
-    // In a real app, you would make an API call here
+    // TODO: Add API call to update profile in backend
     console.log("Updated user data:", editForm);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+    // Reset form to current user data
+    setEditForm({
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone === "Not set" ? "" : userData.phone
+    });
   };
 
   // NEW: Address editing handlers
@@ -230,7 +291,7 @@ const Profile = () => {
   // Smooth tab switching
   const handleTabSwitch = (tabId) => {
     setActiveTab(tabId);
-  
+
     if (tabContentRef.current) {
       tabContentRef.current.scrollTop = 0;
     }
@@ -290,6 +351,11 @@ const Profile = () => {
     Plus: () => (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+      </svg>
+    ),
+    LogOut: () => (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
       </svg>
     )
   };
@@ -385,14 +451,14 @@ const Profile = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="text-xl font-semibold">Saved Addresses</h3>
-              <button 
+              <button
                 onClick={handleAddAddress}
                 className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <Icons.Plus /> Add New Address
               </button>
             </div>
-            
+
             {/* Add New Address Form */}
             {showAddAddress && (
               <div ref={addressFormRef} className="p-4 sm:p-6 border border-[#5b3d25] rounded-lg space-y-4 animate-fadeIn">
@@ -485,7 +551,7 @@ const Profile = () => {
                 </div>
               </div>
             )}
-            
+
             {/* Address Editing Form */}
             {isEditingAddress ? (
               <div className="p-4 sm:p-6 border border-[#5b3d25] rounded-lg space-y-4">
@@ -574,13 +640,13 @@ const Profile = () => {
                     <p className="mb-1 wrap-break-word">{address.city}, {address.state} {address.zipCode}</p>
                     <p className="wrap-break-word">{address.country}</p>
                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                      <button 
+                      <button
                         onClick={handleEditAddress}
                         className="px-4 py-2 text-sm border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2"
                       >
                         <Icons.Edit2 /> Edit
                       </button>
-                      <button 
+                      <button
                         onClick={handleDeleteAddress}
                         className="px-4 py-2 text-sm border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
                       >
@@ -592,7 +658,7 @@ const Profile = () => {
                   <div className="p-6 border border-dashed border-[#5b3d25]/50 rounded-lg text-center">
                     <Icons.MapPin className="w-12 h-12 mx-auto mb-4 text-[#5b3d25]/50" />
                     <p className="text-[#5b3d25]/70 mb-4">No addresses saved yet</p>
-                    <button 
+                    <button
                       onClick={handleAddAddress}
                       className="px-6 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2 mx-auto"
                     >
@@ -629,18 +695,17 @@ const Profile = () => {
                           <td className="px-4 py-3 whitespace-nowrap text-sm">{order.date}</td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">{order.total}</td>
                           <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.status === 'Delivered' 
-                                ? 'bg-green-100 text-green-800' 
-                                : order.status === 'Processing'
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'Delivered'
+                              ? 'bg-green-100 text-green-800'
+                              : order.status === 'Processing'
                                 ? 'bg-yellow-100 text-yellow-800'
                                 : 'bg-blue-100 text-blue-800'
-                            }`}>
+                              }`}>
                               {order.status}
                             </span>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm">
-                            <Link 
+                            <Link
                               to={`/orders/${order.id}`}
                               className="text-[#5b3d25] hover:underline font-medium"
                             >
@@ -655,8 +720,8 @@ const Profile = () => {
               </div>
             </div>
             <div className="text-center">
-              <Link 
-                to="/orders" 
+              <Link
+                to="/orders"
                 className="inline-block px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors"
               >
                 View All Orders
@@ -666,21 +731,21 @@ const Profile = () => {
         );
 
       case "messages":
-        
+
         const hasMoreMessages = messages.length > 4;
-        
+
         return (
           <div className="space-y-6" >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="text-xl font-semibold">Messages</h3>
-              <button 
+              <button
                 onClick={handleMarkAllAsRead}
                 className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors w-full sm:w-auto"
               >
                 Mark All as Read
               </button>
             </div>
-            <div 
+            <div
               ref={messagesContainerRef}
               className="space-y-4"
               style={{
@@ -691,18 +756,17 @@ const Profile = () => {
                 msOverflowStyle: 'none',
               }}
             >
-              
+
               <div className="space-y-4 pr-2" id="message">
                 {messages.map(message => (
-                  <div 
-                    key={message.id} 
-                    className={`p-4 border rounded-lg cursor-pointer hover:bg-[#5b3d25]/5 transition-colors ${
-                      !message.read ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'
-                    }`}
+                  <div
+                    key={message.id}
+                    className={`p-4 border rounded-lg cursor-pointer hover:bg-[#5b3d25]/5 transition-colors ${!message.read ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'
+                      }`}
                     onClick={() => {
                       // Mark message as read when clicked
-                      const updatedMessages = messages.map(m => 
-                        m.id === message.id ? {...m, read: true} : m
+                      const updatedMessages = messages.map(m =>
+                        m.id === message.id ? { ...m, read: true } : m
                       );
                       setMessages(updatedMessages);
                     }}
@@ -721,14 +785,14 @@ const Profile = () => {
                 ))}
                 {messages.length > 4 && (
                   <div className="text-center py-2 text-sm text-[#5b3d25]/70 opacity-50 gowun-dodum-regular">
-                     Scroll for more ↓
+                    Scroll for more ↓
                   </div>
                 )}
               </div>
             </div>
             {messages.some(m => !m.read) && (
               <div className="text-center sm:hidden">
-                <button 
+                <button
                   onClick={handleMarkAllAsRead}
                   className="px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors w-full gowun-dodum-regular"
                 >
@@ -746,7 +810,7 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <section 
+      <section
         className="min-h-screen w-full flex items-center justify-center text-[#5b3d25] overflow-hidden"
         style={{
           backgroundColor: "#f3eadc",
@@ -763,7 +827,7 @@ const Profile = () => {
   }
 
   return (
-    <section 
+    <section
       className="h-screen w-full text-[#5b3d25] overflow-hidden overflow-x-hidden flex flex-col gowun-dodum-regular"
       style={{
         backgroundColor: "#f3eadc",
@@ -772,7 +836,7 @@ const Profile = () => {
       }}
     >
       <Navbar />
-      
+
       <style jsx>{`
         div::-webkit-scrollbar {
           display: none;
@@ -797,7 +861,7 @@ const Profile = () => {
           </h1>
           {/* Horizontal Divider - Only visible on medium screens and up */}
           <div className="hidden md:block w-full my-4 mt-6 lg:mt-8">
-            <div 
+            <div
               className="w-full border-t-2 border-[#5B3D25]"
               style={{
                 borderTopStyle: "dashed",
@@ -813,9 +877,9 @@ const Profile = () => {
           <div className="lg:w-1/3 flex flex-col items-center overflow-y-auto lg:overflow-visible lg:shrink-0">
             <div className="relative mb-4 sm:mb-6">
               <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25]">
-                <img 
-                  src={userData.avatar} 
-                  alt="Profile" 
+                <img
+                  src={userData.avatar}
+                  alt="Profile"
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -827,13 +891,21 @@ const Profile = () => {
                 <Icons.Edit2 />
               </button>
             </div>
-            
+
             <div className="text-center mb-6">
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 wrap-break-word px-2">{userData.name}</h2>
               <p className="text-[#5b3d25]/70 wrap-break-word px-2">{userData.email}</p>
-              <div className="mt-3 sm:mt-4">
+              <div className="mt-3 sm:mt-4 space-y-4">
+                <div>
+                  <button
+                    onClick={handleLogout}
+                    className="px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25] hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto"
+                  >
+                    <Icons.LogOut /> Logout
+                  </button>
+                </div>
                 <span className="inline-block px-3 sm:px-4 py-1 bg-[#5b3d25]/10 rounded-full text-xs sm:text-sm">
-                  Member since {userData.joinDate}
+                  {userData.joinDate}
                 </span>
               </div>
             </div>
@@ -841,7 +913,7 @@ const Profile = () => {
 
           {/* Vertical Divider - Hidden on mobile */}
           <div className="hidden lg:block relative shrink-0 -mt-6">
-            <div 
+            <div
               className="h-full border-l-2 border-[#5B3D25] absolute left-0 top-0 bottom-0"
               style={{
                 borderLeftStyle: "dashed",
@@ -864,11 +936,10 @@ const Profile = () => {
                 <button
                   key={tab.id}
                   onClick={() => handleTabSwitch(tab.id)}
-                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 shrink-0 ${
-                    activeTab === tab.id
-                      ? "bg-[#5b3d25] text-white"
-                      : "hover:bg-[#5b3d25]/10"
-                  }`}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 shrink-0 ${activeTab === tab.id
+                    ? "bg-[#5b3d25] text-white"
+                    : "hover:bg-[#5b3d25]/10"
+                    }`}
                 >
                   <tab.icon />
                   <span className="text-xs sm:text-sm lg:text-base">
@@ -880,7 +951,7 @@ const Profile = () => {
             </div>
 
             {/* Tab Content Container */}
-            <div 
+            <div
               ref={tabContentRef}
               className="grow min-h-0 overflow-y-auto"
               style={{
