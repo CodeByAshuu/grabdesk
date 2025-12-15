@@ -135,14 +135,14 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
         {/* SUBMIT BUTTON */}
         <div className="flex justify-end gap-3 mt-6">
           <button
-            className="px-4 py-2 rounded-lg relative border border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+            className="px-4 py-2 active:translate-y-1 rounded-lg relative border border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={onClose}
           >
             Cancel
           </button>
 
           <button
-            className="px-4 py-2  text-[#452215] border rounded-lg bg-[#F0A322]  relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+            className="px-4 py-2 active:translate-y-1 text-[#452215] border rounded-lg bg-[#F0A322]  relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={handleSubmit}
           >
             Add Product

@@ -53,25 +53,22 @@ const NotificationCenter = () => {
 
       {/* HEADER */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        <h2 className="text-xl sm:text-2xl font-semibold text-[#5b3d25] nunito-exbold">
-          Notification Center
-        </h2>
-
+        
         <button
           onClick={() => setAnnouncementModal(true)}
-          className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors text-sm sm:text-base whitespace-nowrap w-full xs:w-auto"
+          className="px-3 sm:px-4 py-1.5 sm:py-2  rounded-lg text-sm sm:text-base whitespace-nowrap w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer"
         >
           Send Announcement
         </button>
       </div>
 
       {/* Notifications List */}
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-3 sm:space-y-4 ">
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`p-3 sm:p-4 border rounded-lg sm:rounded-xl transition-all duration-150 hover:shadow-sm ${
-              !notification.read ? "border-[#5b3d25] bg-[#5b3d25]/5" : "border-[#5b3d25]/30"
+            className={`p-3 sm:p-4 border rounded-lg    bg-[#E3D5C3] sm:rounded-xl  relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer ${
+              !notification.read ? "border-[#452215] bg-[#E3D5C3]/70" : "border-[#452215]/30"
             }`}
           >
             <div className="flex flex-col xs:flex-row xs:justify-between xs:items-start gap-2 xs:gap-3">
@@ -86,7 +83,7 @@ const NotificationCenter = () => {
                 ></div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-sm sm:text-base truncate">
+                  <p className="font-medium text-sm sm:text-base truncate gowun-dodum-regular">
                     {notification.message}
                   </p>
                   <p className="text-xs sm:text-sm text-[#5b3d25]/70 mt-1">
@@ -100,12 +97,12 @@ const NotificationCenter = () => {
                 <span
                   className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded whitespace-nowrap ${
                     notification.type === "order"
-                      ? "bg-blue-100 text-blue-800"
+                      ? "bg-blue-100 text-[#5B6E8C]"
                       : notification.type === "stock"
-                      ? "bg-red-100 text-red-800"
+                      ? "bg-[#F7EFE6] text-[#D18B1F]"
                       : notification.type === "user"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
+                      ? "bg-green-100 text-[#3E7C59]"
+                      : "bg-gray-100 text-[#9E3A2E]"
                   }`}
                 >
                   {notification.type}
@@ -113,7 +110,7 @@ const NotificationCenter = () => {
 
                 {/* Delete Button */}
                 <button
-                  className="text-red-600 hover:text-red-800 text-sm"
+                  className="text-[#452215] hover:text-[#452215]/70 text-sm"
                   onClick={() => deleteNotification(notification.id)}
                 >
                   ✕
@@ -125,7 +122,7 @@ const NotificationCenter = () => {
       </div>
 
       {/* Email/SMS Integration (Unchanged UI) */}
-      <div className="mt-6 sm:mt-8 p-4 sm:p-5 bg-white border border-[#5b3d25]/20 rounded-lg sm:rounded-xl">
+      <div className="mt-6 sm:mt-8 p-4 sm:p-5 bg-[#E3D5C3] text-[#452215] border border-[#5b3d25]/20 rounded-lg sm:rounded-xl">
         <h3 className="font-semibold mb-4 nunito-exbold text-sm sm:text-base md:text-lg">
           Email/SMS Integration
         </h3>
@@ -134,24 +131,24 @@ const NotificationCenter = () => {
 
           <div className="flex flex-col xs:flex-row xs:items-center gap-3">
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm sm:text-base">Email Notifications</p>
-              <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">
+              <p className="font-medium text-sm sm:text-base gowun-dodum-regular">Email Notifications</p>
+              <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate ">
                 Configure email templates
               </p>
             </div>
-            <button className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 text-xs sm:text-sm w-full xs:w-auto">
+            <button className="px-4 py-2 rounded-lg  text-xs sm:text-sm w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer">
               Configure
             </button>
           </div>
 
           <div className="flex flex-col xs:flex-row xs:items-center gap-3">
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm sm:text-base">SMS Notifications</p>
+              <p className="font-medium text-sm sm:text-base gowun-dodum-regular">SMS Notifications</p>
               <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">
                 Set up SMS alerts
               </p>
             </div>
-            <button className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 text-xs sm:text-sm w-full xs:w-auto">
+            <button className="px-4 py-2 rounded-lg  text-xs sm:text-sm w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer">
               Set Up
             </button>
           </div>

@@ -59,13 +59,11 @@ const CategoryManagement = ({ categories, setCategories }) => {
 
       {/* HEADER */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        <h2 className="text-xl sm:text-2xl font-semibold text-[#5b3d25] nunito-exbold">
-          Category Management
-        </h2>
+        
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition flex items-center gap-2 text-sm sm:text-base w-full xs:w-auto justify-center"
+          className="px-4 py-2 rounded-lg bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer flex items-center gap-2 text-sm sm:text-base w-full xs:w-auto justify-center"
         >
           <Icons.Plus /> Add Category
         </button>
@@ -76,9 +74,9 @@ const CategoryManagement = ({ categories, setCategories }) => {
         {categories.map((category) => (
           <div
             key={category.id}
-            className="border border-[#5b3d25]/30 rounded-xl p-4 hover:shadow-sm transition"
+            className="border bg-[#E3D5C3] text-[#452215] rounded-xl p-4 hover:shadow-sm transition"
           >
-            <div className="flex justify-between items-start mb-3">
+            <div className="flex justify-between items-start mb-3 ">
               <h4 className="font-semibold text-sm sm:text-base truncate">{category.name}</h4>
               <span className="px-2 py-1 bg-[#5b3d25]/10 text-[#5b3d25] rounded text-xs sm:text-sm">
                 {category.productCount} products
@@ -91,7 +89,7 @@ const CategoryManagement = ({ categories, setCategories }) => {
                   setEditCategory(category);
                   setShowEditModal(true);
                 }}
-                className="flex-1 px-3 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 text-xs sm:text-sm"
+                className="flex-1 px-3 py-2 rounded-lg hover:bg-[#5b3d25]/10 text-xs sm:text-sm active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer"
               >
                 Edit
               </button>
@@ -101,7 +99,7 @@ const CategoryManagement = ({ categories, setCategories }) => {
                   setDeleteCategory(category);
                   setShowDeleteConfirm(true);
                 }}
-                className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs sm:text-sm"
+                className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs sm:text-sm active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1 cursor-pointer "
               >
                 Delete
               </button>
@@ -110,23 +108,7 @@ const CategoryManagement = ({ categories, setCategories }) => {
         ))}
       </div>
 
-      {/* INVENTORY BOX */}
-      <div className="mt-6">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4 nunito-exbold">
-          Inventory Management
-        </h3>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-          <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3">
-            <div className="min-w-0">
-              <h4 className="font-semibold text-red-800">Low Stock Warning</h4>
-              <p className="text-xs sm:text-sm text-red-600">12 items need restocking</p>
-            </div>
-            <button className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] text-sm">
-              View All
-            </button>
-          </div>
-        </div>
-      </div>
+      
 
       {/* ------------------------------------------------ */}
       {/* ADD CATEGORY MODAL */}
@@ -136,7 +118,7 @@ const CategoryManagement = ({ categories, setCategories }) => {
              onClick={() => setShowAddModal(false)}>
           
           <div
-            className="bg-white rounded-xl p-5 w-full max-w-sm shadow-xl"
+            className="bg-[#E3D5C3] text-[#452215] rounded-xl p-5 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-[#5b3d25] mb-4">Add Category</h3>
@@ -146,14 +128,14 @@ const CategoryManagement = ({ categories, setCategories }) => {
               placeholder="Category Name"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              className="w-full border border-[#5b3d25]/30 rounded-lg p-2 mb-4"
+              className="w-full border border-[#452215]/30 rounded-lg p-2 mb-4 bg-[#E3D5C3] text-[#452215] "
             />
 
             <div className="flex justify-end gap-3">
               <button onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 border rounded-lg">Cancel</button>
+                className="px-4 py-2 border rounded-lg active:translate-y-1 relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1 cursor-pointer">Cancel</button>
               <button onClick={handleAddCategory}
-                className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg">Add</button>
+                className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1 cursor-pointer">Add</button>
             </div>
           </div>
         </div>
@@ -167,10 +149,10 @@ const CategoryManagement = ({ categories, setCategories }) => {
              onClick={() => setShowEditModal(false)}>
           
           <div
-            className="bg-white rounded-xl p-5 w-full max-w-sm shadow-xl"
+            className="bg-[#E3D5C3] text-[#452215] rounded-xl p-5 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-[#5b3d25] mb-4">Edit Category</h3>
+            <h3 className="text-lg font-semibold text-[#452215] nunito-exbold mb-4">Edit Category</h3>
 
             <input
               type="text"
@@ -178,14 +160,14 @@ const CategoryManagement = ({ categories, setCategories }) => {
               onChange={(e) =>
                 setEditCategory({ ...editCategory, name: e.target.value })
               }
-              className="w-full border border-[#5b3d25]/30 rounded-lg p-2 mb-4"
+              className="w-full border [#E3D5C3] text-[#452215] rounded-lg p-2 mb-4"
             />
 
             <div className="flex justify-end gap-3">
               <button onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 border rounded-lg">Cancel</button>
+                className="px-4 py-2 border rounded-lg active:translate-y-1   relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1 cursor-pointer">Cancel</button>
               <button onClick={handleEditCategorySave}
-                className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg">Save</button>
+                className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1 cursor-pointer">Save</button>
             </div>
           </div>
         </div>
@@ -199,12 +181,12 @@ const CategoryManagement = ({ categories, setCategories }) => {
              onClick={() => setShowDeleteConfirm(false)}>
           
           <div
-            className="bg-white rounded-xl p-5 w-full max-w-sm shadow-xl"
+            className="bg-[#E3D5C3]  rounded-xl p-5 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-red-600 mb-4">Delete Category?</h3>
+            <h3 className="text-lg font-semibold text-[#452215] mb-4">Delete Category?</h3>
 
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-[#452215]/70 mb-4">
               Are you sure you want to delete <strong>{deleteCategory.name}</strong>?
             </p>
 
@@ -212,7 +194,7 @@ const CategoryManagement = ({ categories, setCategories }) => {
               <button onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 border rounded-lg">Cancel</button>
               <button onClick={confirmDeleteCategory}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg">Delete</button>
+                className="px-4 py-2 bg-[#F0A322] text-white rounded-lg active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1 cursor-pointer">Delete</button>
             </div>
           </div>
         </div>

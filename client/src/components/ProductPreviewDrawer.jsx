@@ -13,13 +13,13 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
 
         
         <div
-          className="w-full max-w-md bg-[#442314] text-[#E3D5C3] rounded-2xl shadow-2xl border border-[#452215]  overflow-hidden animate-scaleIn relative"
+          className="w-full max-w-md  text-[#442314] bg-[#E3D5C3] rounded-2xl shadow-2xl border border-[#452215]  overflow-hidden animate-scaleIn relative"
           onClick={(e) => e.stopPropagation()}  // PREVENT CLICK INSIDE FROM CLOSING
         >
 
           {/* FLOATING CLOSE BUTTON */}
           <button
-            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[#5b3d25] text-lg  transition"
+            className="absolute top-3 active:translate-y-1 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[#5b3d25] text-lg  transition"
             onClick={onClose}
           >
             ✕
@@ -45,16 +45,16 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
               </div>
 
               {/* TITLE */}
-              <h3 className="text-2xl font-bold text-[#E3D5C3] leading-tight drop-shadow-sm">
+              <h3 className="text-2xl font-bold text-[#442314] leading-tight drop-shadow-sm">
                 {product.name}
               </h3>
 
-              {/* DESCRIPTION */}
-              <p className="text-[#E3D5C3]/70 text-sm leading-relaxed">
+             
+              <p className="text-[#442314]/70 text-sm leading-relaxed">
                 {product.description || "No description available."}
               </p>
 
-              {/* DETAILS GRID */}
+           
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {[
                   ["Category", product.category],
@@ -87,7 +87,7 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
         </div>
       </div>
 
-      {/* ANIMATIONS */}
+     
       <style>{`
         @keyframes scaleIn {
           0% { transform: scale(0.85); opacity: 0; }
