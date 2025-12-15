@@ -64,9 +64,7 @@ const OrderManagement = ({ orders, setOrders }) => {
 
       {/* Header */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        <h2 className="text-xl sm:text-2xl font-semibold nunito-exbold ">
-          Order Management
-        </h2>
+        
 
         <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 xs:gap-4 w-full xs:w-auto">
 
@@ -85,7 +83,7 @@ const OrderManagement = ({ orders, setOrders }) => {
 
 
           <button
-            className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg flex items-center gap-2 justify-center text-sm sm:text-base whitespace-nowrap w-full xs:w-auto bg-[#F0A322] nunito-bold relative border-[#452215] shadow-[4px_4px_0_#8F5E41] text-[#452215] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+            className="px-3 active:translate-y-1 sm:px-4 py-1.5 sm:py-2 border rounded-lg flex items-center gap-2 justify-center text-sm sm:text-base whitespace-nowrap w-full xs:w-auto bg-[#F0A322] nunito-bold relative border-[#452215] shadow-[4px_4px_0_#8F5E41] text-[#452215] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={() => setFilter(selectedFilter)}
           >
             <Icons.Filter /> <span className="truncate">Filter</span>
@@ -137,14 +135,14 @@ const OrderManagement = ({ orders, setOrders }) => {
             <div className="flex flex-col xs:flex-row gap-2">
               <button
                 onClick={() => setStatusModal(order)}
-                className="flex-1 px-3 py-2 text-xs sm:text-sm justify-center   border nunito-bold rounded-lg flex items-center relative border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215]  gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+                className="flex-1 px-3 py-2 active:translate-y-1 text-xs sm:text-sm justify-center   border nunito-bold rounded-lg flex items-center relative border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215]  gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
               >
                 Update Status
               </button>
 
               <button
                 onClick={() => setSelectedOrder(order)}
-                className="flex-1 px-3 py-2 text-xs sm:text-sm justify-center bg-[#F0A322]  border nunito-bold rounded-lg flex items-center relative border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215]  gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+                className="flex-1 px-3 py-2 text-xs active:translate-y-1 sm:text-sm justify-center bg-[#F0A322]  border nunito-bold rounded-lg flex items-center relative border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215]  gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
               >
                 View Details
               </button>
@@ -174,7 +172,7 @@ const OrderManagement = ({ orders, setOrders }) => {
 
             <button
               onClick={() => setStatusModal(null)}
-              className="mt-4 px-4 py-2 border rounded-lg w-full bg-[#F0A322] text-[#5b3d25] relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+              className="mt-4 px-4 py-2 border active:translate-y-1 rounded-lg w-full bg-[#F0A322] text-[#5b3d25] relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             >
               Close
             </button>
@@ -209,7 +207,7 @@ const OrderManagement = ({ orders, setOrders }) => {
 
       <button
         onClick={() => setSelectedOrder(null)}
-        className="mt-6 px-4 py-2  text-[#452215] rounded-lg w-full bg-[#F0A322]  relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
+        className="mt-6 px-4 py-2 active:translate-y-1 text-[#452215] rounded-lg w-full bg-[#F0A322]  relative border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
       >
         Close
       </button>
