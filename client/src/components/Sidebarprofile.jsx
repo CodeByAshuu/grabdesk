@@ -99,10 +99,6 @@ const SidebarProfile = ({
       {/* User Info */}
       <h2 className="text-lg font-bold mt-4 text-center">{userData.name}</h2>
       <p className="text-[#5b3d25]/70 text-sm text-center">{userData.email}</p>
-      <span className="mt-2 inline-block px-3 py-1 bg-[#5b3d25]/10 rounded-full text-xs">
-        Member since {userData.joinDate}
-      </span>
-
     </div>
   );
 };
