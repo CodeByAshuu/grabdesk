@@ -1,14 +1,15 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import AnalyticsDashboard from "./AnalyticsDashboard";
 import CategoryManagement from "./CategoryManagement";
-import CouponManagement from "./CouponManagement";
+import ActivityLogs from "./ActivityLogs";
 import NotificationCenter from "./NotificationSystem";
 import OrderManagement from "./OrderManager";
 import ProductManagement from "./ProductManager";
-import SettingsPanel from "./SettingPannel";
+
 import UserManagement from "./UserManager";
 import Navbar from "../components/Navbar";
 import SidebarProfile from "../components/Sidebarprofile";
+import Button from "../components/Button";
 
 const Icons = {
   Package: () => (
@@ -95,16 +96,7 @@ const Icons = {
   ),
 };
 
-const ActivityLogs = () => {
-  return (
-    <div className="space-y-6 gowun-dodum-regular">
-      <h2 className="text-2xl font-semibold text-[#5b3d25] nunito-exbold">Activity Logs</h2>
-      <div className="bg-white border border-[#5b3d25]/20 rounded-xl p-6">
-        <p className="text-[#5b3d25]/50">Activity logs placeholder - Real implementation would show user activities</p>
-      </div>
-    </div>
-  );
-};
+
 
 const AdminManager = () => {
   const [activeSection, setActiveSection] = useState("products");
@@ -164,10 +156,10 @@ const AdminManager = () => {
     { id: "orders", label: "Orders", icon: Icons.ShoppingCart },
     { id: "users", label: "Users", icon: Icons.Users },
     { id: "categories", label: "Categories", icon: Icons.Tag },
-    { id: "coupons", label: "Coupons", icon: Icons.Percent },
+    
     { id: "notifications", label: "Notifications", icon: Icons.Bell },
     { id: "activity", label: "Activity Logs", icon: Icons.Activity },
-    { id: "settings", label: "Settings", icon: Icons.Settings },
+   
   ];
 
   const renderSectionContent = () => {
@@ -182,36 +174,28 @@ const AdminManager = () => {
         return <UserManagement users={users} setUsers={setUsers} />;
       case "categories":
         return <CategoryManagement categories={categories} setCategories={setCategories} />;
-      case "coupons":
-        return <CouponManagement coupons={coupons} setCoupons={setCoupons} />;
       case "notifications":
         return <NotificationCenter />;
       case "activity":
         return <ActivityLogs />;
-      case "settings":
-        return <SettingsPanel />;
       default:
         return <AnalyticsDashboard />;
     }
   };
 
-  // Measure Navbar + Header heights and compute remaining height
   useLayoutEffect(() => {
     const compute = () => {
       const navH = navbarRef.current ? navbarRef.current.offsetHeight : 0;
       const headerH = headerRef.current ? headerRef.current.offsetHeight : 0;
       const totalTop = navH + headerH;
       const remaining = window.innerHeight - totalTop;
-      // minimal fallback to avoid tiny/negative heights
       setContentHeight(Math.max(remaining, 300));
     };
 
     // initial compute
     compute();
 
-    // recompute on resize & when fonts/layout settle
     window.addEventListener("resize", compute);
-    // also compute after a short timeout to catch dynamic content changes
     const t = setTimeout(compute, 120);
     return () => {
       window.removeEventListener("resize", compute);
@@ -230,8 +214,7 @@ const AdminManager = () => {
         }}
     >
 
-      
-      {/* Page Header - measured via headerRef */}
+
       <div ref={headerRef} className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 shrink-0">
         <h1 className="text-[#E3D5C3] boldonse-bold text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl wrap-break-word max-w-full mb-3 sm:mb-4 md:mb-8 px-2 sm:px-0">
           DASHBOARD
@@ -263,13 +246,7 @@ const AdminManager = () => {
         </div>
       </div>
 
-      {/* FIXED HEIGHT WRAPPER FOR SIDEBAR + MAIN CONTENT */}
-      <div
-        className="text-[#E3D5C3] flex-1 min-h-screen p-1 lg:-mt-6"
-        style={{
-          height: contentHeight ? `${contentHeight}px` : undefined,
-        }}
-      >
+      
       
         <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 h-full">
           {/* MOBILE HORIZONTAL TABS - Improved for small screens */}
@@ -286,7 +263,7 @@ const AdminManager = () => {
                   }`}
                 >
                   <section.icon className="w-4 h-4" />
-                  <span className="text-xs whitespace-nowrap">{section.label}</span>
+                  <span className="text-lg whitespace-nowrap">{section.label}</span>
                 </button>
               ))}
             </div>
@@ -296,21 +273,21 @@ const AdminManager = () => {
           <div className="flex flex-col lg:flex-row gap-4 sm:gap-5 md:gap-6 lg:gap-8 h-full ">
             
             {/* LEFT SIDEBAR - Desktop only - NO CHANGES */}
-            <div className="hidden lg:block lg:w-[200px] xl:w-[220px] shrink-0 ">
-              <div className="bg-[#FFE9D5] relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 mx-auto text-[#452215] cursor-pointer backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 h-full overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="hidden lg:block lg:w-[200px] xl:w-[220px] shrink-0 sticky top-0 self-start ">
+              <div className="bg-[#FFE9D5] relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 mx-auto text-[#452215] cursor-pointer backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4  flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Admin Profile Section */}
-                <div className="mb-6 flex flex-col items-center">
+                <div className="flex flex-col items-center">
                   <SidebarProfile userData={userData} setUserData={setUserData} Icons={Icons} width={160} height={160}/>
                 </div>
 
                 {/* Navigation Items - Enhanced for wider sidebar */}
-                <h3 className="text-lg font-bold mb-3 text-[#5b3d25] text-center lg:text-left">Management</h3>
+                <h3 className="text-2xl font-bold mb-3 text-[#5b3d25] text-center lg:text-left">Management</h3>
                 <div className="space-y-1.5 flex-1 nunito-exbold">
                   {sections.map(section => (
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                      className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all text-[18px] duration-200 ${
                         activeSection === section.id
                           ? "bg-[#5b3d25] text-white"
                           : "hover:bg-[#5b3d25]/10 text-[#5b3d25]"
@@ -325,7 +302,7 @@ const AdminManager = () => {
 
                 {/* Sidebar Footer */}
                 <div className="pt-4 mt-4 border-t border-[#5b3d25]/10 text-xs text-[#5b3d25]/50">
-                  <p className="text-center">Dashboard v1.0</p>
+                  <Button labell={"Logout"}/>
                 </div>
               </div>
             </div>
@@ -356,22 +333,13 @@ const AdminManager = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Content Footer - Better spacing for mobile */}
-                <div className="p-2 sm:p-3 md:p-4 border-t border-[#5b3d25]/10 shrink-0">
-                  <div className="flex flex-col xs:flex-row items-center justify-between gap-2 text-xs text-[#5b3d25]/60">
-                    <span className="text-center xs:text-left">Last updated: Today</span>
-                    <span className="text-center xs:text-right">© 2025 Dashboard</span>
-                  </div>
-                </div>
-
               </div>
             </div>
 
           </div>
         </div>
       </div>
-    </div>
+    
   );
 };
 
