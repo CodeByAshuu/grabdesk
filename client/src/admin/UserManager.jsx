@@ -39,26 +39,24 @@ const UserManagement = ({ users, setUsers }) => {
 
       {/* HEADER */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        <h2 className="text-xl sm:text-2xl font-semibold nunito-exbold">
-          User Management
-        </h2>
+        
 
         <div className="flex flex-col xs:flex-row gap-2 w-full xs:w-auto">
           <select
-            className="px-3 sm:px-4 py-1.5 sm:py-2 border border-[#5b3d25] rounded-lg bg-transparent text-sm sm:text-base"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 border border-[#5b3d25] rounded-lg text-sm sm:text-base bg-[#E3D5C3] text-[#442314]"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
           >
-            <option>All Roles</option>
-            <option>Admin</option>
-            <option>Moderator</option>
-            <option>Customer</option>
+            <option className="gowun-dodum-regular text-[#442314]">All Roles</option>
+            <option className="gowun-dodum-regular text-[#442314]">Admin</option>
+            <option className="gowun-dodum-regular text-[#442314]">Moderator</option>
+            <option className="gowun-dodum-regular text-[#442314]">Customer</option>
           </select>
 
           <input
             type="text"
             placeholder="Search Users..."
-            className="px-3 sm:px-4 py-1.5 sm:py-2 border border-[#5b3d25] rounded-lg text-sm sm:text-base"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 border text-[#452215] rounded-lg text-sm sm:text-base  border-[#452215] shadow-[4px_4px_0_#8F5E41] bg-[#FFE9D5] flex items-center"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
@@ -67,7 +65,7 @@ const UserManagement = ({ users, setUsers }) => {
       {/* USER TABLE */}
       <div className="overflow-x-auto -mx-3 sm:-mx-4 md:mx-0">
         <div className="min-w-[640px] sm:min-w-0">
-          <table className="w-full">
+          <table className="w-full bg-[#E3D5C3] text-[#442314] rounded-lg">
             <thead>
               <tr className="border-b border-[#5b3d25]">
                 <th className="text-left py-2 px-4 text-xs sm:text-sm">Name</th>
@@ -123,21 +121,21 @@ const UserManagement = ({ users, setUsers }) => {
 
                       <button
                         onClick={() => toggleUserStatus(user.id)}
-                        className="px-3 py-1 border border-[#5b3d25] text-[#5b3d25] rounded text-xs sm:text-sm hover:bg-[#5b3d25]/10"
+                        className="px-3 py-1 border  text-[#5b3d25] rounded text-xs sm:text-sm relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1"
                       >
                         {user.status === "Active" ? "Block" : "Unblock"}
                       </button>
 
                       <button
                         onClick={() => setResetUser(user)}
-                        className="px-3 py-1 bg-[#5b3d25] text-white rounded text-xs sm:text-sm hover:bg-[#4a3120]"
+                        className="px-3 py-1 bg-[#5b3d25] text-[#E3D5C3] rounded text-xs sm:text-sm  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] duration-300  hover:-translate-y-1"
                       >
                         Reset Password
                       </button>
 
                       <button
                         onClick={() => setSelectedUser(user)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded text-xs sm:text-sm hover:bg-blue-700"
+                        className="px-3 py-1  rounded text-xs sm:text-sm bg-[#F0A322]  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1"
                       >
                         View
                       </button>
@@ -154,8 +152,8 @@ const UserManagement = ({ users, setUsers }) => {
       {/* RESET PASSWORD MODAL */}
       {resetUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-[#E3D5C3] p-5 rounded-xl w-[90%] max-w-sm">
-            <h3 className="text-lg font-semibold mb-3 text-[#5b3d25]">
+          <div className="bg-[#E3D5C3] p-5 rounded-xl w-[90%] max-w-sm text-[#442314]">
+            <h3 className="text-lg font-semibold mb-3">
               Reset Password
             </h3>
 
@@ -166,14 +164,14 @@ const UserManagement = ({ users, setUsers }) => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setResetUser(null)}
-                className="px-4 py-2 border rounded-lg"
+                className="px-4 py-2 rounded-lg active:translate-y-1  w-full   border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer "
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleResetPassword}
-                className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg"
+                className="px-4 py-2 rounded-lg w-full bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer  "
               >
                 Send Link
               </button>
@@ -185,7 +183,7 @@ const UserManagement = ({ users, setUsers }) => {
       {/* VIEW USER – CENTER MODAL (REPLACED SIDEBAR) */}
       {selectedUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-xl">
+          <div className="bg-[#E3D5C3] w-[90%] max-w-md p-6 rounded-xl shadow-xl text-[#442314]">
 
             <h3 className="text-xl font-semibold text-[#5b3d25] mb-4 text-center">
               User Details
@@ -201,7 +199,7 @@ const UserManagement = ({ users, setUsers }) => {
 
             <button
               onClick={() => setSelectedUser(null)}
-              className="mt-6 px-4 py-2 bg-[#5b3d25] text-white rounded-lg w-full hover:bg-[#4a3120]"
+              className="mt-6 px-4 py-2 active:translate-y-1 rounded-lg w-full bg-[#F0A322]  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer "
             >
               Close
             </button>
