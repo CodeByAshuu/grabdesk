@@ -91,7 +91,7 @@ const Profile = () => {
   // Smooth tab switching
   const handleTabSwitch = (tabId) => {
     setActiveTab(tabId);
-  
+
     if (tabContentRef.current) {
       tabContentRef.current.scrollTop = 0;
     }
@@ -271,16 +271,15 @@ const Profile = () => {
                       <td className="py-3 px-4">{order.date}</td>
                       <td className="py-3 px-4">{order.total}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-3 py-1 rounded-full text-sm ${
-                          order.status === 'Delivered' 
-                            ? 'bg-green-100 text-green-800' 
+                        <span className={`px-3 py-1 rounded-full text-sm ${order.status === 'Delivered'
+                            ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
-                        }`}>
+                          }`}>
                           {order.status}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <Link 
+                        <Link
                           to={`/orders/${order.id}`}
                           className="text-[#5b3d25] hover:underline"
                         >
@@ -293,8 +292,8 @@ const Profile = () => {
               </table>
             </div>
             <div className="text-center">
-              <Link 
-                to="/orders" 
+              <Link
+                to="/orders"
                 className="inline-block px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors"
               >
                 View All Orders
@@ -306,11 +305,11 @@ const Profile = () => {
       case "messages":
         // Modified to render ALL messages but restrict height via CSS
         const hasMoreMessages = messages.length > 4;
-        
+
         return (
           <div className="space-y-6">
             <h3 className="text-xl font-semibold">Messages</h3>
-            <div 
+            <div
               ref={messagesContainerRef}
               className="space-y-4"
               style={{
@@ -324,11 +323,10 @@ const Profile = () => {
             >
               <div className="space-y-4 pr-2">
                 {messages.map(message => (
-                  <div 
-                    key={message.id} 
-                    className={`p-4 border rounded-lg cursor-pointer hover:bg-[#5b3d25]/5 transition-colors ${
-                      !message.read ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'
-                    }`}
+                  <div
+                    key={message.id}
+                    className={`p-4 border rounded-lg cursor-pointer hover:bg-[#5b3d25]/5 transition-colors ${!message.read ? 'border-[#5b3d25] bg-[#5b3d25]/5' : 'border-[#5b3d25]/30'
+                      }`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -344,7 +342,7 @@ const Profile = () => {
                 ))}
                 {messages.length > 4 && (
                   <div className="text-center py-2 text-sm text-[#5b3d25]/70 opacity-50">
-                     Scroll for more ↓
+                    Scroll for more ↓
                   </div>
                 )}
               </div>
@@ -364,7 +362,7 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <section 
+      <section
         className="min-h-screen w-full flex items-center justify-center text-[#5b3d25] overflow-hidden"
         style={{
           backgroundColor: "#f3eadc",
@@ -381,7 +379,7 @@ const Profile = () => {
   }
 
   return (
-    <section 
+    <section
       // Changed from min-h-screen to h-screen and added overflow-hidden to remove page scroll
       className="h-screen w-full text-[#5b3d25] overflow-hidden overflow-x-hidden flex flex-col"
       style={{
@@ -391,7 +389,7 @@ const Profile = () => {
       }}
     >
       <Navbar />
-      
+
       <style jsx>{`
         div::-webkit-scrollbar {
           display: none;
@@ -400,7 +398,7 @@ const Profile = () => {
           display: none;
         }
       `}</style>
-      
+
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 h-full flex flex-col">
         {/* Header */}
@@ -410,7 +408,7 @@ const Profile = () => {
           </h1>
           {/* Horizontal Divider - Only visible on medium screens and up */}
           <div className="hidden md:block w-full my-4 mt-8">
-            <div 
+            <div
               className="w-full border-t-2 border-[#5B3D25]"
               style={{
                 borderTopStyle: "dashed",
@@ -430,9 +428,9 @@ const Profile = () => {
           <div className="lg:w-1/3 flex flex-col items-center overflow-y-auto lg:overflow-visible lg:shrink-0">
             <div className="relative mb-6">
               <div className="w-40 h-40 sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25]">
-                <img 
-                  src={userData.avatar} 
-                  alt="Profile" 
+                <img
+                  src={userData.avatar}
+                  alt="Profile"
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -444,7 +442,7 @@ const Profile = () => {
                 <Icons.Edit2 />
               </button>
             </div>
-            
+
             <div className="text-center mb-8">
               <h2 className="text-2xl sm:text-3xl font-bold mb-2">{userData.name}</h2>
               <p className="text-[#5b3d25]/70">{userData.email}</p>
@@ -458,7 +456,7 @@ const Profile = () => {
 
           {/* Vertical Divider - Hidden on mobile */}
           <div className="hidden lg:block relative shrink-0 -mt-6">
-            <div 
+            <div
               className="h-full border-l-2 border-[#5B3D25] absolute left-0 top-0 bottom-0"
               style={{
                 borderLeftStyle: "dashed",
@@ -481,11 +479,10 @@ const Profile = () => {
                 <button
                   key={tab.id}
                   onClick={() => handleTabSwitch(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 sm:py-3 rounded-lg transition-all duration-200 ${
-                    activeTab === tab.id
+                  className={`flex items-center gap-2 px-4 py-2 sm:py-3 rounded-lg transition-all duration-200 ${activeTab === tab.id
                       ? "bg-[#5b3d25] text-white"
                       : "hover:bg-[#5b3d25]/10"
-                  }`}
+                    }`}
                 >
                   <tab.icon />
                   <span className="text-sm sm:text-base">{tab.label}</span>
@@ -494,7 +491,7 @@ const Profile = () => {
             </div>
 
             {/* Tab Content Container - Added Invisible Internal Scroll Logic */}
-            <div 
+            <div
               ref={tabContentRef}
               className="grow min-h-0 overflow-y-auto"
               style={{

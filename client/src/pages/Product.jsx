@@ -358,6 +358,7 @@ function Product() {
                     rating={product.rating}
                     namee={product.name}
                     pricee={product.price}
+                    priceNum={product.priceNumber}
                   />
                 ))}
               </div>

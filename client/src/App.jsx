@@ -11,26 +11,34 @@ import Studio from './pages/Studio';
 import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
+import WishlistPage from './components/WishlistPage';
+import { WishlistProvider } from './context/WishlistContext';
+import { ToastProvider } from './context/ToastContext';
 
 
 function App() {
 
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Landing />} />
-          <Route path='/auth' element={<Login />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/product' element={<Product />} />
-          <Route path='/product/:id' element={<ProductDetail />} />
-          <Route path='/checkout' element={<Checkout />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/studio' element={<Studio />} />
-        </Routes>
-      </BrowserRouter>
+      <WishlistProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<Landing />} />
+              <Route path='/auth' element={<Login />} />
+              <Route path='/home' element={<Home />} />
+              <Route path='/product' element={<Product />} />
+              <Route path='/product/:id' element={<ProductDetail />} />
+              <Route path='/checkout' element={<Checkout />} />
+              <Route path='/cart' element={<Cart />} />
+              <Route path='/profile' element={<Profile />} />
+              <Route path='/contact' element={<Contact />} />
+              <Route path='/studio' element={<Studio />} />
+              <Route path='/wishlist' element={<WishlistPage />} />
+            </Routes>
+          </BrowserRouter>
+        </ToastProvider>
+      </WishlistProvider>
 
 
     </>
