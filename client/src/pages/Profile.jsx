@@ -29,6 +29,7 @@ const Profile = () => {
 
   const [activeTab, setActiveTab] = useState("account");
   const [isEditing, setIsEditing] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,6 +46,13 @@ const Profile = () => {
     country: "",
     isPrimary: false
   });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
 
   // Refs for smooth transitions
   const messagesContainerRef = useRef(null);
@@ -198,7 +206,6 @@ const Profile = () => {
 
   const handleSave = async () => {
     // TODO: Implement User Profile Update API if needed
-    // For now, optimistic update or just log
     setUserData(prev => ({
       ...prev,
       ...editForm
@@ -327,6 +334,64 @@ const Profile = () => {
     }));
   };
 
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    if (passwordError) setPasswordError("");
+    if (passwordSuccess) setPasswordSuccess("");
+  };
+
+  const handlePasswordReset = async () => {
+    // Validation
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmNewPassword) {
+      setPasswordError("Please fill in all password fields.");
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordError("New password must be at least 6 characters.");
+      return;
+    }
+
+    try {
+      const res = await api.put('/auth/reset-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
+
+      if (res.data.success) {
+        setPasswordSuccess("Password updated successfully.");
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmNewPassword: ""
+        });
+        setIsResettingPassword(false);
+        // Clear success message after 3 seconds
+        setTimeout(() => setPasswordSuccess(""), 3000);
+      }
+    } catch (error) {
+      console.error("Password reset error:", error);
+      setPasswordError(error.response?.data?.message || "Failed to reset password. Please try again.");
+    }
+  };
+
+  const handleCancelReset = () => {
+    setIsResettingPassword(false);
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: ""
+    });
+    if (passwordError) setPasswordError("");
+  };
+
   const handleTabSwitch = (tabId) => {
     setActiveTab(tabId);
     if (tabContentRef.current) {
@@ -403,6 +468,22 @@ const Profile = () => {
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
       </svg>
+    ),
+    Lock: () => (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+    ),
+    Eye: () => (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+    ),
+    EyeOff: () => (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+      </svg>
     )
   };
 
@@ -411,6 +492,11 @@ const Profile = () => {
       case "account":
         return (
           <div className="space-y-6 gowun-dodum-regular">
+            {passwordSuccess && !isResettingPassword && (
+              <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm border border-green-200">
+                {passwordSuccess}
+              </div>
+            )}
             {isEditing ? (
               <div className="space-y-4">
                 <div>
@@ -458,24 +544,75 @@ const Profile = () => {
                   </button>
                 </div>
               </div>
+            ) : isResettingPassword ? (
+              <div className="space-y-3">
+                <h3 className="text-xl font-semibold">Reset Password</h3>
+                <div className="space-y-3 max-w-md">
+                  {passwordError && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-200">
+                      {passwordError}
+                    </div>
+                  )}
+                  {passwordSuccess && (
+                    <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm border border-green-200">
+                      {passwordSuccess}
+                    </div>
+                  )}
+
+                  <div className="relative">
+                    <label className="block text-sm font-medium mb-1">Current Password</label>
+                    <ResetPasswordInput
+                      value={passwordForm.currentPassword}
+                      name="currentPassword"
+                      onChange={handlePasswordChange}
+                      placeholder="Enter current password"
+                    />
+                  </div>
+                  <div className="relative">
+                    <label className="block text-sm font-medium mb-1">New Password</label>
+                    <ResetPasswordInput
+                      value={passwordForm.newPassword}
+                      name="newPassword"
+                      onChange={handlePasswordChange}
+                      placeholder="Enter new password"
+                    />
+                  </div>
+                  <div className="relative">
+                    <label className="block text-sm font-medium mb-1">Confirm New Password</label>
+                    <ResetPasswordInput
+                      value={passwordForm.confirmNewPassword}
+                      name="confirmNewPassword"
+                      onChange={handlePasswordChange}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button
+                      onClick={handlePasswordReset}
+                      className="px-6 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Icons.Lock /> Update Password
+                    </button>
+                    <button
+                      onClick={handleCancelReset}
+                      className="px-6 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Icons.X /> Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <h3 className="text-xl font-semibold ">Personal Information</h3>
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    <button
-                      onClick={handleLogout}
-                      className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
-                    >
-                      <Icons.LogOut /> Logout
-                    </button>
-                    <button
-                      onClick={handleEdit}
-                      className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
-                    >
-                      <Icons.Edit2 /> Edit Profile
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleEdit}
+                    className="px-4 py-2 bg-[#5b3d25] text-white rounded-lg hover:bg-[#4a3120] transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
+                  >
+                    <Icons.Edit2 /> Edit Profile
+                  </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -494,6 +631,21 @@ const Profile = () => {
                     <p className="text-sm text-[#5b3d25]/70">Member Since</p>
                     <p className="text-lg">{userData.joinDate}</p>
                   </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4">
+                  <button
+                    onClick={() => setIsResettingPassword(true)}
+                    className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
+                  >
+                    <Icons.Lock /> Reset Password
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 border border-[#5b3d25] text-[#5b3d25] rounded-lg hover:bg-[#5b3d25]/10 transition-colors flex items-center justify-center gap-2 flex-1 sm:flex-none"
+                  >
+                    <Icons.LogOut /> Logout
+                  </button>
                 </div>
               </div>
             )}
@@ -947,12 +1099,16 @@ const Profile = () => {
           <div className="lg:w-1/3 flex flex-col items-center overflow-y-auto lg:overflow-visible lg:shrink-0">
             <div className="relative mb-4 sm:mb-6">
               <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25] flex items-center justify-center bg-white text-[#5b3d25]">
-                {userData.avatar ? (
+                {/* Check if we should show avatar or initials */}
+                {(userData.avatar && userData.avatar !== "https://via.placeholder.com/350") ? (
                   <img
                     src={userData.avatar}
                     alt="Profile"
                     className="w-full h-full object-cover"
-                    onError={(e) => { e.target.style.display = 'none'; }}
+                    onError={(e) => {
+                      // Replace with initials agar image nhi hai
+                      e.target.outerHTML = `<span class="text-4xl sm:text-5xl lg:text-8xl font-bold text-[#5b3d25]">${getInitials(userData.name)}</span>`;
+                    }}
                   />
                 ) : (
                   <span className="text-4xl sm:text-5xl lg:text-8xl font-bold text-[#5b3d25]">
@@ -968,14 +1124,6 @@ const Profile = () => {
             <div className="text-center mb-6">
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 wrap-break-word px-2">{userData.name}</h2>
               <p className="text-[#5b3d25]/70 wrap-break-word px-2">{userData.email}</p>
-              <div className="mt-3 sm:mt-4 space-y-4">
-                {/* <span className="inline-block px-3 sm:px-4 py-1 bg-[#5b3d25]/10 rounded-full text-xs sm:text-sm">
-                  {userData.joinDate}
-                </span> */}
-                {/* double joindate hogya , unnecessary shit */}
-
-                {/* Logout Button REMOVED from Sidepanel kyuki ganda lg rha tha */}
-              </div>
             </div>
           </div>
 
@@ -1036,6 +1184,39 @@ const Profile = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+// Helper component for Reset Password Input to manage its own visibility state
+const ResetPasswordInput = ({ value, name, onChange, placeholder }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <input
+        type={show ? "text" : "password"}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full px-4 py-2 border border-[#5b3d25] rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-[#5b3d25] transition-all duration-200 pr-10"
+      />
+      <button
+        type="button"
+        onClick={() => setShow(!show)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5b3d25]/60 hover:text-[#5b3d25] p-1"
+      >
+        {show ? (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+          </svg>
+        ) : (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        )}
+      </button>
+    </div>
   );
 };
 
