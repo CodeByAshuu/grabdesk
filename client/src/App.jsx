@@ -11,6 +11,9 @@ import Studio from './pages/Studio';
 import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
+import WishlistPage from './components/WishlistPage';
+import { WishlistProvider } from './context/WishlistContext';
+import { ToastProvider } from './context/ToastContext';
 import Signup from './pages/Signup';
 import ScrollToTop from './components/ScrollToTop';
 import AdminDashbord from './admin/AdminDashboard';
@@ -20,23 +23,27 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path='/' element={<Landing />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/product' element={<Product />} />
-          <Route path='/product/:id' element={<ProductDetail />} />
-          <Route path='/checkout' element={<Checkout />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/studio' element={<Studio />} />
-          <Route path='/admindashbord' element={<AdminDashbord/>}/>
-        </Routes>
-      </BrowserRouter>
+      <WishlistProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<Landing />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/signup' element={<Signup />} />
+              <Route path='/home' element={<Home />} />
+              <Route path='/product' element={<Product />} />
+              <Route path='/product/:id' element={<ProductDetail />} />
+              <Route path='/checkout' element={<Checkout />} />
+              <Route path='/cart' element={<Cart />} />
+              <Route path='/profile' element={<Profile />} />
+              <Route path='/contact' element={<Contact />} />
+              <Route path='/studio' element={<Studio />} />
+              <Route path='/admindashbord' element={<AdminDashbord/>}/>
+              <Route path='/wishlist' element={<WishlistPage />} />
+            </Routes>
+          </BrowserRouter>
+        </ToastProvider>
+      </WishlistProvider>
 
 
     </>
