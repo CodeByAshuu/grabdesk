@@ -135,7 +135,7 @@ const ProductDetail = () => {
                                 <button
                                     key={idx}
                                     onClick={() => setSelectedImage(idx)}
-                                    className={`relative flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-[#8F5E41]' : 'border-transparent'
+                                    className={`relative shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx ? 'border-[#8F5E41]' : 'border-transparent'
                                         }`}
                                 >
                                     <img src={img} alt={`View ${idx}`} className="w-full h-full object-cover" />
@@ -309,22 +309,40 @@ const ProductDetail = () => {
 
                 {/* Related Products */}
                 <div className="mt-16 mb-8">
-                    <h2 className="text-3xl font-bold text-[#452215] mb-8">You May Also Like</h2>
-                    <div className="flex gap-8 px-6 py-6 scrollbar-hide snap-x">
-                        {relatedProducts.map(prod => (
-                            <div key={prod.id} className="min-w-[280px] snap-center">
-                                <ProductCard
-                                    namee={prod.name}
-                                    pricee={prod.price}
-                                    images={prod.images}
-                                    rating={prod.rating}
-                                    tagg={prod.tag}
-                                />
-                            </div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#452215] mb-6 sm:mb-8">
+                        You May Also Like
+                    </h2>
+
+                    <div
+                        className="
+                        flex lg:grid
+                        grid-cols-4
+                        gap-4 sm:gap-6 lg:gap-8
+                        px-4 sm:px-6 py-4
+                        overflow-x-auto lg:overflow-visible
+                        snap-x lg:snap-none
+                        scrollbar-hide
+                        "
+                    >
+                        {relatedProducts.map((prod) => (
+                        <div
+                            key={prod.id}
+                            className="
+                            min-w-[220px] sm:min-w-[260px] lg:min-w-0
+                            snap-center
+                            "
+                        >
+                            <ProductCard
+                            namee={prod.name}
+                            pricee={prod.price}
+                            images={prod.images}
+                            rating={prod.rating}
+                            tagg={prod.tag}
+                            />
+                        </div>
                         ))}
                     </div>
                 </div>
-
             </div>
         </section>
     );

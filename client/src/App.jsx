@@ -14,6 +14,9 @@ import Login from './pages/Login';
 import WishlistPage from './components/WishlistPage';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './context/ToastContext';
+import Signup from './pages/Signup';
+import ScrollToTop from './components/ScrollToTop';
+import AdminDashbord from './admin/AdminDashboard';
 
 
 function App() {
@@ -25,7 +28,8 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path='/' element={<Landing />} />
-              <Route path='/auth' element={<Login />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/signup' element={<Signup />} />
               <Route path='/home' element={<Home />} />
               <Route path='/product' element={<Product />} />
               <Route path='/product/:id' element={<ProductDetail />} />
@@ -34,6 +38,7 @@ function App() {
               <Route path='/profile' element={<Profile />} />
               <Route path='/contact' element={<Contact />} />
               <Route path='/studio' element={<Studio />} />
+              <Route path='/admindashbord' element={<AdminDashbord/>}/>
               <Route path='/wishlist' element={<WishlistPage />} />
             </Routes>
           </BrowserRouter>

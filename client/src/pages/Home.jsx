@@ -44,7 +44,7 @@ const categories = [
 ];
 
 const recommendations = [
-  { id: 1, name: "Vintage Lamp", price: "₹ 4,500", rating: 4.8, image: Nike1 },
+  { id: 1, name: "Vintage Lamp", price: "₹ 4,500", rating: 4.8, image: Nike1, Nike2, Nike3 },
   { id: 2, name: "Ergo Chair", price: "₹ 12,000", rating: 4.9, image: Nike2 },
   { id: 3, name: "Wooden Desk", price: "₹ 25,000", rating: 4.7, image: Nike3 },
   {
@@ -64,7 +64,7 @@ const topDeals = [
     price: "₹ 8,999",
     rating: 4.8,
     tag: "HOT",
-    image: Nike3,
+    image: Nike1,
   },
   {
     id: 2,
@@ -190,7 +190,7 @@ function Home() {
                   alt={cat.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
                 <div className="absolute bottom-4 left-4">
                   <h3 className="text-[#f3eadc] text-xl md:text-2xl boldonse-bold tracking-wider drop-shadow-md">
                     {cat.name}
@@ -229,6 +229,7 @@ function Home() {
                   className="w-full flex justify-center"
                 >
                   <ProductCard
+                    id={item.id}
                     images={[item.image, item.image, item.image]}
                     tagg="FOR YOU"
                     rating={item.rating}
@@ -250,6 +251,7 @@ function Home() {
             {topDeals.map((item) => (
               <ProductCard
                 key={item.id}
+                id={item.id}
                 images={[item.image, item.image, item.image]}
                 tagg={item.tag}
                 rating={item.rating}
