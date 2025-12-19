@@ -11,27 +11,39 @@ function Product() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pages, setPages] = useState(1);
   const location = useLocation();
   const initialCategory = location.state?.category;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get('/products');
-        // Map backend data to frontend structure if needed, though we tried to match it
-        const formattedProducts = res.data.map(p => ({
-          id: p._id,
-          name: p.name,
-          price: p.originalPriceString || `₹ ${p.price}`,
-          priceNumber: p.price,
-          rating: p.rating,
-          tag: p.tag,
-          images: p.images,
-          category: p.category,
-          brand: p.brand,
-          discount: p.discount
-        }));
+        const res = await api.get(`/products?pageNumber=${pageNumber}`);
+        // Handle paginated response structure
+        const { products, page, pages } = res.data;
+
+        console.log("Raw API Response:", products); // Debug log
+
+        const formattedProducts = products.map(p => {
+          // Normalize data with robust fallbacks
+          return {
+            id: p._id || p.id,
+            name: p.productName || p.name || "No Name",
+            price: p.formattedPrice || p.originalPriceString || (p.price ? `₹ ${p.price}` : "₹ 0"),
+            priceNumber: p.discountedPrice || p.finalPrice || p.price || 0,
+            rating: p.stars || p.ratingAverage || p.rating || 0,
+            tag: (Array.isArray(p.tags) && p.tags.length > 0) ? (p.tags[0].value || p.tags[0]) : (p.tag || "New"),
+            images: (p.images && p.images.length > 0) ? p.images : [],
+            category: p.category || "General",
+            brand: p.brand || "Generic",
+            discount: p.discount || 0
+          };
+        });
+
+        console.log("Normalized Products:", formattedProducts); // Debug log
         setProducts(formattedProducts);
+        setPages(pages);
       } catch (error) {
         console.error("Failed to fetch products", error);
       } finally {
@@ -40,7 +52,7 @@ function Product() {
     };
 
     fetchProducts();
-  }, []);
+  }, [pageNumber]);
 
   const initialFilters = useMemo(() => ({
     categories: initialCategory ? [initialCategory] : []
@@ -253,7 +265,8 @@ function Product() {
                 </p>
               </div>
             ) : (
-              <div className="
+              <>
+                <div className="
                 grid 
                 grid-cols-1 
                 sm:grid-cols-2 
@@ -265,19 +278,38 @@ function Product() {
                 xl:gap-8 
                 justify-items-center
               ">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    images={product.images}
-                    tagg={product.tag}
-                    rating={product.rating}
-                    namee={product.name}
-                    pricee={product.price}
-                    priceNum={product.priceNumber}
-                  />
-                ))}
-              </div>
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      images={product.images}
+                      tagg={product.tag}
+                      rating={product.rating}
+                      namee={product.name}
+                      pricee={product.price}
+                      priceNum={product.priceNumber}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {pages > 1 && (
+                  <div className="flex justify-center mt-12 gap-2">
+                    {[...Array(pages).keys()].map((x) => (
+                      <button
+                        key={x + 1}
+                        onClick={() => setPageNumber(x + 1)}
+                        className={`px-4 py-2 rounded-md font-bold transition-colors ${pageNumber === x + 1
+                          ? "bg-[#f0a224] text-[#442314]"
+                          : "bg-[#FFE9D5] text-[#442314] hover:bg-[#f0a224] hover:text-[#442314]"
+                          }`}
+                      >
+                        {x + 1}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -1,57 +1,114 @@
 const mongoose = require('mongoose');
 
+const tagSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['category', 'attribute', 'usage'],
+        required: true
+    },
+    value: {
+        type: String,
+        required: true
+    },
+    weight: {
+        type: Number,
+        default: 1
+    }
+}, { _id: false });
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     description: {
         type: String,
-        default: ''
+        required: true
     },
-    price: {
+    // Pricing Structure
+    basePrice: {
         type: Number,
         required: true
     },
-    originalPriceString: {
-        type: String,
-        default: ''
-    },
-    rating: {
+    discountPercent: {
         type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    finalPrice: {
+        type: Number,
+        required: true
+    },
+    // Inventory & Identification
+    stock: {
+        type: Number,
+        required: true,
         default: 0
     },
-    tag: {
+    sku: {
+        type: String,
+        unique: true,
+        sparse: true // Allows null/undefined to not conflict if not set
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    // Categorization
+    category: {
+        type: String,
+        required: true,
+        index: true
+    },
+    // Tags for Personalization
+    tags: [tagSchema],
+    // Product Attributes
+    brand: {
         type: String,
         default: ''
     },
+    model: {
+        type: String,
+        default: ''
+    },
+    color: {
+        type: String,
+        default: ''
+    },
+    material: {
+        type: String,
+        default: ''
+    },
+    sizeAvailable: {
+        type: [String],
+        default: []
+    },
+    // Media
     images: {
         type: [String],
         default: []
     },
-    category: {
-        type: String,
-        required: true
-    },
-    brand: {
-        type: String,
-        required: true
-    },
-    discount: {
+    // Ratings
+    ratingAverage: {
         type: Number,
         default: 0
     },
-    countInStock: {
-        type: Number,
-        required: true,
-        default: 10
-    },
-    numReviews: {
+    ratingCount: {
         type: Number,
         default: 0
     }
 }, {
     timestamps: true
+});
+
+// Pre-save hook to calculate finalPrice if not explicitly set (though seed should set it)
+productSchema.pre('save', function (next) {
+    if (this.isModified('basePrice') || this.isModified('discountPercent')) {
+        this.finalPrice = this.basePrice - (this.basePrice * (this.discountPercent / 100));
+    }
+    next();
 });
 
 const Product = mongoose.model('Product', productSchema);
