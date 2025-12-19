@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import api from "../api/axios";
 import CartCard from "../components/CartCard";
 import UPI from "../assets/upi.png";
 import Mastercard from "../assets/Mastercard.png";
@@ -56,24 +57,51 @@ function Cart() {
         }
     ];
 
-    const [cartProducts, setCartProducts] = useState(() => {
-        const savedCart = localStorage.getItem('cart');
-        return savedCart ? JSON.parse(savedCart) : initialCartProducts;
-    });
-    const [loading, setLoading] = useState(false);
+    const [cartProducts, setCartProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch cart data from API
+    useEffect(() => {
+        const fetchCart = async () => {
+            try {
+                const response = await api.get('/users/cart');
+                setCartProducts(response.data);
+            } catch (error) {
+                console.error("Error fetching cart:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCart();
+    }, []);
 
     // Remove item from cart
-    const RemoveCart = (itemId) => {
-        setCartProducts(prev => prev.filter(item => item.id !== itemId));
+    const RemoveCart = async (itemId) => {
+        try {
+            await api.delete(`/users/cart/${itemId}`);
+            // Optimistic update
+            setCartProducts(prev => prev.filter(item => item.id !== itemId));
+        } catch (error) {
+            console.error("Error removing item:", error);
+            alert("Failed to remove item");
+        }
     };
 
     // Update quantity
-    const UpdateQuantity = (itemId, newQuantity) => {
-        setCartProducts(prev =>
-            prev.map(item =>
-                item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )
-        );
+    const UpdateQuantity = async (itemId, newQuantity) => {
+        try {
+            await api.put(`/users/cart/${itemId}`, { quantity: newQuantity });
+            // Optimistic update
+            setCartProducts(prev =>
+                prev.map(item =>
+                    item.id === itemId ? { ...item, quantity: newQuantity } : item
+                )
+            );
+        } catch (error) {
+            console.error("Error updating quantity:", error);
+            alert("Failed to update quantity");
+        }
     };
 
     // Calculate subtotal
@@ -100,32 +128,20 @@ function Cart() {
     };
 
     // Clear entire cart
-    const clearCart = () => {
-        setCartProducts([]);
+    const clearCart = async () => {
+        try {
+            await api.delete('/users/cart');
+            setCartProducts([]);
+        } catch (error) {
+            console.error("Error clearing cart:", error);
+            alert("Failed to clear cart");
+        }
     };
 
     // Format currency
     const formatCurrency = (amount) => {
         return `₹${amount.toFixed(2)}`;
     };
-
-    // Load cart data (in production, fetch from API)
-    // useEffect(() => {
-    //     // Example: Fetch cart data from localStorage or API
-    //     const savedCart = localStorage.getItem('cart');
-    //     if (savedCart) {
-    //         try {
-    //             setCartProducts(JSON.parse(savedCart));
-    //         } catch (error) {
-    //             console.error('Error loading cart:', error);
-    //         }
-    //     }
-    // }, []);
-
-    // Save cart data (in production, sync with API)
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartProducts));
-    }, [cartProducts]);
 
     const paymentIcons = {
         UPI: UPI,
@@ -135,11 +151,11 @@ function Cart() {
     };
 
     const relatedProducts = [
-            { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
-            { id: 2, name: "Nike Jordan 1", price: "₹ 15,999.00", images: [Nike3], rating: 4.8, tag: "SALE" },
-            { id: 3, name: "Nike Blazer", price: "₹ 8,499.00", images: [Nike1], rating: 4.3, tag: "HOT" },
-            { id: 4, name: "Nike Zoom", price: "₹ 11,299.00", images: [Nike2], rating: 4.6, tag: "NEW" },
-        ];
+        { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
+        { id: 2, name: "Nike Jordan 1", price: "₹ 15,999.00", images: [Nike3], rating: 4.8, tag: "SALE" },
+        { id: 3, name: "Nike Blazer", price: "₹ 8,499.00", images: [Nike1], rating: 4.3, tag: "HOT" },
+        { id: 4, name: "Nike Zoom", price: "₹ 11,299.00", images: [Nike2], rating: 4.6, tag: "NEW" },
+    ];
 
     return (
         <>
@@ -386,21 +402,21 @@ function Cart() {
                             "
                         >
                             {relatedProducts.map((prod) => (
-                            <div
-                                key={prod.id}
-                                className="
+                                <div
+                                    key={prod.id}
+                                    className="
                                 min-w-[220px] sm:min-w-[260px] lg:min-w-0
                                 snap-center
                                 "
-                            >
-                                <ProductCard
-                                namee={prod.name}
-                                pricee={prod.price}
-                                images={prod.images}
-                                rating={prod.rating}
-                                tagg={prod.tag}
-                                />
-                            </div>
+                                >
+                                    <ProductCard
+                                        namee={prod.name}
+                                        pricee={prod.price}
+                                        images={prod.images}
+                                        rating={prod.rating}
+                                        tagg={prod.tag}
+                                    />
+                                </div>
                             ))}
                         </div>
                     </div>

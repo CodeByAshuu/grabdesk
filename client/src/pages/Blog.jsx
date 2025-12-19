@@ -2,15 +2,15 @@ import { Link } from "react-router-dom";
 import React from "react";
 import Navbar from "../components/Navbar";
 
-function Studio(){
+function Blog(){
     return (
         <>
         <Navbar/>
-        
+        blog haiii
         
         
 
         </>
     )
 }
-export default Studio;
+export default Blog;
