@@ -91,8 +91,13 @@ function ProductCard(props) {
         // Save back to localStorage
         localStorage.setItem('cart', JSON.stringify(cart));
 
-        // Redirect to Cart
-        navigate('/cart');
+        if (props.moveToCart) {
+            removeFromWishlist(props.id);
+            addToast("Moved to cart", "success");
+        } else {
+            // Redirect to Cart
+            navigate('/cart');
+        }
     };
 
     return (
@@ -132,7 +137,7 @@ function ProductCard(props) {
                 <div className="flex flex-col">
                     <p className="mb-2">{props.pricee}</p>
                     <div onClick={(e) => e.stopPropagation()}>
-                        <Button labell="Buy Now" onClick={handleBuyClick} />
+                        <Button labell={props.buttonText || "Add to Cart"} onClick={handleBuyClick} />
                     </div>
                 </div>
 

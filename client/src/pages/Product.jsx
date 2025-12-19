@@ -1,136 +1,52 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
-import Nike1 from '../assets/Nike1.png';
-import Nike2 from '../assets/Nike2.png';
-import Nike3 from '../assets/Nike3.png';
 import Searchbar from "../components/Searchbar";
 import FilterPanel from "../components/FilterPannel";
+import api from "../api/axios";
 
 function Product() {
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const initialCategory = location.state?.category;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products');
+        // Map backend data to frontend structure if needed, though we tried to match it
+        const formattedProducts = res.data.map(p => ({
+          id: p._id,
+          name: p.name,
+          price: p.originalPriceString || `₹ ${p.price}`,
+          priceNumber: p.price,
+          rating: p.rating,
+          tag: p.tag,
+          images: p.images,
+          category: p.category,
+          brand: p.brand,
+          discount: p.discount
+        }));
+        setProducts(formattedProducts);
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const initialFilters = useMemo(() => ({
     categories: initialCategory ? [initialCategory] : []
   }), [initialCategory]);
 
   const [activeFilters, setActiveFilters] = useState(initialFilters);
-
-  // Complete product data with all necessary properties
-  const products = [
-    {
-      id: 1,
-      name: "Nike SE",
-      price: "₹ 10,257.00",
-      priceNumber: 10257,
-      rating: 4.56,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 10
-    },
-    {
-      id: 2,
-      name: "Nike Dunk Low Retro SE",
-      price: "₹ 10,257.00",
-      priceNumber: 10257,
-      rating: 4.56,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 20
-    },
-    {
-      id: 3,
-      name: "Nike Dunk Low Retro",
-      price: "₹ 9,999.00",
-      priceNumber: 9999,
-      rating: 4.3,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 15
-    },
-    {
-      id: 4,
-      name: "Nike Air Max",
-      price: "₹ 12,499.00",
-      priceNumber: 12499,
-      rating: 4.56,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Sports & Fitness",
-      brand: "Nike",
-      discount: 30
-    },
-    {
-      id: 5,
-      name: "Nike Jordan 1",
-      price: "₹ 15,999.00",
-      priceNumber: 15999,
-      rating: 4.8,
-      tag: "SALE",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 50
-    },
-    {
-      id: 6,
-      name: "Nike Blazer",
-      price: "₹ 8,499.00",
-      priceNumber: 8499,
-      rating: 4.3,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 10
-    },
-    {
-      id: 7,
-      name: "Apple iPhone 15 Pro",
-      price: "₹ 134,900.00",
-      priceNumber: 134900,
-      rating: 4.9,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Electronics",
-      brand: "Apple",
-      discount: 5
-    },
-    {
-      id: 8,
-      name: "Samsung Galaxy S24",
-      price: "₹ 79,999.00",
-      priceNumber: 79999,
-      rating: 4.7,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Electronics",
-      brand: "Samsung",
-      discount: 10
-    },
-    {
-      id: 9,
-      name: "Adidas Ultraboost",
-      price: "₹ 14,999.00",
-      priceNumber: 14999,
-      rating: 4.6,
-      tag: "SALE",
-      images: [Nike1, Nike2, Nike3],
-      category: "Sports & Fitness",
-      brand: "Adidas",
-      discount: 20
-    }
-  ];
 
   // Handle filter changes from FilterPanel
   const handleFilterChange = (filters) => {

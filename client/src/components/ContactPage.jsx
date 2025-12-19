@@ -20,6 +20,8 @@ const LocationIcon = ({ className = "w-5 h-5" }) => (
   </svg>
 );
 
+import Navbar from "./Navbar";
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [errors, setErrors] = useState({});
@@ -71,19 +73,22 @@ export default function ContactPage() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#3c261f] text-[#f5e6d3] p-8 font-sans bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/paper-texture.jpg')" }}
+    <section
+      className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
+      style={{
+        backgroundColor: "#442314",
+        backgroundImage:
+          "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
+        backgroundSize: "14px 14px",
+      }}
     >
+      <Navbar />
       {/* HEADER */}
-      <header className="text-center mb-12 animate-fade-in">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight drop-shadow-lg">
+      <div className="my-8 sm:my-10 md:my-12 lg:my-14 mx-4 sm:mx-5">
+        <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
           CONTACT US
         </h1>
-        <p className="text-[#d4c5b9] mt-3 tracking-wide text-sm max-w-lg mx-auto">
-          We'd love to hear from you — questions, feedback or collaborations.
-        </p>
-      </header>
+      </div>
 
       <section className="max-w-5xl mx-auto space-y-16">
 
@@ -98,7 +103,7 @@ export default function ContactPage() {
               </div>
               <div className="flex items-center gap-3">
                 <MailIcon className="w-5 h-5 text-orange-300" />
-                <span>lpun@fadedandfound.com</span>
+                <span>lpu@grabdesk.com</span>
               </div>
               <div className="flex items-start gap-3">
                 <LocationIcon className="w-5 h-5 text-orange-300 mt-1" />
@@ -139,8 +144,8 @@ export default function ContactPage() {
             <div className="bg-[#2a1a15]/40 p-6 rounded-xl border-l-4 border-orange-500">
               <h3 className="text-xl md:text-2xl text-orange-400 font-bold">Job Applications</h3>
               <p className="text-sm text-[#d4c5b9]">
-               We're always looking for passionate people 
-               who share our love for timeless style. If you're
+                We're always looking for passionate people
+                who share our love for timeless style. If you're
                 interested in joining the Faded&Found team,
                 send your CV and a short cover letter to the
                 store you'd like to apply for. We'll be in touch if
@@ -220,6 +225,6 @@ export default function ContactPage() {
           </form>
         </div>
       </section>
-    </div>
+    </section>
   );
 }
