@@ -11,7 +11,7 @@ import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
-import WishlistPage from './components/WishlistPage';
+import WishlistPage from './pages/WishlistPage';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './context/ToastContext';
 import Signup from './pages/Signup';
@@ -23,10 +23,10 @@ function App() {
 
   return (
     <>
-      <WishlistProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <WishlistProvider>
           <BrowserRouter>
-          <ScrollToTop />
+            <ScrollToTop />
             <Routes>
               <Route path='/' element={<Landing />} />
               <Route path='/login' element={<Login />} />
@@ -39,12 +39,12 @@ function App() {
               <Route path='/profile' element={<Profile />} />
               <Route path='/contact' element={<Contact />} />
               <Route path='/blog' element={<Blog />} />
-              <Route path='/admindashbord' element={<AdminDashbord/>}/>
+              <Route path='/admindashbord' element={<AdminDashbord />} />
               <Route path='/wishlist' element={<WishlistPage />} />
             </Routes>
           </BrowserRouter>
-        </ToastProvider>
-      </WishlistProvider>
+        </WishlistProvider>
+      </ToastProvider>
 
 
     </>
