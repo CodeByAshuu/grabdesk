@@ -420,7 +420,7 @@ function Checkout() {
                             <div className="space-y-4 max-h-96 overflow-y-auto pr-2 mb-6 custom-scrollbar">
                                 {cartItems.map((item) => (
                                     <div key={`${item.id}-${item.color}`} className="flex gap-4 items-start">
-                                        <div className="w-16 h-16 flex-shrink-0 bg-gray-200 rounded overflow-hidden">
+                                        <div className="w-16 h-16 shrink-0 bg-gray-200 rounded overflow-hidden">
                                             <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-1">
