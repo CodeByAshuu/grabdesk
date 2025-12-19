@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import Checkout from './pages/Checkout';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
-import Studio from './pages/Studio';
+import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
@@ -26,6 +26,7 @@ function App() {
       <WishlistProvider>
         <ToastProvider>
           <BrowserRouter>
+          <ScrollToTop />
             <Routes>
               <Route path='/' element={<Landing />} />
               <Route path='/login' element={<Login />} />
@@ -37,7 +38,7 @@ function App() {
               <Route path='/cart' element={<Cart />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/contact' element={<Contact />} />
-              <Route path='/studio' element={<Studio />} />
+              <Route path='/blog' element={<Blog />} />
               <Route path='/admindashbord' element={<AdminDashbord/>}/>
               <Route path='/wishlist' element={<WishlistPage />} />
             </Routes>

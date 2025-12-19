@@ -160,8 +160,8 @@ function Navbar() {
           <div className="flex flex-col md:flex-row items-center gap-6 text-[#b8a180] tracking-widest sm:text-left">
             {[
               { name: "HOME", path: "/home" },
+              { name: "BLOG", path: "/blog" },
               { name: "PRODUCT", path: "/product" },
-              { name: "STUDIO", path: "/studio" },
               { name: "CONTACT", path: "/contact" },
             ].map((item) => (
               <Link

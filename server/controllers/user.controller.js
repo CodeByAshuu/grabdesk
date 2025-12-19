@@ -140,3 +140,170 @@ exports.markMessagesRead = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+
+// @desc    Get user cart
+// @route   GET /api/users/cart
+// @access  Private
+exports.getCart = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate('cart.productId');
+
+        // Transform to expected frontend format
+        const cartItems = user.cart.map(item => {
+            if (!item.productId) return null; // Handle if product was deleted
+            const product = item.productId;
+            return {
+                id: product._id,
+                title: product.name,
+                price: product.price,
+                image: product.images && product.images.length > 0 ? product.images[0] : '', // Assuming images array
+                color: "Standard", // Placeholder as model might not have this yet
+                quantity: item.quantity,
+                inStock: product.countInStock > 0,
+                maxQuantity: product.countInStock
+            };
+        }).filter(item => item !== null);
+
+        res.json(cartItems);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Add item to cart
+// @route   POST /api/users/cart
+// @access  Private
+exports.addToCart = async (req, res) => {
+    try {
+        const { productId, quantity } = req.body;
+        const user = await User.findById(req.user.id);
+
+        const cartItemIndex = user.cart.findIndex(item => item.productId.toString() === productId);
+
+        if (cartItemIndex > -1) {
+            // Item exists, update quantity
+            user.cart[cartItemIndex].quantity += quantity || 1;
+        } else {
+            // Add new item
+            user.cart.push({ productId, quantity: quantity || 1 });
+        }
+
+        await user.save();
+
+        // Return updated cart
+        const updatedUser = await User.findById(req.user.id).populate('cart.productId');
+        const cartItems = updatedUser.cart.map(item => {
+            if (!item.productId) return null;
+            const product = item.productId;
+            return {
+                id: product._id,
+                title: product.name,
+                price: product.price,
+                image: product.images && product.images.length > 0 ? product.images[0] : '',
+                color: "Standard",
+                quantity: item.quantity,
+                inStock: product.countInStock > 0,
+                maxQuantity: product.countInStock
+            };
+        }).filter(item => item !== null);
+
+        res.json(cartItems);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Update cart item quantity
+// @route   PUT /api/users/cart/:productId
+// @access  Private
+exports.updateCartItem = async (req, res) => {
+    try {
+        const { quantity } = req.body;
+        const productId = req.params.productId;
+        const user = await User.findById(req.user.id);
+
+        const cartItemIndex = user.cart.findIndex(item => item.productId.toString() === productId);
+
+        if (cartItemIndex > -1) {
+            user.cart[cartItemIndex].quantity = quantity;
+            await user.save();
+        } else {
+            return res.status(404).json({ success: false, message: 'Item not found in cart' });
+        }
+
+        // Return updated cart
+        const updatedUser = await User.findById(req.user.id).populate('cart.productId');
+        const cartItems = updatedUser.cart.map(item => {
+            if (!item.productId) return null;
+            const product = item.productId;
+            return {
+                id: product._id,
+                title: product.name,
+                price: product.price,
+                image: product.images && product.images.length > 0 ? product.images[0] : '',
+                color: "Standard",
+                quantity: item.quantity,
+                inStock: product.countInStock > 0,
+                maxQuantity: product.countInStock
+            };
+        }).filter(item => item !== null);
+
+        res.json(cartItems);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Remove item from cart
+// @route   DELETE /api/users/cart/:productId
+// @access  Private
+exports.removeFromCart = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const user = await User.findById(req.user.id);
+
+        user.cart = user.cart.filter(item => item.productId.toString() !== productId);
+        await user.save();
+
+        // Return updated cart
+        const updatedUser = await User.findById(req.user.id).populate('cart.productId');
+        const cartItems = updatedUser.cart.map(item => {
+            if (!item.productId) return null;
+            const product = item.productId;
+            return {
+                id: product._id,
+                title: product.name,
+                price: product.price,
+                image: product.images && product.images.length > 0 ? product.images[0] : '',
+                color: "Standard",
+                quantity: item.quantity,
+                inStock: product.countInStock > 0,
+                maxQuantity: product.countInStock
+            };
+        }).filter(item => item !== null);
+
+        res.json(cartItems);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Clear cart
+// @route   DELETE /api/users/cart
+// @access  Private
+exports.clearCart = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        user.cart = [];
+        await user.save();
+        res.json([]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
