@@ -10,6 +10,7 @@ export default function FashionWebsite() {
   const navigate = useNavigate();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { addToast } = useToast();
+  const [newsletterEmail, setNewsletterEmail] = useState('');
 
   const casualWear = [
     { id: 1, name: 'Casual Wear', price: '$99.00', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop' },
@@ -247,9 +248,28 @@ export default function FashionWebsite() {
             <input
               type="email"
               placeholder="Enter your email..."
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 px-4 py-3 rounded-l-sm focus:outline-none bg-white text-[#452215] placeholder-gray-500 border border-[#d4a574]"
             />
-            <button className="px-6 py-3 rounded-r-sm hover:bg-[#6b4a3f] transition border border-l-0 border-[#d4a574]" style={{ backgroundColor: '#452215', color: '#FFE9D5' }}>
+            <button
+              onClick={() => {
+                const email = (newsletterEmail || '').trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email) {
+                  addToast('Please enter your email', 'error');
+                  return;
+                }
+                if (!emailRegex.test(email)) {
+                  addToast('Please enter a valid email address', 'error');
+                  return;
+                }
+                setNewsletterEmail('');
+                addToast('Thanks for subscribing', 'success');
+              }}
+              className="px-6 py-3 rounded-r-sm hover:bg-[#6b4a3f] transition border border-l-0 border-[#d4a574]"
+              style={{ backgroundColor: '#452215', color: '#FFE9D5' }}
+            >
               Subscribe
             </button>
           </div>
