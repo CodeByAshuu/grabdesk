@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../api/axios";
 
 const Icons = {
   Plus: () => (
@@ -16,42 +17,115 @@ const CategoryManagement = ({ categories, setCategories }) => {
   const [newCategory, setNewCategory] = useState("");
   const [editCategory, setEditCategory] = useState(null);
   const [deleteCategory, setDeleteCategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // ------------------------------
-  // ADD CATEGORY (real-time)
-  // ------------------------------
-  const handleAddCategory = () => {
-    if (!newCategory.trim()) return;
-
-    const newData = {
-      id: Date.now(),
-      name: newCategory,
-      productCount: 0,
+  // Fetch categories from backend on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/admin/categories');
+        if (response.data) {
+          setCategories(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
+    fetchCategories();
+  }, [setCategories]);
+
+  // ------------------------------
+  // ADD CATEGORY (real-time with backend)
+  // ------------------------------
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) return;
+
+    const tempId = Date.now();
+    const categoryName = newCategory.trim(); // Preserve name for error recovery
+    const newData = { id: tempId, name: categoryName, productCount: 0 };
+
+    // Optimistic update
     setCategories((prev) => [...prev, newData]);
     setNewCategory("");
     setShowAddModal(false);
+
+    try {
+      const response = await api.post('/admin/categories', { name: categoryName });
+      if (response.data.success && response.data.category) {
+        // Replace temp with real backend data
+        setCategories((prev) =>
+          prev.map((cat) => (cat.id === tempId ? response.data.category : cat))
+        );
+      }
+    } catch (error) {
+      console.error('Error adding category:', error);
+      // Rollback on error
+      setCategories((prev) => prev.filter((cat) => cat.id !== tempId));
+      alert(error.response?.data?.message || 'Failed to add category. Please try again.');
+      setShowAddModal(true);
+      setNewCategory(categoryName);
+    }
   };
 
   // ------------------------------
-  // EDIT CATEGORY (real-time)
+  // EDIT CATEGORY (real-time with backend)
   // ------------------------------
-  const handleEditCategorySave = () => {
+  const handleEditCategorySave = async () => {
+    const previousCategories = categories;
+
+    // Optimistic update
     setCategories((prev) =>
       prev.map((cat) =>
         cat.id === editCategory.id ? { ...cat, name: editCategory.name } : cat
       )
     );
     setShowEditModal(false);
+
+    try {
+      const response = await api.patch(`/admin/categories/${editCategory.id}`, {
+        name: editCategory.name
+      });
+
+      if (response.data.success && response.data.category) {
+        // Update with backend response
+        setCategories((prev) =>
+          prev.map((cat) =>
+            cat.id === editCategory.id ? response.data.category : cat
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      // Rollback on error
+      setCategories(previousCategories);
+      alert(error.response?.data?.message || 'Failed to update category. Please try again.');
+      setShowEditModal(true);
+    }
   };
 
   // ------------------------------
-  // DELETE CATEGORY (real-time)
+  // DELETE CATEGORY (real-time with backend)
   // ------------------------------
-  const confirmDeleteCategory = () => {
+  const confirmDeleteCategory = async () => {
+    const previousCategories = categories;
+
+    // Optimistic update
     setCategories((prev) => prev.filter((cat) => cat.id !== deleteCategory.id));
     setShowDeleteConfirm(false);
+
+    try {
+      await api.delete(`/admin/categories/${deleteCategory.id}`);
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      // Rollback on error
+      setCategories(previousCategories);
+      alert('Failed to delete category. Please try again.');
+      setShowDeleteConfirm(true);
+    }
   };
 
   return (
@@ -59,7 +133,7 @@ const CategoryManagement = ({ categories, setCategories }) => {
 
       {/* HEADER */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        
+
 
         <button
           onClick={() => setShowAddModal(true)}
@@ -108,15 +182,15 @@ const CategoryManagement = ({ categories, setCategories }) => {
         ))}
       </div>
 
-      
+
 
       {/* ------------------------------------------------ */}
       {/* ADD CATEGORY MODAL */}
       {/* ------------------------------------------------ */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-4"
-             onClick={() => setShowAddModal(false)}>
-          
+          onClick={() => setShowAddModal(false)}>
+
           <div
             className="bg-[#E3D5C3] text-[#452215] rounded-xl p-5 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}
@@ -146,8 +220,8 @@ const CategoryManagement = ({ categories, setCategories }) => {
       {/* ------------------------------------------------ */}
       {showEditModal && editCategory && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-4"
-             onClick={() => setShowEditModal(false)}>
-          
+          onClick={() => setShowEditModal(false)}>
+
           <div
             className="bg-[#E3D5C3] text-[#452215] rounded-xl p-5 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}
@@ -178,8 +252,8 @@ const CategoryManagement = ({ categories, setCategories }) => {
       {/* ------------------------------------------------ */}
       {showDeleteConfirm && deleteCategory && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-4"
-             onClick={() => setShowDeleteConfirm(false)}>
-          
+          onClick={() => setShowDeleteConfirm(false)}>
+
           <div
             className="bg-[#E3D5C3]  rounded-xl p-5 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}

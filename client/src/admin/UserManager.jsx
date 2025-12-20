@@ -1,10 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../api/axios";
 
 const UserManagement = ({ users, setUsers }) => {
   const [roleFilter, setRoleFilter] = useState("All Roles");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [resetUser, setResetUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch users from backend on mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/admin/users');
+        if (response.data) {
+          setUsers(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        // Keep existing users on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [setUsers]);
 
   const filteredUsers = users.filter((user) => {
     const matchesRole =
@@ -17,7 +39,9 @@ const UserManagement = ({ users, setUsers }) => {
     return matchesRole && matchesSearch;
   });
 
-  const toggleUserStatus = (id) => {
+  const toggleUserStatus = async (id) => {
+    // Optimistic update
+    const previousUsers = users;
     setUsers(
       users.map((u) =>
         u.id === id
@@ -25,13 +49,40 @@ const UserManagement = ({ users, setUsers }) => {
           : u
       )
     );
+
+    try {
+      // Call backend API
+      const response = await api.patch(`/admin/users/${id}/status`);
+
+      if (response.data.success && response.data.user) {
+        // Update with backend response to ensure consistency
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === id ? response.data.user : u
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+      // Rollback on error
+      setUsers(previousUsers);
+      alert('Failed to update user status. Please try again.');
+    }
   };
 
-  const handleResetPassword = () => {
-    setTimeout(() => {
-      alert(`Password reset link sent to ${resetUser.email}`);
+  const handleResetPassword = async () => {
+    try {
+      const response = await api.post(`/admin/users/${resetUser.id}/reset-password`);
+
+      if (response.data.success) {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      alert('Failed to send reset link. Please try again.');
+    } finally {
       setResetUser(null);
-    }, 400);
+    }
   };
 
   return (
@@ -39,7 +90,7 @@ const UserManagement = ({ users, setUsers }) => {
 
       {/* HEADER */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        
+
 
         <div className="flex flex-col xs:flex-row gap-2 w-full xs:w-auto">
           <select
@@ -88,13 +139,12 @@ const UserManagement = ({ users, setUsers }) => {
 
                   <td className="py-3 px-4">
                     <span
-                      className={`px-2 py-1 rounded text-xs sm:text-sm ${
-                        user.role === "Admin"
+                      className={`px-2 py-1 rounded text-xs sm:text-sm ${user.role === "Admin"
                           ? "bg-purple-100 text-purple-800"
                           : user.role === "Moderator"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
                     >
                       {user.role}
                     </span>
@@ -102,11 +152,10 @@ const UserManagement = ({ users, setUsers }) => {
 
                   <td className="py-3 px-4">
                     <span
-                      className={`px-2 py-1 rounded text-xs sm:text-sm ${
-                        user.status === "Active"
+                      className={`px-2 py-1 rounded text-xs sm:text-sm ${user.status === "Active"
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
-                      }`}
+                        }`}
                     >
                       {user.status}
                     </span>
