@@ -21,4 +21,24 @@ api.interceptors.request.use(
     }
 );
 
+// Add a response interceptor to handle 401 errors globally
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Clear local storage to remove stale token
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            // Redirect to login if not already there to prevent infinite loops
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;
