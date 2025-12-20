@@ -1,16 +1,12 @@
-import { Link } from "react-router-dom";
 import React from "react";
-import Navbar from "../components/Navbar";
+import FashionWebsite from "../components/FashionWebsite";
 
-function Studio(){
+function Studio() {
     return (
         <>
-        <Navbar/>
-        
-        
-        
-
+            <FashionWebsite />
         </>
-    )
+    );
 }
+
 export default Studio;

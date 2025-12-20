@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaHeart } from 'react-icons/fa';
+import { useWishlist } from '../context/WishlistContext';
+import { useToast } from '../context/ToastContext';
 import Navbar from './Navbar';
 
 export default function FashionWebsite() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToast } = useToast();
 
   const casualWear = [
     { id: 1, name: 'Casual Wear', price: '$99.00', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop' },
@@ -55,7 +62,7 @@ export default function FashionWebsite() {
               <p className="text-sm tracking-[0.3em] text-gray-600 mb-4">{heroSlides[currentSlide].tagline}</p>
               <h2 className="text-6xl md:text-7xl font-serif mb-2">{heroSlides[currentSlide].title}</h2>
               <h2 className="text-6xl md:text-7xl font-serif italic mb-8">{heroSlides[currentSlide].subtitle}</h2>
-              <button className="px-8 py-3 rounded-sm transition mb-4" style={{ backgroundColor: '#5a2f1f', color: '#FFE9D5' }}>
+              <button onClick={() => navigate('/product')} className="px-8 py-3 rounded-sm transition mb-4" style={{ backgroundColor: '#5a2f1f', color: '#FFE9D5' }}>
                 SHOP NOW
               </button>
               <div className="text-sm text-gray-600">
@@ -108,10 +115,59 @@ export default function FashionWebsite() {
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />
-                  <button className="absolute top-4 right-4 p-2 rounded-full opacity-0 group-hover:opacity-100 transition" aria-label="Add to wishlist" style={{ backgroundColor: '#d19a2c', color: 'white' }}>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const prod = {
+                        id: item.id,
+                        name: item.name,
+                        originalPriceString: item.price,
+                        price: typeof item.price === 'number' ? item.price : parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0,
+                        rating: item.rating || 4.0,
+                        images: [item.image],
+                        available: true,
+                      };
+
+                      if (isInWishlist(item.id)) {
+                        removeFromWishlist(item.id);
+                        addToast(`${item.name} removed from wishlist`, 'info');
+                      } else {
+                        addToWishlist(prod);
+                        addToast(`${item.name} added to wishlist`, 'success');
+                      }
+                    }}
+                    className="absolute top-4 right-4 p-2 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
+                    aria-label="Toggle wishlist"
+                    style={{ backgroundColor: 'rgba(209,154,44,0.95)', color: 'white' }}
+                  >
+                    <FaHeart className={`w-4 h-4 ${isInWishlist(item.id) ? 'text-red-500' : 'text-white'}`} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const prod = {
+                        id: item.id,
+                        name: item.name,
+                        originalPriceString: item.price,
+                        price: typeof item.price === 'number' ? item.price : parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0,
+                        rating: item.rating || 4.0,
+                        images: [item.image],
+                        available: true,
+                      };
+
+                      if (isInWishlist(item.id)) {
+                        removeFromWishlist(item.id);
+                        addToast(`${item.name} removed from wishlist`, 'info');
+                      } else {
+                        addToWishlist(prod);
+                        addToast(`${item.name} added to wishlist`, 'success');
+                      }
+                    }}
+                    className="absolute top-4 right-4 p-2 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
+                    aria-label="Toggle wishlist"
+                    style={{ backgroundColor: 'rgba(209,154,44,0.95)', color: 'white' }}
+                  >
+                    <FaHeart className={`w-4 h-4 ${isInWishlist(item.id) ? 'text-red-500' : 'text-white'}`} />
                   </button>
                 </div>
                 <h4 className="font-medium text-center mb-1" style={{ color: '#452215' }}>{item.name}</h4>
@@ -137,7 +193,7 @@ export default function FashionWebsite() {
               <div className="text-center">
                 <h3 className="text-4xl font-serif mb-4">Spring Collection</h3>
                 <p className="text-5xl font-bold" style={{ color: '#8F5E41' }} mb-6>30% OFF</p>
-                <button className="border-2 px-8 py-3 hover:bg-[#6b4a3f] hover:text-white transition" style={{ borderColor: '#8F5E41', backgroundColor: '#FFE9D5', color: '#452215' }}>
+                <button onClick={() => navigate('/product')} className="border-2 px-8 py-3 hover:bg-[#6b4a3f] hover:text-white transition" style={{ borderColor: '#8F5E41', backgroundColor: '#FFE9D5', color: '#452215' }}>
                   SHOP NOW
                 </button>
               </div>
@@ -191,9 +247,9 @@ export default function FashionWebsite() {
             <input
               type="email"
               placeholder="Enter your email..."
-              className="flex-1 px-4 py-3 rounded-l-sm focus:outline-none"
+              className="flex-1 px-4 py-3 rounded-l-sm focus:outline-none bg-white text-[#452215] placeholder-gray-500 border border-[#d4a574]"
             />
-            <button className="px-6 py-3 rounded-r-sm hover:bg-[#6b4a3f] transition" style={{ backgroundColor: '#452215', color: '#FFE9D5' }}>
+            <button className="px-6 py-3 rounded-r-sm hover:bg-[#6b4a3f] transition border border-l-0 border-[#d4a574]" style={{ backgroundColor: '#452215', color: '#FFE9D5' }}>
               Subscribe
             </button>
           </div>

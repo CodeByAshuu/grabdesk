@@ -41,7 +41,7 @@ function App() {
               <Route path='/studio' element={<Studio />} />
               <Route path='/admindashbord' element={<AdminDashbord/>}/>
               <Route path='/wishlist' element={<WishlistPage />} />
-              <Route path='/fashion' element={<FashionWebsite />} />
+              
             </Routes>
           </BrowserRouter>
         </ToastProvider>
