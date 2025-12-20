@@ -4,6 +4,7 @@ import EditProductModal from "../components/EditProductModal";
 import ProductPreviewDrawer from "../components/ProductPreviewDrawer";
 import AdminProductCard from "../components/AdminProductCard";
 import AddProductForm from "../components/AddProductForm";  // ✅ ADDED
+import api from "../api/axios";
 
 const Icons = {
   Package: () => (
@@ -95,7 +96,7 @@ const ProductManagement = ({ products, setProducts }) => {
   const [previewProduct, setPreviewProduct] = useState(null);
   const [showBulkModal, setShowBulkModal] = useState(false);
 
- 
+
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (
@@ -103,10 +104,10 @@ const ProductManagement = ({ products, setProducts }) => {
 
       {/* Header */}
       <div className="flex justify-between items-center">
-        
+
 
         <div className="flex gap-2">
-         
+
           <button
             className="px-3 py-2 bg-[#F0A322] active:translate-y-1 border nunito-bold rounded-lg flex items-center relative border-[#452215] shadow-[4px_4px_0_#8F5E41]  text-[#452215]  gap-2 transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 cursor-pointer"
             onClick={() => setShowAddForm(true)}
@@ -127,25 +128,50 @@ const ProductManagement = ({ products, setProducts }) => {
       <div className="space-y-3">
         {products.map((product) => (
           <AdminProductCard
-            key={product.id}
+            key={product._id || product.id}
             product={product}
             onEdit={() => setEditProduct(product)}
-            onDelete={() =>
-              setProducts(products.filter((p) => p.id !== product.id))
-            }
+            onDelete={async () => {
+              if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
+                try {
+                  // Call backend API to delete product
+                  await api.delete(`/products/${product._id}`);
+                  // Remove from local state
+                  setProducts(products.filter((p) => p._id !== product._id));
+                } catch (error) {
+                  console.error('Error deleting product:', error);
+                  alert('Failed to delete product. Please try again.');
+                }
+              }
+            }}
             onPreview={() => setPreviewProduct(product)}
           />
         ))}
       </div>
 
-     
+
       <EditProductModal
         isOpen={!!editProduct}
         product={editProduct}
         onClose={() => setEditProduct(null)}
-        onSave={(updated) => {
-          setProducts(products.map((p) => (p.id === updated.id ? updated : p)));
-          setEditProduct(null);
+        onSave={async (updated) => {
+          try {
+            // 1. Call API to update backend
+            const res = await api.put(`/admin/products/${updated._id}`, updated);
+
+            if (res.data.success) {
+              // 2. Update local state with the server response (source of truth)
+              const savedProduct = res.data.product;
+              setProducts(products.map((p) => (p._id === savedProduct._id ? savedProduct : p)));
+              setEditProduct(null);
+              alert('Product updated successfully!');
+            } else {
+              alert('Failed to update product');
+            }
+          } catch (err) {
+            console.error('Update failed', err);
+            alert('Error updating product: ' + (err.response?.data?.message || err.message));
+          }
         }}
       />
 
@@ -160,26 +186,68 @@ const ProductManagement = ({ products, setProducts }) => {
       <BulkUploadModal
         isOpen={showBulkModal}
         onClose={() => setShowBulkModal(false)}
-        onUpload={(rows) => {
-          const mapped = rows.map((item, index) => ({
-            id: Date.now() + index,
-            name: item.name,
-            price: item.price,
-            category: item.category,
-            stock: item.stock,
-            status: item.status || "Active",
-          }));
-          setProducts([...products, ...mapped]);
-          setShowBulkModal(false);
+        onUpload={async (rows) => {
+          try {
+            // Send bulk upload request to backend
+            const response = await api.post('/admin/products/bulk', { products: rows });
+
+            const { success, successCount, failedCount, insertedProducts, failures, message } = response.data;
+
+            if (success && insertedProducts) {
+              // Add successfully inserted products to local state
+              setProducts([...products, ...insertedProducts]);
+              setShowBulkModal(false);
+
+              // Show success message
+              if (failedCount > 0) {
+                const failureDetails = failures?.map(f => `Row ${f.row}: ${f.error}`).join('\n');
+                alert(`${message}\n\nSuccessfully added: ${successCount}\nFailed: ${failedCount}\n\nFailure details:\n${failureDetails}`);
+              } else {
+                alert(`Success! ${successCount} products added successfully.`);
+              }
+            } else {
+              alert(`Error: ${message || 'Failed to upload products'}`);
+            }
+          } catch (error) {
+            console.error('Bulk upload error:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to upload products';
+            const failures = error.response?.data?.failures;
+
+            if (failures && failures.length > 0) {
+              const failureDetails = failures.map(f => `Row ${f.row}: ${f.error}`).join('\n');
+              alert(`Error: ${errorMessage}\n\nFailure details:\n${failureDetails}`);
+            } else {
+              alert(`Error: ${errorMessage}`);
+            }
+          }
         }}
       />
 
       <AddProductForm
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}
-        onAdd={(newProduct) => {
-          setProducts([...products, newProduct]);
-          setShowAddForm(false);
+        onAdd={async (newProduct) => {
+          try {
+            // Send product data to backend API
+            const response = await api.post('/admin/products', newProduct);
+
+            if (response.data.success) {
+              // Refetch all products from backend to ensure data consistency
+              const fetchResponse = await api.get('/products');
+              if (fetchResponse.data.products) {
+                setProducts(fetchResponse.data.products);
+              }
+
+              setShowAddForm(false);
+              alert('Product added successfully!');
+            } else {
+              alert(`Error: ${response.data.message || 'Failed to add product'}`);
+            }
+          } catch (error) {
+            console.error('Error adding product:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to add product';
+            alert(`Error: ${errorMessage}`);
+          }
         }}
       />
     </div>
