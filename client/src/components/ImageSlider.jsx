@@ -56,10 +56,9 @@ function ImageSlider({ images }) {
               duration-300 
               transform
               hover:scale-125
-              ${
-                current === index 
-                  ? "bg-[#8F5E41] scale-125" 
-                  : "bg-[#dedddc] hover:bg-[#8F5E41]"
+              ${current === index
+                ? "bg-[#8F5E41] scale-125"
+                : "bg-[#dedddc] hover:bg-[#8F5E41]"
               }
             `}
             onClick={() => setCurrent(index)}
