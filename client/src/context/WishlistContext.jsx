@@ -25,7 +25,10 @@ export const WishlistProvider = ({ children }) => {
             const res = await api.get('/users/wishlist');
             setWishlist(res.data);
         } catch (error) {
-            console.error("Failed to fetch wishlist", error);
+            // Silently ignore 401 errors (user not logged in) - this is expected
+            if (error.response?.status !== 401) {
+                console.error("Failed to fetch wishlist", error);
+            }
         }
     };
 
