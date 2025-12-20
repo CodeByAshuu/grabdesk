@@ -88,74 +88,75 @@ const Icons = {
     </svg>
   ),
   Attention: () => (
-  <svg 
-    className="w-4 h-4 sm:w-5 sm:h-5" 
-    fill="none" 
-    stroke="currentColor" 
-    viewBox="0 0 24 24" 
-    xmlns="http://www.w3.org/2000/svg"
-  >
-      <path 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-        strokeWidth={2} 
-        d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" 
+    <svg
+      className="w-4 h-4 sm:w-5 sm:h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
       />
-  </svg>
-)
+    </svg>
+  )
 };
+
+import { io } from "socket.io-client";
+import api from "../api/axios"; // Adjust path if needed
 
 const AnalyticsDashboard = () => {
   const [stats, setStats] = useState({
-    totalSales: 24589,
-    totalOrders: 1248,
-    activeUsers: 5678,
-    lowStock: 12,
+    totalSales: 0,
+    totalOrders: 0,
+    activeUsers: 0,
+    lowStock: 0,
   });
 
-  const [salesData, setSalesData] = useState([
-    { month: "Jan", sales: 4000 },
-    { month: "Feb", sales: 5000 },
-    { month: "Mar", sales: 4700 },
-    { month: "Apr", sales: 5200 },
-    { month: "May", sales: 5800 },
-  ]);
+  const [salesData, setSalesData] = useState([]);
+  const [productData, setProductData] = useState([]);
 
-  const [productData, setProductData] = useState([
-    { name: "Wallet", sales: 240 },
-    { name: "Leather Bag", sales: 180 },
-    { name: "Watch", sales: 300 },
-    { name: "Shoes", sales: 200 },
-  ]);
+  const fetchData = async () => {
+    try {
+      const [statsRes, historyRes, productsRes] = await Promise.all([
+        api.get('/admin/analytics/stats'),
+        api.get('/admin/analytics/sales-history'),
+        api.get('/admin/analytics/top-products')
+      ]);
 
-  // AUTO UPDATE EVERY 5 SECONDS
+      if (statsRes.data.success) setStats(statsRes.data.stats);
+      if (historyRes.data.success) setSalesData(historyRes.data.history.length ? historyRes.data.history : [{ month: 'No Data', sales: 0 }]);
+      if (productsRes.data.success) setProductData(productsRes.data.products);
+
+    } catch (error) {
+      console.error("Failed to fetch analytics:", error);
+    }
+  };
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStats((prev) => ({
-        totalSales: prev.totalSales + Math.floor(Math.random() * 50),
-        totalOrders: prev.totalOrders + Math.floor(Math.random() * 4),
-        activeUsers: prev.activeUsers + Math.floor(Math.random() * 15),
-        lowStock: prev.lowStock,
-      }));
+    fetchData();
 
-      setSalesData((prev) => {
-        const newVal = {
-          month: `M${prev.length + 1}`,
-          sales: prev[prev.length - 1].sales + Math.floor(Math.random() * 300),
-        };
-        return [...prev.slice(-5), newVal];
-      });
+    // CONNECT TO SOCKET
+    const newSocket = io("http://localhost:5000"); // Ensure this matches your backend URL
 
-      setProductData((prev) =>
-        prev.map((p) => ({
-          ...p,
-          sales: p.sales + Math.floor(Math.random() * 20),
-        }))
-      );
-    }, 5000);
+    // LISTEN FOR EVENTS
+    newSocket.on("newLog", () => {
+      // Simple strategy: refetch all stats when ANY activity happens
+      // This ensures data consistency without complex client-side math
+      fetchData();
+    });
 
-    return () => clearInterval(interval);
-  }, []);
+    // Also listen for specific events if they exist (or just rely on newLog if it covers everything)
+    newSocket.on("orderPlaced", fetchData);
+    newSocket.on("userRegistered", fetchData);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []); // Empty dependency array = run once on mount
 
   return (
     <div className="space-y-6">
@@ -167,27 +168,27 @@ const AnalyticsDashboard = () => {
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">Total Sales</p>
-              <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">{stats.totalSales.toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">₹{stats.totalSales.toLocaleString()}</p>
             </div>
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#5b3d25]/10 rounded-full flex items-center justify-center shrink-0 ml-2">
               <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.BarChart /></span>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">+12.5% from last month</p>
+          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">Updated Just Now</p>
         </div>
 
-        {/* Total Orders */}
+        {/* Total Products (Inventory) */}
         <div className="bg-[#FFE9D5] border rounded-lg sm:rounded-xl p-4 sm:p-6 relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] cursor-pointer">
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">Total Orders</p>
-              <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">{stats.totalOrders.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">Total Products</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">{stats.totalProducts?.toLocaleString() || 0}</p>
             </div>
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#5b3d25]/10 rounded-full flex items-center justify-center shrink-0 ml-2">
               <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.Package /></span>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">+8.2% from last month</p>
+          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">Inventory Count</p>
         </div>
 
         {/* Active Users */}
@@ -201,7 +202,7 @@ const AnalyticsDashboard = () => {
               <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.Users /></span>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">+15.3% from last month</p>
+          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">Registered Members</p>
         </div>
 
         {/* Low Stock */}
@@ -212,10 +213,12 @@ const AnalyticsDashboard = () => {
               <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">{stats.lowStock}</p>
             </div>
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#5b3d25]/10 rounded-full flex items-center justify-center shrink-0 ml-2">
-              <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.Attention/></span>
+              <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.Attention /></span>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-red-600 mt-1 sm:mt-2 truncate">Need attention</p>
+          <p className={`text-xs sm:text-sm mt-1 sm:mt-2 truncate ${stats.lowStock > 0 ? 'text-red-600' : 'text-green-600'}`}>
+            {stats.lowStock > 0 ? 'Need attention' : 'Inventory Healthy'}
+          </p>
         </div>
 
       </div>
@@ -226,16 +229,16 @@ const AnalyticsDashboard = () => {
         {/* SALES CHART */}
         <div className="bg-[#FFE9D5] gowun-dodum-regular border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] rounded-lg p-4 sm:p-6 ">
           <h3 className="font-semibold mb-4 text-sm sm:text-base">Sales Overview</h3>
-          <div className="h-48 sm:h-56 md:h-64">
-            <SalesChart data={salesData} />
+          <div className="h-48 sm:h-56 md:h-64 w-full">
+            <SalesChart data={salesData.length ? salesData : []} />
           </div>
         </div>
 
         {/* TOP PRODUCTS CHART */}
         <div className="bg-[#FFE9D5] gowun-dodum-regular border  rounded-lg p-4 sm:p-6 relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
           <h3 className="font-semibold mb-4 text-sm sm:text-base">Top Products</h3>
-          <div className="h-48 sm:h-56 md:h-64">
-            <ProductsChart data={productData} />
+          <div className="h-48 sm:h-56 md:h-64 w-full">
+            <ProductsChart data={productData.length ? productData : []} />
           </div>
         </div>
 
@@ -244,5 +247,6 @@ const AnalyticsDashboard = () => {
     </div>
   );
 };
+
 
 export default AnalyticsDashboard;
