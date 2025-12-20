@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import api from "../api/axios";
 import { getInitials } from "../utils/stringUtils";
 import { useState, useEffect, useRef } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 const Profile = () => {
   const navigate = useNavigate();
 
@@ -27,11 +28,21 @@ const Profile = () => {
   const [orders, setOrders] = useState([]);
   const [messages, setMessages] = useState([]);
 
-  const [activeTab, setActiveTab] = useState("account");
+  const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  useEffect(() => {
+      // Check for tab parameter in URL
+      const tabFromUrl = searchParams.get("tab");
+      if (tabFromUrl) {
+          setActiveTab(tabFromUrl);
+      }
+  }, [location.search, searchParams]);
 
   // Address editing states
   const [isEditingAddress, setIsEditingAddress] = useState(false);
@@ -58,7 +69,7 @@ const Profile = () => {
   const messagesContainerRef = useRef(null);
   const tabContentRef = useRef(null);
   const addressFormRef = useRef(null);
-
+  
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -114,7 +125,7 @@ const Profile = () => {
       const formattedOrders = ordersRes.data.map(order => ({
         id: order._id,
         date: new Date(order.createdAt).toISOString().split('T')[0],
-        total: order.total.toFixed(2),
+        total: order.pricing.total.toFixed(2),
         status: order.status.charAt(0).toUpperCase() + order.status.slice(1)
       }));
       setOrders(formattedOrders);
@@ -900,7 +911,7 @@ const Profile = () => {
                       <tbody className="divide-y divide-[#5b3d25]/30">
                         {orders.map(order => (
                           <tr key={order.id} className="hover:bg-[#5b3d25]/5 transition-colors">
-                            <td className="px-4 py-3 whitespace-nowrap text-sm">#{order.id.substring(orders.id.length - 6).toUpperCase()}</td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">#{order.id.substring(order.id.length - 6).toUpperCase()}</td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm">{order.date}</td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">{order.total}</td>
                             <td className="px-4 py-3 whitespace-nowrap">

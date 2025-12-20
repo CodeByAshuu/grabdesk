@@ -324,7 +324,6 @@ exports.clearCart = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
-
 // @desc    Get user wishlist
 // @route   GET /api/users/wishlist
 // @access  Private
@@ -336,10 +335,12 @@ exports.getWishlist = async (req, res) => {
             .map(product => ({
                 id: product._id,
                 name: product.name,
-                price: product.price,
+                price: product.finalPrice || product.price || 0,  // Add fallback for price
+                basePrice: product.originalPrice || product.basePrice || product.price || 0, // Add basePrice
+                priceNum: product.finalPrice || product.price || 0, // Add priceNum for ProductCard
                 images: product.images,
-                rating: product.rating,
-                available: product.countInStock > 0,
+                rating: product.ratingAverage || product.rating || 0, // Ensure rating exists
+                available: product.stock > 0,
                 originalPriceString: product.originalPriceString
             }));
         res.json(wishlistItems);
@@ -368,10 +369,12 @@ exports.addToWishlist = async (req, res) => {
             .map(product => ({
                 id: product._id,
                 name: product.name,
-                price: product.price,
+                price: product.finalPrice || product.price || 0,
+                basePrice: product.originalPrice || product.basePrice || product.price || 0,
+                priceNum: product.finalPrice || product.price || 0,
                 images: product.images,
-                rating: product.rating,
-                available: product.countInStock > 0,
+                rating: product.ratingAverage || product.rating || 0,
+                available: product.stock > 0,
                 originalPriceString: product.originalPriceString
             }));
         res.json(wishlistItems);
@@ -396,10 +399,12 @@ exports.removeFromWishlist = async (req, res) => {
         const wishlistItems = updatedUser.wishlist.map(product => ({
             id: product._id,
             name: product.name,
-            price: product.price,
+            price: product.finalPrice || product.price || 0,
+            basePrice: product.originalPrice || product.basePrice || product.price || 0,
+            priceNum: product.finalPrice || product.price || 0,
             images: product.images,
-            rating: product.rating,
-            available: product.countInStock > 0,
+            rating: product.ratingAverage || product.rating || 0,
+            available: product.stock > 0,
             originalPriceString: product.originalPriceString
         }));
         res.json(wishlistItems);
