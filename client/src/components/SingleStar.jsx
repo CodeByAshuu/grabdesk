@@ -10,14 +10,14 @@ function SingleStar({ rating = 0 }) {
       {/* Star Container */}
       <div className="relative w-5 h-5">
         {/* Empty Star */}
-        <FaStar className="text-white absolute inset-0" size={20} />
+        {/* <FaStar className="text-white absolute inset-0" size={20} /> */}
 
-        {/* Filled Star (clip to show percentage) */}
+        {/* Filled Star */}
         <div
-          className="absolute inset-0 overflow-hidden"
+          className="absolute inset-0"
           style={{ width: `${fillPercent}%` }}
         >
-          <FaStar className="text-black" size={20} />
+          <FaStar className="text-amber-400" size={20} />
         </div>
       </div>
 

@@ -32,12 +32,13 @@ function Product() {
             name: p.productName || p.name || "No Name",
             price: p.formattedPrice || p.originalPriceString || (p.price ? `₹ ${p.price}` : "₹ 0"),
             priceNumber: p.discountedPrice || p.finalPrice || p.price || 0,
+            basePrice: p.basePrice || 0,
             rating: p.stars || p.ratingAverage || p.rating || 0,
             tag: (Array.isArray(p.tags) && p.tags.length > 0) ? (p.tags[0].value || p.tags[0]) : (p.tag || "New"),
             images: (p.images && p.images.length > 0) ? p.images : [],
             category: p.category || "General",
             brand: p.brand || "Generic",
-            discount: p.discount || 0
+            discount: p.discountPercent || p.discount || 0
           };
         });
 
@@ -288,6 +289,8 @@ function Product() {
                       namee={product.name}
                       pricee={product.price}
                       priceNum={product.priceNumber}
+                      basePrice={product.basePrice}
+                      discount={product.discount}
                     />
                   ))}
                 </div>

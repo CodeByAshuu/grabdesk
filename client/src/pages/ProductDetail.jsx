@@ -1,45 +1,56 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ProductReviews from '../components/ProductReviews';
 import ProductCard from '../components/ProductCard';
-import Nike1 from '../assets/Nike1.png';
-import Nike2 from '../assets/Nike2.png';
-import Nike3 from '../assets/Nike3.png';
+import api from '../api/axios';
+import { useWishlist } from '../context/WishlistContext';
 
 const ProductDetail = () => {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState('M');
-    const [selectedColor, setSelectedColor] = useState('brown');
-    const [pincode, setPincode] = useState('');
+    const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
     const [showDescription, setShowDescription] = useState(true);
     const [showToast, setShowToast] = useState(false);
 
-    const product = {
-        id: 101,
-        title: "Nike Dunk Low Retro SE",
-        shortDesc: "Created for the hardwood but taken to the streets, the Nike Dunk Low Retro returns with crisp overlays and original team colors.",
-        price: 10257,
-        originalPrice: 12999,
-        discount: 21,
-        rating: 4.5,
-        reviews: 128,
-        images: [Nike1, Nike2, Nike3, Nike1],
-        sizes: ['S', 'M', 'L', 'XL'],
-        colors: [
-            { name: 'brown', hex: '#8F5E41' },
-            { name: 'cream', hex: '#E3D5C3' },
-            { name: 'black', hex: '#222222' }
-        ]
-    };
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+    // Fetch product data
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const res = await api.get(`/products/${id}`);
+                setProduct(res.data);
+                // Set initial selections if available
+                if (res.data.sizeAvailable && res.data.sizeAvailable.length > 0) {
+                    setSelectedSize(res.data.sizeAvailable[0]);
+                }
+                if (res.data.color) {
+                    setSelectedColor(res.data.color);
+                }
+            } catch (err) {
+                console.error("Failed to fetch product", err);
+                setError("Product not found or failed to load.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchProduct();
+        }
+    }, [id]);
 
     const relatedProducts = [
-        { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
-        { id: 2, name: "Nike Jordan 1", price: "₹ 15,999.00", images: [Nike3], rating: 4.8, tag: "SALE" },
-        { id: 3, name: "Nike Blazer", price: "₹ 8,499.00", images: [Nike1], rating: 4.3, tag: "HOT" },
-        { id: 4, name: "Nike Zoom", price: "₹ 11,299.00", images: [Nike2], rating: 4.6, tag: "NEW" },
+        // Placeholder for related products - could fetch from API later
+        // { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
     ];
 
     const handleQuantityChange = (type) => {
@@ -54,57 +65,62 @@ const ProductDetail = () => {
         image.style.transformOrigin = `${x}% ${y}%`;
     };
 
-    const addToCartLogic = () => {
-        const cartItem = {
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            originalPrice: product.originalPrice,
-            image: product.images[0],
-            color: selectedColor,
-            size: selectedSize,
-            quantity: quantity,
-            inStock: true,
-            maxQuantity: 10
-        };
-
-        // Get existing cart
-        const savedCart = localStorage.getItem('cart');
-        let cart = [];
-        if (savedCart) {
-            try {
-                cart = JSON.parse(savedCart);
-            } catch (e) {
-                console.error("Error parsing cart", e);
-            }
+    const addToCartAPI = async () => {
+        if (!product) return;
+        try {
+            await api.post('/users/cart', {
+                productId: product._id,
+                quantity: quantity,
+                size: selectedSize,
+                color: selectedColor
+            });
+            return true;
+        } catch (error) {
+            console.error("Failed to add to cart", error);
+            alert("Failed to add to cart. Please try again.");
+            return false;
         }
+    };
 
-        // Check if item already exists (same ID, size, color)
-        const existingItemIndex = cart.findIndex(item =>
-            item.id === cartItem.id &&
-            item.size === cartItem.size &&
-            item.color === cartItem.color
-        );
+    const handleAddToCart = async () => {
+        const success = await addToCartAPI();
+        if (success) {
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+        }
+    };
 
-        if (existingItemIndex > -1) {
-            cart[existingItemIndex].quantity += quantity;
+    const handleBuyNow = async () => {
+        const success = await addToCartAPI();
+        if (success) {
+            navigate('/cart');
+        }
+    };
+
+    const handleWishlistToggle = () => {
+        if (!product) return;
+        if (isInWishlist(product._id)) {
+            removeFromWishlist(product._id);
         } else {
-            cart.push(cartItem);
+            addToWishlist({ id: product._id });
         }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
     };
 
-    const handleAddToCart = () => {
-        addToCartLogic();
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-    };
+    if (loading) {
+        return (
+            <div className="min-h-screen flex justify-center items-center bg-[#f9f5f0]">
+                <div className="text-[#452215] text-xl font-bold">Loading...</div>
+            </div>
+        );
+    }
 
-    const handleBuyNow = () => {
-        addToCartLogic();
-        navigate('/cart');
-    };
+    if (error || !product) {
+        return (
+            <div className="min-h-screen flex justify-center items-center bg-[#f9f5f0]">
+                <div className="text-red-500 text-xl font-bold">{error || "Product not found"}</div>
+            </div>
+        );
+    }
 
     return (
         <section className="min-h-screen w-full bg-[#f9f5f0] text-[#5b3d25] pb-20 relative">
@@ -118,7 +134,7 @@ const ProductDetail = () => {
                     </svg>
                     <div>
                         <h4 className="font-bold">Added to Cart!</h4>
-                        <p className="text-sm opacity-90">{product.title} ({quantity})</p>
+                        <p className="text-sm opacity-90">{product.name} ({quantity})</p>
                     </div>
                 </div>
             )}
@@ -131,7 +147,7 @@ const ProductDetail = () => {
                     <div className="w-full lg:w-3/5 flex flex-col-reverse lg:flex-row gap-4">
                         {/* Thumbnails */}
                         <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto lg:w-24 lg:h-[600px] scrollbar-hide">
-                            {product.images.map((img, idx) => (
+                            {product.images && product.images.map((img, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => setSelectedImage(idx)}
@@ -150,14 +166,16 @@ const ProductDetail = () => {
                                 onMouseMove={handleZoom}
                             >
                                 <img
-                                    src={product.images[selectedImage]}
+                                    src={product.images && product.images[selectedImage]}
                                     alt="Product Main"
-                                    className="w-full h-full object-contain transition-transform duration-200 ease-out group-hover:scale-150"
+                                    className="w-full h-full object-cover transition-transform duration-200 ease-out group-hover:scale-150"
                                 />
                             </div>
-                            <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#8F5E41]">
-                                -{product.discount}%
-                            </div>
+                            {product.discountPercent > 0 && (
+                                <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#8F5E41]">
+                                    -{product.discountPercent}%
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -165,63 +183,69 @@ const ProductDetail = () => {
                     <div className="w-full lg:w-2/5 flex flex-col gap-6">
                         {/* Title & Rating */}
                         <div>
-                            <h1 className="text-3xl lg:text-4xl nunnito-bold font-bold text-[#452215] mb-2">{product.title}</h1>
+                            <h1 className="text-3xl lg:text-4xl nunnito-bold font-bold text-[#452215] mb-2">{product.name}</h1>
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="flex text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
-                                        <svg key={i} xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-gray-300 fill-current'}`} viewBox="0 0 24 24">
+                                        <svg key={i} xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${i < Math.floor(product.ratingAverage || 0) ? 'fill-current' : 'text-gray-300 fill-current'}`} viewBox="0 0 24 24">
                                             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                         </svg>
                                     ))}
                                 </div>
-                                <span className="text-sm text-[#8F5E41] underline cursor-pointer hover:text-[#452215]">{product.reviews} reviews</span>
+                                <span className="text-sm text-[#8F5E41] underline cursor-pointer hover:text-[#452215]">{product.ratingCount || 0} reviews</span>
                             </div>
-                            <p className="text-[#6b4c35] leading-relaxed">{product.shortDesc}</p>
+                            <p className="text-[#6b4c35] leading-relaxed line-clamp-3">{product.description}</p>
                         </div>
 
                         {/* Price */}
                         <div className="border-y border-[#e6d0bc] py-4">
                             <div className="flex items-end gap-3 mb-1">
-                                <span className="text-3xl font-bold text-[#452215]">₹ {product.price.toLocaleString()}</span>
-                                <span className="text-lg text-[#8F5E41]/60 line-through mb-1">₹ {product.originalPrice.toLocaleString()}</span>
+                                <span className="text-3xl font-bold text-[#452215]">₹ {product.finalPrice.toLocaleString()}</span>
+                                {product.basePrice > product.finalPrice && (
+                                    <span className="text-lg text-[#8F5E41]/60 line-through mb-1">₹ {product.basePrice.toLocaleString()}</span>
+                                )}
                             </div>
                             <p className="text-xs text-[#6b4c35]">Inclusive of all taxes</p>
                         </div>
 
                         {/* Variants */}
                         <div className="space-y-4">
-                            <div>
-                                <h3 className="tex-sm font-semibold mb-2 text-[#452215]">Color</h3>
-                                <div className="flex gap-3">
-                                    {product.colors.map((color) => (
+                            {product.color && (
+                                <div>
+                                    <h3 className="tex-sm font-semibold mb-2 text-[#452215]">Color</h3>
+                                    <div className="flex gap-3">
                                         <button
-                                            key={color.name}
-                                            onClick={() => setSelectedColor(color.name)}
-                                            className={`w-8 h-8 rounded-full border-2 ring-2 ring-offset-2 transition-all ${selectedColor === color.name ? 'ring-[#8F5E41] border-white' : 'ring-transparent border-transparent'
-                                                }`}
-                                            style={{ backgroundColor: color.hex }}
-                                            aria-label={color.name}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="tex-sm font-semibold mb-2 text-[#452215]">Size</h3>
-                                <div className="flex gap-3">
-                                    {product.sizes.map((size) => (
-                                        <button
-                                            key={size}
-                                            onClick={() => setSelectedSize(size)}
-                                            className={`w-12 h-10 rounded-md border text-sm font-medium transition-all ${selectedSize === size
+                                            onClick={() => setSelectedColor(product.color)}
+                                            className={`px-4 py-2 rounded-md border text-sm font-medium transition-all ${selectedColor === product.color
                                                 ? 'bg-[#452215] text-[#E3D5C3] border-[#452215]'
                                                 : 'bg-white text-[#5b3d25] border-[#e6d0bc] hover:border-[#8F5E41]'
                                                 }`}
                                         >
-                                            {size}
+                                            {product.color}
                                         </button>
-                                    ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {product.sizeAvailable && product.sizeAvailable.length > 0 && (
+                                <div>
+                                    <h3 className="tex-sm font-semibold mb-2 text-[#452215]">Size</h3>
+                                    <div className="flex gap-3 flex-wrap">
+                                        {product.sizeAvailable.map((size) => (
+                                            <button
+                                                key={size}
+                                                onClick={() => setSelectedSize(size)}
+                                                className={`min-w-[3rem] h-10 px-2 rounded-md border text-sm font-medium transition-all ${selectedSize === size
+                                                    ? 'bg-[#452215] text-[#E3D5C3] border-[#452215]'
+                                                    : 'bg-white text-[#5b3d25] border-[#e6d0bc] hover:border-[#8F5E41]'
+                                                    }`}
+                                            >
+                                                {size}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Actions */}
@@ -239,19 +263,24 @@ const ProductDetail = () => {
                             </div>
                             <button
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-[#452215] text-[#E3D5C3] py-3 rounded-lg font-bold hover:bg-[#5b3d25] transition-all shadow-lg active:scale-95"
+                                disabled={!product.stock}
+                                className={`flex-1 py-3 rounded-lg font-bold transition-all shadow-lg active:scale-95 ${product.stock > 0 ? 'bg-[#452215] text-[#E3D5C3] hover:bg-[#5b3d25]' : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
                             >
-                                Add to Cart
+                                {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                             </button>
-                            <button className="p-3 border border-[#8F5E41] rounded-lg text-[#8F5E41] hover:bg-[#8F5E41] hover:text-white transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <button
+                                onClick={handleWishlistToggle}
+                                className={`p-3 border border-[#8F5E41] rounded-lg transition-all ${isInWishlist(product._id) ? 'bg-[#8F5E41] text-white' : 'text-[#8F5E41] hover:bg-[#8F5E41] hover:text-white'}`}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill={isInWishlist(product._id) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
                             </button>
                         </div>
                         <button
                             onClick={handleBuyNow}
-                            className="w-full py-3 bg-[#E3D5C3] text-[#452215] font-bold rounded-lg hover:bg-[#d4c3b0] transition-all"
+                            disabled={!product.stock}
+                            className={`w-full py-3 font-bold rounded-lg transition-all ${product.stock > 0 ? 'bg-[#E3D5C3] text-[#452215] hover:bg-[#d4c3b0]' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
                         >
                             Buy Now
                         </button>
@@ -270,16 +299,9 @@ const ProductDetail = () => {
                         </div>
                         {showDescription && (
                             <div className="prose text-[#6b4c35] max-w-none animate-fadeIn">
-                                <p className="mb-4">
-                                    The Nike Dunk Low Retro SE channels vintage hoops style back onto the streets.
-                                    Padded, low-cut collar lets you take your game anywhere—in comfort.
+                                <p className="mb-4 whitespace-pre-line">
+                                    {product.description}
                                 </p>
-                                <ul className="list-disc pl-5 space-y-2 mb-6">
-                                    <li>Crisp leather upper has a slight sheen, ages to soft perfection.</li>
-                                    <li>Durable foam midsole offers lightweight, responsive cushioning.</li>
-                                    <li>Rubber outsole with classic pivot circle adds durability, tractions and heritage style.</li>
-                                    <li>Displayed color: Sail/Dark Marina Blue/University Gold</li>
-                                </ul>
                             </div>
                         )}
                     </div>
@@ -289,23 +311,21 @@ const ProductDetail = () => {
                         <h2 className="text-2xl font-bold text-[#452215] border-b border-[#e6d0bc] pb-2 mb-4">Specifications</h2>
                         <div className="grid grid-cols-2 gap-y-4 text-sm">
                             <div className="font-semibold text-[#452215]">Brand</div>
-                            <div className="text-[#6b4c35]">Nike</div>
+                            <div className="text-[#6b4c35]">{product.brand || 'N/A'}</div>
                             <div className="font-semibold text-[#452215]">Model</div>
-                            <div className="text-[#6b4c35]">Dunk Low SE</div>
+                            <div className="text-[#6b4c35]">{product.model || 'N/A'}</div>
                             <div className="font-semibold text-[#452215]">Material</div>
-                            <div className="text-[#6b4c35]">Leather & Synthetic</div>
-                            <div className="font-semibold text-[#452215]">Weight</div>
-                            <div className="text-[#6b4c35]">850g</div>
-                            <div className="font-semibold text-[#452215]">Origin</div>
-                            <div className="text-[#6b4c35]">Vietnam</div>
-                            <div className="font-semibold text-[#452215]">Warranty</div>
-                            <div className="text-[#6b4c35]">3 Months Manufacturing</div>
+                            <div className="text-[#6b4c35]">{product.material || 'N/A'}</div>
+                            <div className="font-semibold text-[#452215]">Color</div>
+                            <div className="text-[#6b4c35]">{product.color || 'N/A'}</div>
+                            <div className="font-semibold text-[#452215]">Category</div>
+                            <div className="text-[#6b4c35]">{product.category || 'N/A'}</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Reviews */}
-                <ProductReviews />
+                <ProductReviews productId={product._id} />
 
                 {/* Related Products */}
                 <div className="mt-16 mb-8">
@@ -325,21 +345,21 @@ const ProductDetail = () => {
                         "
                     >
                         {relatedProducts.map((prod) => (
-                        <div
-                            key={prod.id}
-                            className="
+                            <div
+                                key={prod.id}
+                                className="
                             min-w-[220px] sm:min-w-[260px] lg:min-w-0
                             snap-center
                             "
-                        >
-                            <ProductCard
-                            namee={prod.name}
-                            pricee={prod.price}
-                            images={prod.images}
-                            rating={prod.rating}
-                            tagg={prod.tag}
-                            />
-                        </div>
+                            >
+                                <ProductCard
+                                    namee={prod.name}
+                                    pricee={prod.price}
+                                    images={prod.images}
+                                    rating={prod.rating}
+                                    tagg={prod.tag}
+                                />
+                            </div>
                         ))}
                     </div>
                 </div>

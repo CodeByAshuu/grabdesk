@@ -17,45 +17,8 @@ import Nike3 from '../assets/Nike3.png';
 
 function Cart() {
     // Sample real data - in production, you'd fetch this from an API
-    const initialCartProducts = [
-        {
-            id: 1,
-            title: "Artisan Coffee Beans",
-            price: 24.99,
-            originalPrice: 29.99,
-            image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
-            color: "Dark Roast",
-            size: "1lb",
-            quantity: 2,
-            description: "Premium Arabica beans, sourced from Colombia",
-            inStock: true,
-            maxQuantity: 10
-        },
-        {
-            id: 2,
-            title: "Ceramic Pour Over",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e7",
-            color: "Terracotta",
-            size: "Standard",
-            quantity: 1,
-            inStock: true,
-            maxQuantity: 5
-        },
-        {
-            id: 3,
-            title: "Coffee Grinder",
-            price: 89.99,
-            originalPrice: 109.99,
-            image: "https://images.unsplash.com/photo-1511920170033-f8396924c348",
-            color: "Brushed Steel",
-            size: "Professional",
-            quantity: 1,
-            description: "Adjustable burr grinder with 15 settings",
-            inStock: true,
-            maxQuantity: 3
-        }
-    ];
+    // Sample real data - in production, you'd fetch this from an API
+    // const initialCartProducts = []; // Removed unused mock data
 
     const [cartProducts, setCartProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -294,7 +257,7 @@ function Cart() {
 
                                     <Link
                                         to="/product"
-                                        className="block text-center text- hover:text-[#E3D5C3] text-sm transition-colors mt-3"
+                                        className="block text-center text- hover:text-[#F0A322] text-sm transition-colors mt-3"
                                     >
                                         Continue Shopping
                                     </Link>
