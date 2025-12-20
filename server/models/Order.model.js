@@ -1,51 +1,64 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-    userId: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     items: [
         {
-            productId: {
+            product: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Product',
                 required: true
             },
-            name: String,
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1
+            name: {
+                type: String,
+                required: true
+            },
+            image: {
+                type: String,
+                required: true
             },
             price: {
                 type: Number,
                 required: true
             },
-            image: String
+            quantity: {
+                type: Number,
+                required: true,
+                min: 1
+            }
         }
     ],
-    total: {
-        type: Number,
-        required: true
+    shippingAddress: {
+        fullName: { type: String, required: true },
+        phone: { type: String, required: true },
+        street: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        country: { type: String, required: true },
+        zipCode: { type: String, required: true }
+    },
+    pricing: {
+        subtotal: { type: Number, required: true },
+        shipping: { type: Number, required: true },
+        tax: { type: Number, required: true },
+        total: { type: Number, required: true }
+    },
+    deliveryMethod: {
+        type: String,
+        enum: ['standard', 'express'],
+        default: 'standard'
     },
     status: {
         type: String,
-        enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+        enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
         default: 'pending'
-    },
-    shippingAddress: {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
-        country: String
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
+}, {
+    timestamps: true
 });
 
 const Order = mongoose.model('Order', orderSchema);

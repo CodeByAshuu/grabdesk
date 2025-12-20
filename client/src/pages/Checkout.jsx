@@ -155,26 +155,43 @@ function Checkout() {
             shippingAddress = addresses[selectedAddressIndex];
         }
 
-        // Place Order Logic (Mock for now, will connect to Orders API later)
-        console.log("Order Placed:", {
-            cartItems,
-            shippingAddress,
-            contact: { name: formData.fullName, email: formData.email, phone: formData.phone },
-            totals: {
-                subtotal: calculateSubtotal(),
-                shipping: calculateShipping(),
-                tax: calculateTax(),
-                total: calculateTotal()
-            }
-        });
-
-        // Clear Cart from DB
+        // Place Order Logic
         try {
-            await api.delete('/users/cart');
-            alert("Order placed successfully! Check console for details.");
-            navigate("/");
+            const orderPayload = {
+                items: cartItems.map(item => ({
+                    product: item.productId || item.id,
+                    name: item.title || item.name,
+                    image: item.image,
+                    price: item.price,
+                    quantity: item.quantity
+                })),
+                shippingAddress: {
+                    fullName: formData.fullName,
+                    phone: formData.phone,
+                    street: shippingAddress.street,
+                    city: shippingAddress.city,
+                    state: shippingAddress.state,
+                    country: shippingAddress.country,
+                    zipCode: shippingAddress.zipCode
+                },
+                pricing: {
+                    subtotal: calculateSubtotal(),
+                    shipping: calculateShipping(),
+                    tax: calculateTax(),
+                    total: calculateTotal()
+                },
+                deliveryMethod: deliveryMethod
+            };
+
+            const res = await api.post('/orders', orderPayload);
+
+            if (res.data.success) {
+                alert("Order placed successfully!");
+                navigate("/profile?tab=orders");
+            }
         } catch (error) {
-            console.error("Error clearing cart after order:", error);
+            console.error("Error creating order:", error);
+            alert(error.response?.data?.message || "Failed to place order. Please try again.");
         }
     };
 
