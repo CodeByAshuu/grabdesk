@@ -1105,9 +1105,9 @@ const Profile = () => {
             <div className="relative mb-4 sm:mb-6">
               <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25] flex items-center justify-center bg-white text-[#5b3d25]">
                 {/* Check if we should show avatar or initials */}
-                {(userData.avatar && userData.avatar !== "https://via.placeholder.com/350") ? (
+                {(userData.avatar) ? (
                   <img
-                    src={userData.avatar}
+                    src={userData.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3eadc'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='30' fill='%235b3d25' text-anchor='middle' dy='.3em'%3E%3F%3C/text%3E%3C/svg%3E"}
                     alt="Profile"
                     className="w-full h-full object-cover"
                     onError={(e) => {

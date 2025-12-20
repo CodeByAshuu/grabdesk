@@ -37,7 +37,7 @@ router.delete('/wishlist/:productId', removeFromWishlist);
 router.delete('/wishlist', clearWishlist);
 
 router.post('/address', addAddress);
-router.put('/address/:index', updateAddress); // Using index since addresses are array of objects w/o explicit IDs usually unless subdocument
+router.put('/address/:index', updateAddress);
 router.delete('/address/:index', deleteAddress);
 
 module.exports = router;

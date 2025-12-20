@@ -22,8 +22,13 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['customer', 'admin'],
+        enum: ['customer', 'admin', 'moderator'],
         default: 'customer'
+    },
+    status: {
+        type: String,
+        enum: ['Active', 'Blocked'],
+        default: 'Active'
     },
     profilePhotoUrl: {
         type: String,

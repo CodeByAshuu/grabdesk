@@ -47,6 +47,20 @@ exports.signup = async (req, res) => {
         });
 
         if (user) {
+            // Emit activity log
+            const io = req.app.get('io');
+            if (io) {
+                io.of('/activity').emit('newLog', {
+                    message: `New user registered: ${user.email}`,
+                    type: 'auth',
+                    time: new Date().toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })
+                });
+            }
+
             res.status(201).json({
                 success: true,
                 message: 'Account created successfully',
@@ -86,6 +100,20 @@ exports.login = async (req, res) => {
             // Update lastLogin
             user.lastLogin = Date.now();
             await user.save();
+
+            // Emit activity log
+            const io = req.app.get('io');
+            if (io) {
+                io.of('/activity').emit('newLog', {
+                    message: `User logged in: ${user.email}`,
+                    type: 'auth',
+                    time: new Date().toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })
+                });
+            }
 
             res.json({
                 success: true,

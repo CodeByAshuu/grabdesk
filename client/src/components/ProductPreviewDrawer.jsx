@@ -4,14 +4,14 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
   if (!isOpen) return null;
 
   return (
-    <> 
+    <>
       {/* UNIFIED BACKDROP WRAPPER (handles outside click) */}
       <div
         className="fixed inset-0  backdrop-blur-sm z-40 animate-fadeIn flex items-center justify-center px-4 gowun-dodum-regular"
         onClick={onClose}  // CLICK OUTSIDE WILL CLOSE
       >
 
-        
+
         <div
           className="w-full max-w-md  text-[#442314] bg-[#E3D5C3] rounded-2xl shadow-2xl border border-[#452215]  overflow-hidden animate-scaleIn relative"
           onClick={(e) => e.stopPropagation()}  // PREVENT CLICK INSIDE FROM CLOSING
@@ -35,11 +35,11 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
           {/* CONTENT */}
           {product && (
             <div className="p-5 space-y-5 max-h-[75vh] overflow-y-auto">
-              
+
               {/* IMAGE */}
               <div className="overflow-hidden rounded-lg relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] ">
                 <img
-                  src={product.image || "https://via.placeholder.com/200"}
+                  src={product.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3eadc'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='14' fill='%235b3d25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E"}
                   className="w-full h-48 sm:h-56 object-cover rounded-xl transition-transform duration-300 hover:scale-105"
                 />
               </div>
@@ -49,27 +49,26 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
                 {product.name}
               </h3>
 
-             
+
               <p className="text-[#442314]/70 text-sm leading-relaxed">
                 {product.description || "No description available."}
               </p>
 
-           
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {[
-                  ["Category", product.category],
-                  ["Price", `${product.price}`],
+                  ["Category", product.category || "N/A"],
+                  ["Price", `₹${product.finalPrice?.toFixed(2) || product.basePrice?.toFixed(2) || '0.00'}`],
                   ["Stock", product.stock],
                   [
                     "Status",
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        product.status === "Active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${product.isActive
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}
                     >
-                      {product.status}
+                      {product.isActive ? "Active" : "Inactive"}
                     </span>,
                   ],
                 ].map(([label, value], index) => (
@@ -87,7 +86,7 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
         </div>
       </div>
 
-     
+
       <style>{`
         @keyframes scaleIn {
           0% { transform: scale(0.85); opacity: 0; }

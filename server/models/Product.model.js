@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        default: ''
     },
     // Pricing Structure
     basePrice: {
@@ -59,7 +59,7 @@ const productSchema = new mongoose.Schema({
     // Categorization
     category: {
         type: String,
-        required: true,
+        default: '',
         index: true
     },
     // Tags for Personalization
