@@ -298,10 +298,10 @@ export default function FashionWebsite() {
             <div>
               <h5 className="font-semibold mb-4">Customer Care</h5>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition">Shipping</a></li>
-                <li><a href="#" className="hover:text-white transition">Returns</a></li>
-                <li><a href="#" className="hover:text-white transition">FAQ</a></li>
+                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">Contact Us</a></li>
+                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">Shipping</a></li>
+                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">Returns</a></li>
+                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">FAQ</a></li>
               </ul>
             </div>
             <div>
