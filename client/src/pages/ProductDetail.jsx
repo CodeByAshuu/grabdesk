@@ -19,6 +19,7 @@ const ProductDetail = () => {
     const [selectedColor, setSelectedColor] = useState('');
     const [showDescription, setShowDescription] = useState(true);
     const [showToast, setShowToast] = useState(false);
+    const [relatedProducts, setRelatedProducts] = useState([]);
 
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
@@ -48,10 +49,33 @@ const ProductDetail = () => {
         }
     }, [id]);
 
-    const relatedProducts = [
-        // Placeholder for related products - could fetch from API later
-        // { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
-    ];
+    // Fetch related products from the same category
+    useEffect(() => {
+        const fetchRelatedProducts = async () => {
+            if (!product || !product.category) return;
+
+            try {
+                const res = await api.get('/products', {
+                    params: {
+                        pageNumber: 1
+                    }
+                });
+
+                // Filter products from the same category, excluding current product
+                const related = res.data.products
+                    .filter(p => p.category === product.category && p._id !== product._id)
+                    .slice(0, 4); // Limit to 4 related products
+
+                setRelatedProducts(related);
+            } catch (err) {
+                console.error("Failed to fetch related products", err);
+            }
+        };
+
+        fetchRelatedProducts();
+    }, [product]);
+
+
 
     const handleQuantityChange = (type) => {
         if (type === 'dec' && quantity > 1) setQuantity(quantity - 1);
@@ -328,13 +352,14 @@ const ProductDetail = () => {
                 <ProductReviews productId={product._id} />
 
                 {/* Related Products */}
-                <div className="mt-16 mb-8">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-[#452215] mb-6 sm:mb-8">
-                        You May Also Like
-                    </h2>
+                {relatedProducts.length > 0 && (
+                    <div className="mt-16 mb-8">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-[#452215] mb-6 sm:mb-8">
+                            You May Also Like
+                        </h2>
 
-                    <div
-                        className="
+                        <div
+                            className="
                         flex lg:grid
                         grid-cols-4
                         gap-4 sm:gap-6 lg:gap-8
@@ -343,26 +368,29 @@ const ProductDetail = () => {
                         snap-x lg:snap-none
                         scrollbar-hide
                         "
-                    >
-                        {relatedProducts.map((prod) => (
-                            <div
-                                key={prod.id}
-                                className="
-                            min-w-[220px] sm:min-w-[260px] lg:min-w-0
-                            snap-center
-                            "
-                            >
-                                <ProductCard
-                                    namee={prod.name}
-                                    pricee={prod.price}
-                                    images={prod.images}
-                                    rating={prod.rating}
-                                    tagg={prod.tag}
-                                />
-                            </div>
-                        ))}
+                        >
+                            {relatedProducts.map((prod) => (
+                                <div
+                                    key={prod._id}
+                                    className="
+                                min-w-[220px] sm:min-w-[260px] lg:min-w-0
+                                snap-center
+                                "
+                                >
+                                    <ProductCard
+                                        id={prod._id}
+                                        namee={prod.name}
+                                        price={prod.finalPrice}
+                                        basePrice={prod.basePrice}
+                                        discount={prod.discountPercent}
+                                        images={prod.images}
+                                        rating={prod.ratingAverage}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </section>
     );

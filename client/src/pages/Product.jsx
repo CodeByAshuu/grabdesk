@@ -271,28 +271,29 @@ function Product() {
                 grid 
                 grid-cols-1 
                 sm:grid-cols-2 
-                lg:grid-cols-2 
-                xl:grid-cols-3 
+                lg:grid-cols-3
+                xl:grid-cols-4 
                 gap-4 
-                sm:gap-6
-                lg:gap-6 
-                xl:gap-8 
-                justify-items-center
+                sm:gap-4
+                lg:gap-4 
+                xl:gap-6 
+                px-2
               ">
                   {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      id={product.id}
-                      images={product.images}
-                      tagg={product.tag}
-                      rating={product.rating}
-                      namee={product.name}
-                      pricee={product.price}
-                      priceNum={product.priceNumber}
-                      basePrice={product.basePrice}
-                      discount={product.discount}
-                    />
-                  ))}
+                    <div key={product.id} className="w-full flex justify-center">
+                        <ProductCard
+                            id={product.id}
+                            images={product.images}
+                            tagg={product.tag}
+                            rating={product.rating}
+                            namee={product.name}
+                            pricee={product.price}
+                            priceNum={product.priceNumber}
+                            basePrice={product.basePrice}
+                            discount={product.discount}
+                        />
+                    </div>
+                ))}
                 </div>
 
                 {/* Pagination */}

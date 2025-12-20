@@ -422,7 +422,7 @@ const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
         Apply Filters
       </button>
 
-      <style jsx>{`
+      <style >{`
         .slider::-webkit-slider-thumb {
           appearance: none;
           width: 20px;
