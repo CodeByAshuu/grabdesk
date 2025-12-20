@@ -142,7 +142,7 @@ function Product() {
   return (
     <>
       <section
-        className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
+        className="min-h-screen w-full overflow-x-hidden text-[#5b3d25]"
         style={{
           backgroundColor: "#442314",
           backgroundImage:
@@ -281,19 +281,19 @@ function Product() {
               ">
                   {filteredProducts.map((product) => (
                     <div key={product.id} className="w-full flex justify-center">
-                        <ProductCard
-                            id={product.id}
-                            images={product.images}
-                            tagg={product.tag}
-                            rating={product.rating}
-                            namee={product.name}
-                            pricee={product.price}
-                            priceNum={product.priceNumber}
-                            basePrice={product.basePrice}
-                            discount={product.discount}
-                        />
+                      <ProductCard
+                        id={product.id}
+                        images={product.images}
+                        tagg={product.tag}
+                        rating={product.rating}
+                        namee={product.name}
+                        pricee={product.price}
+                        priceNum={product.priceNumber}
+                        basePrice={product.basePrice}
+                        discount={product.discount}
+                      />
                     </div>
-                ))}
+                  ))}
                 </div>
 
                 {/* Pagination */}

@@ -28,20 +28,20 @@ const Profile = () => {
   const [orders, setOrders] = useState([]);
   const [messages, setMessages] = useState([]);
 
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("account");
   const [isEditing, setIsEditing] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   useEffect(() => {
-      // Check for tab parameter in URL
-      const tabFromUrl = searchParams.get("tab");
-      if (tabFromUrl) {
-          setActiveTab(tabFromUrl);
-      }
+    // Check for tab parameter in URL
+    const tabFromUrl = searchParams.get("tab");
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
   }, [location.search, searchParams]);
 
   // Address editing states
@@ -69,7 +69,7 @@ const Profile = () => {
   const messagesContainerRef = useRef(null);
   const tabContentRef = useRef(null);
   const addressFormRef = useRef(null);
-  
+
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -1071,12 +1071,6 @@ const Profile = () => {
       <Navbar />
 
       <style jsx>{`
-        div::-webkit-scrollbar {
-          display: none;
-        }
-        section::-webkit-scrollbar {
-          display: none;
-        }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
