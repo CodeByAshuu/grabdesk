@@ -6,6 +6,7 @@ import { FaHeart } from "react-icons/fa";
 import { useWishlist } from "../context/WishlistContext";
 import { useToast } from "../context/ToastContext";
 import Button from "./Button";
+import api from "../api/axios";
 
 function ProductCard(props) {
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -76,53 +77,27 @@ function ProductCard(props) {
         }
     };
 
-    const handleBuyClick = (e) => {
+    const handleBuyClick = async (e) => {
         e.stopPropagation();
 
-        const image = props.images && props.images.length > 0 ? props.images[0] : "";
-
-        const newItem = {
-            id: props.id,
-            title: props.namee || props.name,
-            price: finalPrice,
-            image: image,
-            quantity: 1,
-            inStock: true,
-            maxQuantity: 10, // Default max limit
-            color: "Standard", // Default values to match CartCard expectations
-            size: "Standard"
-        };
-
-        // Get existing cart
-        const existingCartJson = localStorage.getItem('cart');
-        let cart = [];
         try {
-            cart = existingCartJson ? JSON.parse(existingCartJson) : [];
-        } catch (err) {
-            console.error("Error parsing cart data", err);
-            cart = [];
-        }
+            await api.post('/users/cart', {
+                productId: props.id,
+                quantity: 1,
+                size: "Standard", // Default for quick add
+                color: "Standard" // Default for quick add
+            });
 
-        // Check if item already exists
-        const existingItemIndex = cart.findIndex(item => item.id === newItem.id);
-
-        if (existingItemIndex > -1) {
-            // Increment quantity
-            cart[existingItemIndex].quantity += 1;
-        } else {
-            // Add new item
-            cart.push(newItem);
-        }
-
-        // Save back to localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
-
-        if (props.moveToCart) {
-            removeFromWishlist(props.id);
-            addToast("Moved to cart", "success");
-        } else {
-            // Redirect to Cart
-            navigate('/cart');
+            if (props.moveToCart) {
+                removeFromWishlist(props.id);
+                addToast("Moved to cart", "success");
+            } else {
+                // Redirect to Cart
+                navigate('/cart');
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            addToast("Failed to add to cart", "error");
         }
     };
 
@@ -154,7 +129,7 @@ function ProductCard(props) {
 
                 <div className="flex justify-end items-baseline ">
                     <div className="flex flex-row gap-5">
-                        <SingleStar />
+                        <SingleStar rating={props.rating || 0} />
                         <button
                             onClick={handleLikeClick}
                             className="p-2 rounded-full transition-transform duration-200 active:scale-90"
@@ -177,7 +152,7 @@ function ProductCard(props) {
                         )}
                     </div>
                     <div onClick={(e) => e.stopPropagation()}>
-                        <Button labell={props.buttonText || "Add to Cart"} onClick={handleBuyClick} />
+                        <Button labell={props.buttonText || "Buy Now"} onClick={handleBuyClick} />
                     </div>
                 </div>
 

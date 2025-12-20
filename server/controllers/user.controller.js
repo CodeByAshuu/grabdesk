@@ -156,12 +156,15 @@ exports.getCart = async (req, res) => {
             return {
                 id: product._id,
                 title: product.name,
-                price: product.price,
-                image: product.images && product.images.length > 0 ? product.images[0] : '', // Assuming images array
-                color: "Standard", // Placeholder as model might not have this yet
+                price: product.finalPrice || product.price, // Use finalPrice if available
+                originalPrice: product.basePrice,
+                image: product.images && product.images.length > 0 ? product.images[0] : '',
+                color: item.color || product.color || "Standard",
+                size: item.size || (product.sizeAvailable && product.sizeAvailable.length > 0 ? product.sizeAvailable[0] : "Standard"),
                 quantity: item.quantity,
-                inStock: product.countInStock > 0,
-                maxQuantity: product.countInStock
+                description: product.description,
+                inStock: product.stock > 0,
+                maxQuantity: product.stock
             };
         }).filter(item => item !== null);
 
@@ -177,17 +180,27 @@ exports.getCart = async (req, res) => {
 // @access  Private
 exports.addToCart = async (req, res) => {
     try {
-        const { productId, quantity } = req.body;
+        const { productId, quantity, size, color } = req.body;
         const user = await User.findById(req.user.id);
 
-        const cartItemIndex = user.cart.findIndex(item => item.productId.toString() === productId);
+        // Find if item with same product, size, and color exists
+        const cartItemIndex = user.cart.findIndex(item =>
+            item.productId.toString() === productId &&
+            item.size === (size || '') &&
+            item.color === (color || '')
+        );
 
         if (cartItemIndex > -1) {
             // Item exists, update quantity
             user.cart[cartItemIndex].quantity += quantity || 1;
         } else {
             // Add new item
-            user.cart.push({ productId, quantity: quantity || 1 });
+            user.cart.push({
+                productId,
+                quantity: quantity || 1,
+                size: size || '',
+                color: color || ''
+            });
         }
 
         await user.save();
@@ -200,12 +213,15 @@ exports.addToCart = async (req, res) => {
             return {
                 id: product._id,
                 title: product.name,
-                price: product.price,
+                price: product.finalPrice || product.price,
+                originalPrice: product.basePrice,
                 image: product.images && product.images.length > 0 ? product.images[0] : '',
-                color: "Standard",
+                color: item.color || product.color || "Standard",
+                size: item.size || (product.sizeAvailable && product.sizeAvailable.length > 0 ? product.sizeAvailable[0] : "Standard"),
                 quantity: item.quantity,
-                inStock: product.countInStock > 0,
-                maxQuantity: product.countInStock
+                description: product.description,
+                inStock: product.stock > 0,
+                maxQuantity: product.stock
             };
         }).filter(item => item !== null);
 

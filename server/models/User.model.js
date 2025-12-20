@@ -37,7 +37,9 @@ const userSchema = new mongoose.Schema({
         type: [
             {
                 productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-                quantity: { type: Number, default: 1 }
+                quantity: { type: Number, default: 1 },
+                size: { type: String, default: '' },
+                color: { type: String, default: '' }
             }
         ],
         default: []

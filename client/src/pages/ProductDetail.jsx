@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import ProductReviews from '../components/ProductReviews';
 import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
+import { useWishlist } from '../context/WishlistContext';
 
 const ProductDetail = () => {
     const navigate = useNavigate();
@@ -18,6 +19,8 @@ const ProductDetail = () => {
     const [selectedColor, setSelectedColor] = useState('');
     const [showDescription, setShowDescription] = useState(true);
     const [showToast, setShowToast] = useState(false);
+
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
     // Fetch product data
     useEffect(() => {
@@ -62,58 +65,45 @@ const ProductDetail = () => {
         image.style.transformOrigin = `${x}% ${y}%`;
     };
 
-    const addToCartLogic = () => {
+    const addToCartAPI = async () => {
         if (!product) return;
-
-        const cartItem = {
-            id: product._id,
-            title: product.name,
-            price: product.finalPrice,
-            originalPrice: product.basePrice,
-            image: product.images && product.images.length > 0 ? product.images[0] : "",
-            color: selectedColor,
-            size: selectedSize,
-            quantity: quantity,
-            inStock: product.stock > 0,
-            maxQuantity: product.stock || 10
-        };
-
-        // Get existing cart
-        const savedCart = localStorage.getItem('cart');
-        let cart = [];
-        if (savedCart) {
-            try {
-                cart = JSON.parse(savedCart);
-            } catch (e) {
-                console.error("Error parsing cart", e);
-            }
+        try {
+            await api.post('/users/cart', {
+                productId: product._id,
+                quantity: quantity,
+                size: selectedSize,
+                color: selectedColor
+            });
+            return true;
+        } catch (error) {
+            console.error("Failed to add to cart", error);
+            alert("Failed to add to cart. Please try again.");
+            return false;
         }
+    };
 
-        // Check if item already exists (same ID, size, color)
-        const existingItemIndex = cart.findIndex(item =>
-            item.id === cartItem.id &&
-            item.size === cartItem.size &&
-            item.color === cartItem.color
-        );
+    const handleAddToCart = async () => {
+        const success = await addToCartAPI();
+        if (success) {
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+        }
+    };
 
-        if (existingItemIndex > -1) {
-            cart[existingItemIndex].quantity += quantity;
+    const handleBuyNow = async () => {
+        const success = await addToCartAPI();
+        if (success) {
+            navigate('/cart');
+        }
+    };
+
+    const handleWishlistToggle = () => {
+        if (!product) return;
+        if (isInWishlist(product._id)) {
+            removeFromWishlist(product._id);
         } else {
-            cart.push(cartItem);
+            addToWishlist({ id: product._id });
         }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
-    };
-
-    const handleAddToCart = () => {
-        addToCartLogic();
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-    };
-
-    const handleBuyNow = () => {
-        addToCartLogic();
-        navigate('/cart');
     };
 
     if (loading) {
@@ -278,8 +268,11 @@ const ProductDetail = () => {
                             >
                                 {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                             </button>
-                            <button className="p-3 border border-[#8F5E41] rounded-lg text-[#8F5E41] hover:bg-[#8F5E41] hover:text-white transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <button
+                                onClick={handleWishlistToggle}
+                                className={`p-3 border border-[#8F5E41] rounded-lg transition-all ${isInWishlist(product._id) ? 'bg-[#8F5E41] text-white' : 'text-[#8F5E41] hover:bg-[#8F5E41] hover:text-white'}`}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill={isInWishlist(product._id) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
                             </button>
