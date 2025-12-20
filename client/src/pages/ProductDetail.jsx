@@ -170,7 +170,7 @@ const ProductDetail = () => {
                     {/* Left: Image Gallery */}
                     <div className="w-full lg:w-3/5 flex flex-col-reverse lg:flex-row gap-4">
                         {/* Thumbnails */}
-                        <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto lg:w-24 lg:h-[600px] scrollbar-hide">
+                        <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto lg:w-24 lg:h-[600px]">
                             {product.images && product.images.map((img, idx) => (
                                 <button
                                     key={idx}
@@ -366,7 +366,6 @@ const ProductDetail = () => {
                         px-4 sm:px-6 py-4
                         overflow-x-auto lg:overflow-visible
                         snap-x lg:snap-none
-                        scrollbar-hide
                         "
                         >
                             {relatedProducts.map((prod) => (

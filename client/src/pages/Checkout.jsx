@@ -434,7 +434,7 @@ function Checkout() {
                         <div className="bg-[#E3D5C3] bg-opacity-95 backdrop-blur-sm rounded-lg p-6 sm:p-8 sticky top-24 border-2 border-[#452215] shadow-[4px_4px_0_#8F5E41]">
                             <h2 className="text-2xl font-bold text-[#442314] mb-6 nunito-exbold">Order Summary</h2>
 
-                            <div className="space-y-4 max-h-96 overflow-y-auto pr-2 mb-6 custom-scrollbar">
+                            <div className="space-y-4 max-h-96 overflow-y-auto mb-6">
                                 {cartItems.map((item) => (
                                     <div key={`${item.id}-${item.color}`} className="flex gap-4 items-start">
                                         <div className="w-16 h-16 shrink-0 bg-gray-200 rounded overflow-hidden">

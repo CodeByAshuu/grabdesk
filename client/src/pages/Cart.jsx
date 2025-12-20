@@ -123,7 +123,7 @@ function Cart() {
     return (
         <>
             <section
-                className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
+                className="min-h-screen w-full overflow-x-hidden text-[#5b3d25]"
                 style={{
                     backgroundColor: "#442314",
                     backgroundImage: "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
@@ -166,18 +166,8 @@ function Cart() {
                                     className="space-y-4 overflow-y-auto p-2"
                                     style={{
                                         maxHeight: 'calc(3 * 256px)', // Adjust based on your card height
-                                        scrollbarWidth: 'none', // Firefox
-                                        msOverflowStyle: 'none', // IE/Edge
                                     }}
                                 >
-                                    {/* Hide scrollbar for Chrome/Safari */}
-                                    <style>
-                                        {`
-                                            .overflow-y-auto::-webkit-scrollbar {
-                                                display: none;
-                                            }
-                                        `}
-                                    </style>
                                     {cartProducts.map((product) => (
                                         <CartCard
                                             key={product.id}
@@ -361,7 +351,6 @@ function Cart() {
                             px-4 sm:px-6 py-4
                             overflow-x-auto lg:overflow-visible
                             snap-x lg:snap-none
-                            scrollbar-hide
                             "
                         >
                             {relatedProducts.map((prod) => (
@@ -385,7 +374,7 @@ function Cart() {
                     </div>
                 </div>
                 <Footer />
-            </section>
+            </section >
         </>
     );
 }
