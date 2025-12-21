@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import api from "../api/axios"; // Import authenticated API instance
+
 
 const ActivityLogs = () => {
   const [logs, setLogs] = useState([
@@ -24,9 +26,9 @@ const ActivityLogs = () => {
     // --- Fetch Initial Logs from Backend ---
     const fetchInitialLogs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/activity-logs');
-        if (response.ok) {
-          const backendLogs = await response.json();
+        const response = await api.get('/admin/activity-logs');
+        if (response.data) {
+          const backendLogs = response.data;
           // Append backend logs after dummy logs
           setLogs((prev) => [...prev, ...backendLogs]);
         }
@@ -34,6 +36,7 @@ const ActivityLogs = () => {
         console.warn('Failed to fetch initial activity logs:', err);
       }
     };
+
 
     fetchInitialLogs();
 
@@ -74,9 +77,9 @@ const ActivityLogs = () => {
     // --- Polling Fallback (enhanced with real backend endpoint) ---
     const fallback = setInterval(async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/activity-logs/latest');
-        if (response.ok) {
-          const latestLogs = await response.json();
+        const response = await api.get('/admin/activity-logs/latest');
+        if (response.data) {
+          const latestLogs = response.data;
           if (latestLogs.length > 0) {
             setLogs((prev) => [...prev, ...latestLogs]);
           }
@@ -85,6 +88,7 @@ const ActivityLogs = () => {
         // Silent fail - fallback should not spam console
       }
     }, 15000);
+
 
     return () => {
       clearInterval(fallback);
