@@ -10,7 +10,7 @@ exports.getDashboardStats = async (req, res) => {
         // 1. Total Sales (Sum of total from non-cancelled orders)
         const salesAgg = await Order.aggregate([
             { $match: { status: { $ne: 'cancelled' } } },
-            { $group: { _id: null, total: { $sum: "$total" } } }
+            { $group: { _id: null, total: { $sum: "$pricing.total" } } }
         ]);
         const totalSales = salesAgg.length > 0 ? salesAgg[0].total : 0;
 
@@ -60,7 +60,7 @@ exports.getSalesHistory = async (req, res) => {
                         month: { $month: "$createdAt" },
                         year: { $year: "$createdAt" }
                     },
-                    sales: { $sum: "$total" }
+                    sales: { $sum: "$pricing.total" }
                 }
             },
             { $sort: { "_id.year": 1, "_id.month": 1 } }
