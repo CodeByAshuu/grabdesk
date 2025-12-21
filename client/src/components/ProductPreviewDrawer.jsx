@@ -39,7 +39,8 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
               {/* IMAGE */}
               <div className="overflow-hidden rounded-lg relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] ">
                 <img
-                  src={product.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3eadc'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='14' fill='%235b3d25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E"}
+                  src={(product.images && product.images.length > 0 ? product.images[0] : null) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3eadc'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='14' fill='%235b3d25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E"}
+                  alt={product.name || "Product"}
                   className="w-full h-48 sm:h-56 object-cover rounded-xl transition-transform duration-300 hover:scale-105"
                 />
               </div>
@@ -56,12 +57,24 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
 
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-                {[
-                  ["Category", product.category || "N/A"],
-                  ["Price", `₹${product.finalPrice?.toFixed(2) || product.basePrice?.toFixed(2) || '0.00'}`],
-                  ["Stock", product.stock],
-                  [
-                    "Status",
+                <div className="p-3 bg-[#F0A322] rounded-xl border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
+                  <p className="text-[14px] text-[#452215] nunito-bold">Category</p>
+                  <p className="font-semibold mt-1">{product.category || "N/A"}</p>
+                </div>
+
+                <div className="p-3 bg-[#F0A322] rounded-xl border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
+                  <p className="text-[14px] text-[#452215] nunito-bold">Price</p>
+                  <p className="font-semibold mt-1">{`₹${product.finalPrice?.toFixed(2) || product.basePrice?.toFixed(2) || '0.00'}`}</p>
+                </div>
+
+                <div className="p-3 bg-[#F0A322] rounded-xl border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
+                  <p className="text-[14px] text-[#452215] nunito-bold">Stock</p>
+                  <p className="font-semibold mt-1">{product.stock}</p>
+                </div>
+
+                <div className="p-3 bg-[#F0A322] rounded-xl border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
+                  <p className="text-[14px] text-[#452215] nunito-bold">Status</p>
+                  <p className="font-semibold mt-1">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${product.isActive
                         ? "bg-green-100 text-green-800"
@@ -69,17 +82,9 @@ const ProductPreviewDrawer = ({ isOpen, onClose, product }) => {
                         }`}
                     >
                       {product.isActive ? "Active" : "Inactive"}
-                    </span>,
-                  ],
-                ].map(([label, value], index) => (
-                  <div
-                    key={index}
-                    className="p-3 bg-[#F0A322] rounded-xl border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]"
-                  >
-                    <p className="text-[14px] text-[#452215] nunito-bold">{label}</p>
-                    <p className="font-semibold mt-1 ">{value}</p>
-                  </div>
-                ))}
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           )}

@@ -36,7 +36,8 @@ function Product() {
             rating: p.stars || p.ratingAverage || p.rating || 0,
             tag: (Array.isArray(p.tags) && p.tags.length > 0) ? (p.tags[0].value || p.tags[0]) : (p.tag || "New"),
             images: (p.images && p.images.length > 0) ? p.images : [],
-            category: p.category || "General",
+            category: p.primaryCategory || p.category || "General", // Use primary category from mapper
+            categories: p.resolvedCategories || p.categories || (p.category ? [p.category] : []), // Use resolved categories
             brand: p.brand || "Generic",
             discount: p.discountPercent || p.discount || 0
           };
@@ -80,11 +81,16 @@ function Product() {
       );
     }
 
-    // Apply category filter
+    // Apply category filter (supports both single and multi-category products)
     if (activeFilters.categories && activeFilters.categories.length > 0) {
-      filtered = filtered.filter(product =>
-        activeFilters.categories.includes(product.category)
-      );
+      filtered = filtered.filter(product => {
+        // Check if product has categories array (new multi-category products)
+        if (product.categories && Array.isArray(product.categories)) {
+          return product.categories.some(cat => activeFilters.categories.includes(cat));
+        }
+        // Fallback to single category field (backward compatibility)
+        return activeFilters.categories.includes(product.category);
+      });
     }
 
     // Apply brand filter

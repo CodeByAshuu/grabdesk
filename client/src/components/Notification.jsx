@@ -178,9 +178,9 @@ function Notification({ onClose, initialMessages = [], onMessageRead }) {
         </div>
 
         <div className="px-6 py-4 border-t border-[#ccafa5]/30 gradient-to-r from-[#f3eadc] to-[#e8ddcd] flex justify-center">
-          <button onClick={handleViewAll}>
+          <div onClick={handleViewAll} className="cursor-pointer">
             <Button labell={"View All Messages"} />
-          </button>
+          </div>
         </div>
       </div>
 

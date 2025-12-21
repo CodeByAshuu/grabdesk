@@ -1,5 +1,6 @@
 const Product = require('../models/Product.model');
 const { processProductImages } = require('../utils/cloudinary');
+const { resolveProductCategories } = require('../utils/categoryMapper');
 
 // Helper function to generate SKU
 const generateSKU = (name, category) => {
@@ -9,12 +10,50 @@ const generateSKU = (name, category) => {
     return `${nameCode}-${categoryCode}-${timestamp}`;
 };
 
+// Helper function to normalize brand names (capitalize properly)
+const normalizeBrandName = (brandInput) => {
+    if (!brandInput) return 'Grabdesk';
+
+    const trimmed = brandInput.trim();
+    if (!trimmed) return 'Grabdesk';
+
+    // Common brand names (case-insensitive mapping to proper case)
+    const knownBrands = {
+        'apple': 'Apple',
+        'samsung': 'Samsung',
+        'nike': 'Nike',
+        'adidas': 'Adidas',
+        'puma': 'Puma',
+        'sony': 'Sony',
+        'lg': 'LG',
+        'microsoft': 'Microsoft',
+        'canon': 'Canon',
+        'dell': 'Dell',
+        'hp': 'HP',
+        'lenovo': 'Lenovo',
+        'grabdesk': 'Grabdesk'
+    };
+
+    const lowerBrand = trimmed.toLowerCase();
+
+    // If it's a known brand, return proper case
+    if (knownBrands[lowerBrand]) {
+        return knownBrands[lowerBrand];
+    }
+
+    // For new/custom brands, capitalize first letter of each word
+    return trimmed
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+};
+
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
 exports.getProducts = async (req, res) => {
     try {
-        const pageSize = 21;
+        const pageSize = 28; // Products per page
         const page = Number(req.query.pageNumber) || 1;
 
         const keyword = req.query.keyword
@@ -31,7 +70,19 @@ exports.getProducts = async (req, res) => {
             .limit(pageSize)
             .skip(pageSize * (page - 1));
 
-        res.json({ products, page, pages: Math.ceil(count / pageSize) });
+        // Enrich products with resolved categories (runtime only, non-destructive)
+        const enrichedProducts = products.map(p => {
+            const productObj = p.toObject();
+            const resolved = resolveProductCategories(p);
+            return {
+                ...productObj,
+                resolvedCategories: resolved.all,
+                primaryCategory: resolved.primary,
+                categoryHierarchy: resolved.hierarchy
+            };
+        });
+
+        res.json({ products: enrichedProducts, page, pages: Math.ceil(count / pageSize) });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Server Error' });
@@ -75,6 +126,48 @@ exports.addProduct = async (req, res) => {
                 message: 'Missing required fields: name, basePrice, and stock are required'
             });
         }
+
+        // Validate category (must be from allowed list)
+        const ALLOWED_CATEGORIES = [
+            'Electronics', 'Fashion', 'Home & Living', 'Beauty & Personal Care',
+            'Sports & Fitness', 'Books & Stationery', 'Grocery', 'Toys & Baby Products',
+            'Storage', 'Furniture', 'Kitchen', 'Automotive', 'Health', 'Office Supplies'
+        ];
+        const trimmedCategory = category?.trim() || 'Electronics';
+        if (!ALLOWED_CATEGORIES.includes(trimmedCategory)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid category. Must be one of: ${ALLOWED_CATEGORIES.join(', ')}`
+            });
+        }
+
+        // Validate brand (must be from allowed list)
+        const ALLOWED_BRANDS = [
+            'Apple', 'Samsung', 'Nike', 'Adidas', 'Puma', 'Sony',
+            'LG', 'Microsoft', 'Canon', 'Dell', 'HP', 'Lenovo', 'Grabdesk'
+        ];
+        const trimmedBrand = brand?.trim() || 'Grabdesk';
+        if (!ALLOWED_BRANDS.includes(trimmedBrand)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid brand. Must be one of: ${ALLOWED_BRANDS.join(', ')}`
+            });
+        }
+
+        // Validate and prepare name
+        const trimmedName = name.trim();
+        if (!trimmedName) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product name cannot be empty'
+            });
+        }
+
+        // Normalize brand name (handles case-insensitive matching and new brands)
+        const normalizedBrand = normalizeBrandName(brand);
+
+        // Generate SKU
+        const finalSku = generateSKU(trimmedName, trimmedCategory);
 
         // Validate basePrice
         const basePriceNum = Number(basePrice);
@@ -126,6 +219,13 @@ exports.addProduct = async (req, res) => {
             });
         }
 
+        // Auto-populate categories array if not provided (non-destructive)
+        let productCategories = req.body.categories || [];
+        if (!productCategories || productCategories.length === 0) {
+            // Use single category as fallback
+            productCategories = trimmedCategory ? [trimmedCategory] : ['Electronics'];
+        }
+
         // Create product document matching MongoDB schema
         const productData = {
             name: trimmedName,
@@ -136,10 +236,11 @@ exports.addProduct = async (req, res) => {
             stock: stockNumber,
             sku: finalSku,
             isActive: true,
-            category: trimmedCategory,
+            category: trimmedCategory, // Keep existing single category field
+            categories: productCategories, // Populate multi-category field
             images: processedImages, // Cloudinary URLs or original URLs
             tags: transformedTags,
-            brand: brand?.trim() || '',
+            brand: normalizedBrand, // Normalized brand name
             model: model?.trim() || '',
             color: color?.trim() || '',
             material: material?.trim() || '',
@@ -167,6 +268,14 @@ exports.addProduct = async (req, res) => {
         }
 
         // Return success with saved document
+
+        if (io) {
+            io.emit('product:created', {
+                productId: savedProduct._id,
+                category: savedProduct.category
+            });
+        }
+
         res.status(201).json({
             success: true,
             message: 'Product added successfully',
@@ -462,7 +571,7 @@ exports.updateProduct = async (req, res) => {
 
         // Optional fields
         if (category) product.category = category;
-        if (brand) product.brand = brand;
+        if (brand) product.brand = normalizeBrandName(brand); // Normalize brand
         if (tags) product.tags = tags;
         if (sizeAvailable) product.sizeAvailable = sizeAvailable;
 

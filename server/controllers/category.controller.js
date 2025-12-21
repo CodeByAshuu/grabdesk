@@ -1,20 +1,71 @@
 const Category = require('../models/Category.model');
+const Product = require('../models/Product.model');
+const { calculateCategoryProductCounts, resolveProductCategories } = require('../utils/categoryMapper');
 
 // @desc    Get all categories
 // @route   GET /api/admin/categories
 // @access  Admin
 exports.getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.find({}).sort({ createdAt: -1 });
+        // HYBRID APPROACH: Managed categories + auto-detected from products
+        // NOW WITH INTELLIGENT CATEGORY MAPPING
 
-        const normalizedCategories = categories.map(cat => ({
-            id: cat._id.toString(),
-            _id: cat._id,
-            name: cat.name,
-            productCount: cat.productCount || 0,
-            createdAt: cat.createdAt,
-            updatedAt: cat.updatedAt
-        }));
+        // 1. Get all managed categories from Category collection
+        const managedCategories = await Category.find({}).sort({ createdAt: -1 });
+        const categoryMap = {};
+
+        managedCategories.forEach(cat => {
+            categoryMap[cat.name] = {
+                id: cat._id.toString(),
+                _id: cat._id,
+                name: cat.name,
+                productCount: 0, // Will be filled below
+                createdAt: cat.createdAt,
+                updatedAt: cat.updatedAt,
+                isManaged: true
+            };
+        });
+
+        // 2. Fetch all products and resolve their categories
+        const allProducts = await Product.find({});
+
+        // Resolve categories for each product using mapper
+        const resolvedProducts = allProducts.map(p => {
+            const productObj = p.toObject();
+            return {
+                ...productObj,
+                resolvedCategories: resolveProductCategories(p)
+            };
+        });
+
+        // 3. Calculate accurate product counts using mapping layer
+        const productCounts = calculateCategoryProductCounts(resolvedProducts, managedCategories);
+
+        // 4. Update managed categories with correct counts
+        Object.keys(categoryMap).forEach(catName => {
+            categoryMap[catName].productCount = productCounts[catName] || 0;
+        });
+
+        // 5. Add auto-detected categories (products exist but no Category document)
+        Object.keys(productCounts).forEach(catName => {
+            if (!categoryMap[catName] && productCounts[catName] > 0) {
+                // Add auto-detected category (not in Category collection)
+                categoryMap[catName] = {
+                    id: `auto-${catName}`,
+                    _id: null,
+                    name: catName,
+                    productCount: productCounts[catName],
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    isManaged: false // Auto-detected from products
+                };
+            }
+        });
+
+        // 6. Convert to array and sort alphabetically
+        const normalizedCategories = Object.values(categoryMap).sort((a, b) =>
+            a.name.localeCompare(b.name)
+        );
 
         res.json(normalizedCategories);
     } catch (error) {
@@ -50,6 +101,12 @@ exports.addCategory = async (req, res) => {
             createdAt: category.createdAt,
             updatedAt: category.updatedAt
         };
+
+        // NEW: Emit Socket.io event for real-time sync
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('category:created', normalizedCategory);
+        }
 
         res.status(201).json({ success: true, message: 'Category added successfully', category: normalizedCategory });
     } catch (error) {
@@ -88,6 +145,12 @@ exports.updateCategory = async (req, res) => {
             updatedAt: category.updatedAt
         };
 
+        // NEW: Emit Socket.io event for real-time sync
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('category:updated', normalizedCategory);
+        }
+
         res.json({ success: true, message: 'Category updated successfully', category: normalizedCategory });
     } catch (error) {
         console.error('Update Category Error:', error);
@@ -104,6 +167,12 @@ exports.deleteCategory = async (req, res) => {
 
         if (!category) {
             return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+
+        // NEW: Emit Socket.io event for real-time sync
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('category:deleted', { id: req.params.id });
         }
 
         res.json({ success: true, message: 'Category deleted successfully' });
