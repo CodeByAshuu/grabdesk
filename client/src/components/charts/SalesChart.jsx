@@ -12,7 +12,12 @@ import {
 
 const SalesChart = ({ data }) => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer 
+      width="99%" 
+      height="100%" 
+      minHeight={200}
+      minWidth={0}
+    >
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="#cbb8a0" />
         <XAxis dataKey="month" stroke="#5b3d25" />

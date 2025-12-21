@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import api from "../api/axios";
 import CartCard from "../components/CartCard";
 import UPI from "../assets/upi.png";
 import Mastercard from "../assets/Mastercard.png";
@@ -16,64 +17,54 @@ import Nike3 from '../assets/Nike3.png';
 
 function Cart() {
     // Sample real data - in production, you'd fetch this from an API
-    const initialCartProducts = [
-        {
-            id: 1,
-            title: "Artisan Coffee Beans",
-            price: 24.99,
-            originalPrice: 29.99,
-            image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
-            color: "Dark Roast",
-            size: "1lb",
-            quantity: 2,
-            description: "Premium Arabica beans, sourced from Colombia",
-            inStock: true,
-            maxQuantity: 10
-        },
-        {
-            id: 2,
-            title: "Ceramic Pour Over",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e7",
-            color: "Terracotta",
-            size: "Standard",
-            quantity: 1,
-            inStock: true,
-            maxQuantity: 5
-        },
-        {
-            id: 3,
-            title: "Coffee Grinder",
-            price: 89.99,
-            originalPrice: 109.99,
-            image: "https://images.unsplash.com/photo-1511920170033-f8396924c348",
-            color: "Brushed Steel",
-            size: "Professional",
-            quantity: 1,
-            description: "Adjustable burr grinder with 15 settings",
-            inStock: true,
-            maxQuantity: 3
-        }
-    ];
+    // Sample real data - in production, you'd fetch this from an API
+    // const initialCartProducts = []; // Removed unused mock data
 
-    const [cartProducts, setCartProducts] = useState(() => {
-        const savedCart = localStorage.getItem('cart');
-        return savedCart ? JSON.parse(savedCart) : initialCartProducts;
-    });
-    const [loading, setLoading] = useState(false);
+    const [cartProducts, setCartProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch cart data from API
+    useEffect(() => {
+        const fetchCart = async () => {
+            try {
+                const response = await api.get('/users/cart');
+                setCartProducts(response.data);
+            } catch (error) {
+                console.error("Error fetching cart:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCart();
+    }, []);
 
     // Remove item from cart
-    const RemoveCart = (itemId) => {
-        setCartProducts(prev => prev.filter(item => item.id !== itemId));
+    const RemoveCart = async (itemId) => {
+        try {
+            await api.delete(`/users/cart/${itemId}`);
+            // Optimistic update
+            setCartProducts(prev => prev.filter(item => item.id !== itemId));
+        } catch (error) {
+            console.error("Error removing item:", error);
+            alert("Failed to remove item");
+        }
     };
 
     // Update quantity
-    const UpdateQuantity = (itemId, newQuantity) => {
-        setCartProducts(prev =>
-            prev.map(item =>
-                item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )
-        );
+    const UpdateQuantity = async (itemId, newQuantity) => {
+        try {
+            await api.put(`/users/cart/${itemId}`, { quantity: newQuantity });
+            // Optimistic update
+            setCartProducts(prev =>
+                prev.map(item =>
+                    item.id === itemId ? { ...item, quantity: newQuantity } : item
+                )
+            );
+        } catch (error) {
+            console.error("Error updating quantity:", error);
+            alert("Failed to update quantity");
+        }
     };
 
     // Calculate subtotal
@@ -100,32 +91,20 @@ function Cart() {
     };
 
     // Clear entire cart
-    const clearCart = () => {
-        setCartProducts([]);
+    const clearCart = async () => {
+        try {
+            await api.delete('/users/cart');
+            setCartProducts([]);
+        } catch (error) {
+            console.error("Error clearing cart:", error);
+            alert("Failed to clear cart");
+        }
     };
 
     // Format currency
     const formatCurrency = (amount) => {
         return `₹${amount.toFixed(2)}`;
     };
-
-    // Load cart data (in production, fetch from API)
-    // useEffect(() => {
-    //     // Example: Fetch cart data from localStorage or API
-    //     const savedCart = localStorage.getItem('cart');
-    //     if (savedCart) {
-    //         try {
-    //             setCartProducts(JSON.parse(savedCart));
-    //         } catch (error) {
-    //             console.error('Error loading cart:', error);
-    //         }
-    //     }
-    // }, []);
-
-    // Save cart data (in production, sync with API)
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartProducts));
-    }, [cartProducts]);
 
     const paymentIcons = {
         UPI: UPI,
@@ -135,16 +114,16 @@ function Cart() {
     };
 
     const relatedProducts = [
-            { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
-            { id: 2, name: "Nike Jordan 1", price: "₹ 15,999.00", images: [Nike3], rating: 4.8, tag: "SALE" },
-            { id: 3, name: "Nike Blazer", price: "₹ 8,499.00", images: [Nike1], rating: 4.3, tag: "HOT" },
-            { id: 4, name: "Nike Zoom", price: "₹ 11,299.00", images: [Nike2], rating: 4.6, tag: "NEW" },
-        ];
+        { id: 1, name: "Nike Air Max", price: "₹ 12,499.00", images: [Nike2], rating: 4.5, tag: "NEW" },
+        { id: 2, name: "Nike Jordan 1", price: "₹ 15,999.00", images: [Nike3], rating: 4.8, tag: "SALE" },
+        { id: 3, name: "Nike Blazer", price: "₹ 8,499.00", images: [Nike1], rating: 4.3, tag: "HOT" },
+        { id: 4, name: "Nike Zoom", price: "₹ 11,299.00", images: [Nike2], rating: 4.6, tag: "NEW" },
+    ];
 
     return (
         <>
             <section
-                className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
+                className="min-h-screen w-full overflow-x-hidden text-[#5b3d25]"
                 style={{
                     backgroundColor: "#442314",
                     backgroundImage: "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
@@ -157,6 +136,11 @@ function Cart() {
                     <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                         CART
                     </h1>
+                    <img
+                        src="/page-emo/cart-emo.png"
+                        alt="Product Page Icon"
+                        className="absolute top-18 lg:top-25 left-26 lg:left-70 w-22 h-22 sm:w-46 sm:h-46 mb-4 object-contain"
+                    />
                 </div>
 
                 <div className="px-4 sm:px-6 lg:px-8 pb-12">
@@ -187,18 +171,8 @@ function Cart() {
                                     className="space-y-4 overflow-y-auto p-2"
                                     style={{
                                         maxHeight: 'calc(3 * 256px)', // Adjust based on your card height
-                                        scrollbarWidth: 'none', // Firefox
-                                        msOverflowStyle: 'none', // IE/Edge
                                     }}
                                 >
-                                    {/* Hide scrollbar for Chrome/Safari */}
-                                    <style>
-                                        {`
-                                            .overflow-y-auto::-webkit-scrollbar {
-                                                display: none;
-                                            }
-                                        `}
-                                    </style>
                                     {cartProducts.map((product) => (
                                         <CartCard
                                             key={product.id}
@@ -278,7 +252,7 @@ function Cart() {
 
                                     <Link
                                         to="/product"
-                                        className="block text-center text- hover:text-[#E3D5C3] text-sm transition-colors mt-3"
+                                        className="block text-center text- hover:text-[#F0A322] text-sm transition-colors mt-3"
                                     >
                                         Continue Shopping
                                     </Link>
@@ -382,31 +356,30 @@ function Cart() {
                             px-4 sm:px-6 py-4
                             overflow-x-auto lg:overflow-visible
                             snap-x lg:snap-none
-                            scrollbar-hide
                             "
                         >
                             {relatedProducts.map((prod) => (
-                            <div
-                                key={prod.id}
-                                className="
+                                <div
+                                    key={prod.id}
+                                    className="
                                 min-w-[220px] sm:min-w-[260px] lg:min-w-0
                                 snap-center
                                 "
-                            >
-                                <ProductCard
-                                namee={prod.name}
-                                pricee={prod.price}
-                                images={prod.images}
-                                rating={prod.rating}
-                                tagg={prod.tag}
-                                />
-                            </div>
+                                >
+                                    <ProductCard
+                                        namee={prod.name}
+                                        pricee={prod.price}
+                                        images={prod.images}
+                                        rating={prod.rating}
+                                        tagg={prod.tag}
+                                    />
+                                </div>
                             ))}
                         </div>
                     </div>
                 </div>
                 <Footer />
-            </section>
+            </section >
         </>
     );
 }

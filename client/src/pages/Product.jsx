@@ -1,136 +1,65 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
-import Nike1 from '../assets/Nike1.png';
-import Nike2 from '../assets/Nike2.png';
-import Nike3 from '../assets/Nike3.png';
 import Searchbar from "../components/Searchbar";
 import FilterPanel from "../components/FilterPannel";
+import api from "../api/axios";
 
 function Product() {
   const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pages, setPages] = useState(1);
   const location = useLocation();
   const initialCategory = location.state?.category;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get(`/products?pageNumber=${pageNumber}`);
+        // Handle paginated response structure
+        const { products, page, pages } = res.data;
+
+        console.log("Raw API Response:", products); // Debug log
+
+        const formattedProducts = products.map(p => {
+          // Normalize data with robust fallbacks
+          return {
+            id: p._id || p.id,
+            name: p.productName || p.name || "No Name",
+            price: p.formattedPrice || p.originalPriceString || (p.price ? `₹ ${p.price}` : "₹ 0"),
+            priceNumber: p.discountedPrice || p.finalPrice || p.price || 0,
+            basePrice: p.basePrice || 0,
+            rating: p.stars || p.ratingAverage || p.rating || 0,
+            tag: (Array.isArray(p.tags) && p.tags.length > 0) ? (p.tags[0].value || p.tags[0]) : (p.tag || "New"),
+            images: (p.images && p.images.length > 0) ? p.images : [],
+            category: p.category || "General",
+            brand: p.brand || "Generic",
+            discount: p.discountPercent || p.discount || 0
+          };
+        });
+
+        console.log("Normalized Products:", formattedProducts); // Debug log
+        setProducts(formattedProducts);
+        setPages(pages);
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [pageNumber]);
 
   const initialFilters = useMemo(() => ({
     categories: initialCategory ? [initialCategory] : []
   }), [initialCategory]);
 
   const [activeFilters, setActiveFilters] = useState(initialFilters);
-
-  // Complete product data with all necessary properties
-  const products = [
-    {
-      id: 1,
-      name: "Nike SE",
-      price: "₹ 10,257.00",
-      priceNumber: 10257,
-      rating: 4.56,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 10
-    },
-    {
-      id: 2,
-      name: "Nike Dunk Low Retro SE",
-      price: "₹ 10,257.00",
-      priceNumber: 10257,
-      rating: 4.56,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 20
-    },
-    {
-      id: 3,
-      name: "Nike Dunk Low Retro",
-      price: "₹ 9,999.00",
-      priceNumber: 9999,
-      rating: 4.3,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 15
-    },
-    {
-      id: 4,
-      name: "Nike Air Max",
-      price: "₹ 12,499.00",
-      priceNumber: 12499,
-      rating: 4.56,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Sports & Fitness",
-      brand: "Nike",
-      discount: 30
-    },
-    {
-      id: 5,
-      name: "Nike Jordan 1",
-      price: "₹ 15,999.00",
-      priceNumber: 15999,
-      rating: 4.8,
-      tag: "SALE",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 50
-    },
-    {
-      id: 6,
-      name: "Nike Blazer",
-      price: "₹ 8,499.00",
-      priceNumber: 8499,
-      rating: 4.3,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Fashion",
-      brand: "Nike",
-      discount: 10
-    },
-    {
-      id: 7,
-      name: "Apple iPhone 15 Pro",
-      price: "₹ 134,900.00",
-      priceNumber: 134900,
-      rating: 4.9,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Electronics",
-      brand: "Apple",
-      discount: 5
-    },
-    {
-      id: 8,
-      name: "Samsung Galaxy S24",
-      price: "₹ 79,999.00",
-      priceNumber: 79999,
-      rating: 4.7,
-      tag: "NEW DROP",
-      images: [Nike1, Nike2, Nike3],
-      category: "Electronics",
-      brand: "Samsung",
-      discount: 10
-    },
-    {
-      id: 9,
-      name: "Adidas Ultraboost",
-      price: "₹ 14,999.00",
-      priceNumber: 14999,
-      rating: 4.6,
-      tag: "SALE",
-      images: [Nike1, Nike2, Nike3],
-      category: "Sports & Fitness",
-      brand: "Adidas",
-      discount: 20
-    }
-  ];
 
   // Handle filter changes from FilterPanel
   const handleFilterChange = (filters) => {
@@ -213,7 +142,7 @@ function Product() {
   return (
     <>
       <section
-        className="min-h-screen w-full overflow-hidden text-[#5b3d25]"
+        className="min-h-screen w-full overflow-x-hidden text-[#5b3d25]"
         style={{
           backgroundColor: "#442314",
           backgroundImage:
@@ -228,6 +157,11 @@ function Product() {
           <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
             PRODUCTS
           </h1>
+          <img
+            src="/page-emo/product-emo.png"
+            alt="Product Page Icon"
+            className="absolute top-18 lg:top-25 left-55 lg:left-145  w-22 h-22 sm:w-52 sm:h-52 mb-4 object-contain"
+          />
         </div>
 
 
@@ -337,31 +271,54 @@ function Product() {
                 </p>
               </div>
             ) : (
-              <div className="
+              <>
+                <div className="
                 grid 
                 grid-cols-1 
                 sm:grid-cols-2 
-                lg:grid-cols-2 
+                lg:grid-cols-3
                 xl:grid-cols-3 
                 gap-4 
-                sm:gap-6
-                lg:gap-6 
-                xl:gap-8 
-                justify-items-center
+                sm:gap-4
+                lg:gap-4 
+                xl:gap-6 
+                px-2
               ">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    images={product.images}
-                    tagg={product.tag}
-                    rating={product.rating}
-                    namee={product.name}
-                    pricee={product.price}
-                    priceNum={product.priceNumber}
-                  />
-                ))}
-              </div>
+                  {filteredProducts.map((product) => (
+                    <div key={product.id} className="w-full flex justify-center">
+                      <ProductCard
+                        id={product.id}
+                        images={product.images}
+                        tagg={product.tag}
+                        rating={product.rating}
+                        namee={product.name}
+                        pricee={product.price}
+                        priceNum={product.priceNumber}
+                        basePrice={product.basePrice}
+                        discount={product.discount}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {pages > 1 && (
+                  <div className="flex justify-center mt-12 gap-2">
+                    {[...Array(pages).keys()].map((x) => (
+                      <button
+                        key={x + 1}
+                        onClick={() => setPageNumber(x + 1)}
+                        className={`px-4 py-2 rounded-md font-bold transition-colors ${pageNumber === x + 1
+                          ? "bg-[#f0a224] text-[#442314]"
+                          : "bg-[#FFE9D5] text-[#442314] hover:bg-[#f0a224] hover:text-[#442314]"
+                          }`}
+                      >
+                        {x + 1}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../api/axios";
 
 const NotificationCenter = () => {
   const [notifications, setNotifications] = useState([
@@ -10,32 +11,75 @@ const NotificationCenter = () => {
 
   const [announcementModal, setAnnouncementModal] = useState(false);
   const [announcementText, setAnnouncementText] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch notifications from backend on mount
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/admin/notifications');
+        if (response.data) {
+          setNotifications(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   // --------------------------------------------
-  // REAL-TIME: Toggle Read / Unread
+  // REAL-TIME: Toggle Read / Unread with backend
   // --------------------------------------------
-  const toggleRead = (id) => {
+  const toggleRead = async (id) => {
+    const previousNotifications = notifications;
+
+    // Optimistic update
     setNotifications((prev) =>
       prev.map((n) =>
         n.id === id ? { ...n, read: !n.read } : n
       )
     );
+
+    try {
+      await api.patch(`/admin/notifications/${id}/read`);
+    } catch (error) {
+      console.error('Error toggling read status:', error);
+      // Rollback on error
+      setNotifications(previousNotifications);
+    }
   };
 
   // --------------------------------------------
-  // REAL-TIME: Delete Notification
+  // REAL-TIME: Delete Notification with backend
   // --------------------------------------------
-  const deleteNotification = (id) => {
+  const deleteNotification = async (id) => {
+    const previousNotifications = notifications;
+
+    // Optimistic update
     setNotifications((prev) => prev.filter((n) => n.id !== id));
+
+    try {
+      await api.delete(`/admin/notifications/${id}`);
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      // Rollback on error
+      setNotifications(previousNotifications);
+      alert('Failed to delete notification');
+    }
   };
 
   // --------------------------------------------
-  // REAL-TIME: Create Announcement
+  // REAL-TIME: Create Announcement with backend
   // --------------------------------------------
-  const sendAnnouncement = () => {
+  const sendAnnouncement = async () => {
     if (!announcementText.trim()) return;
 
-    const newNotification = {
+    const tempNotification = {
       id: Date.now(),
       type: "system",
       message: announcementText,
@@ -43,9 +87,30 @@ const NotificationCenter = () => {
       read: false,
     };
 
-    setNotifications([newNotification, ...notifications]);
+    // Optimistic update
+    setNotifications([tempNotification, ...notifications]);
     setAnnouncementText("");
     setAnnouncementModal(false);
+
+    try {
+      const response = await api.post('/admin/notifications/announcement', {
+        message: announcementText
+      });
+
+      if (response.data.success && response.data.notification) {
+        // Replace temp with real backend data
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === tempNotification.id ? response.data.notification : n))
+        );
+      }
+    } catch (error) {
+      console.error('Error sending announcement:', error);
+      // Rollback on error
+      setNotifications((prev) => prev.filter((n) => n.id !== tempNotification.id));
+      alert('Failed to send announcement. Please try again.');
+      setAnnouncementModal(true);
+      setAnnouncementText(announcementText);
+    }
   };
 
   return (
@@ -53,7 +118,7 @@ const NotificationCenter = () => {
 
       {/* HEADER */}
       <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 sm:gap-4">
-        
+
         <button
           onClick={() => setAnnouncementModal(true)}
           className="px-3 sm:px-4 py-1.5 sm:py-2  rounded-lg text-sm sm:text-base whitespace-nowrap w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer"
@@ -67,18 +132,16 @@ const NotificationCenter = () => {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`p-3 sm:p-4 border rounded-lg    bg-[#E3D5C3] sm:rounded-xl  relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer ${
-              !notification.read ? "border-[#452215] bg-[#E3D5C3]/70" : "border-[#452215]/30"
-            }`}
+            className={`p-3 sm:p-4 border rounded-lg    bg-[#E3D5C3] sm:rounded-xl  relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer ${!notification.read ? "border-[#452215] bg-[#E3D5C3]/70" : "border-[#452215]/30"
+              }`}
           >
             <div className="flex flex-col xs:flex-row xs:justify-between xs:items-start gap-2 xs:gap-3">
 
               {/* Left Side */}
               <div className="flex items-start gap-2 sm:gap-3 min-w-0">
                 <div
-                  className={`w-2.5 h-2.5 sm:w-3 sm:h-3 mt-1 rounded-full shrink-0 cursor-pointer ${
-                    !notification.read ? "bg-[#5b3d25]" : "bg-[#5b3d25]/30"
-                  }`}
+                  className={`w-2.5 h-2.5 sm:w-3 sm:h-3 mt-1 rounded-full shrink-0 cursor-pointer ${!notification.read ? "bg-[#5b3d25]" : "bg-[#5b3d25]/30"
+                    }`}
                   onClick={() => toggleRead(notification.id)}
                 ></div>
 
@@ -95,15 +158,14 @@ const NotificationCenter = () => {
               {/* Right Section: Badge + Delete Button */}
               <div className="flex items-center gap-2">
                 <span
-                  className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded whitespace-nowrap ${
-                    notification.type === "order"
+                  className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded whitespace-nowrap ${notification.type === "order"
                       ? "bg-blue-100 text-[#5B6E8C]"
                       : notification.type === "stock"
-                      ? "bg-[#F7EFE6] text-[#D18B1F]"
-                      : notification.type === "user"
-                      ? "bg-green-100 text-[#3E7C59]"
-                      : "bg-gray-100 text-[#9E3A2E]"
-                  }`}
+                        ? "bg-[#F7EFE6] text-[#D18B1F]"
+                        : notification.type === "user"
+                          ? "bg-green-100 text-[#3E7C59]"
+                          : "bg-gray-100 text-[#9E3A2E]"
+                    }`}
                 >
                   {notification.type}
                 </span>

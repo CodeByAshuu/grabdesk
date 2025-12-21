@@ -8,6 +8,7 @@
   font-weight: 700;
   font-style: normal;
 }
+
 .nunito-exbold {
   font-family: "Nunito", sans-serif;
   font-optical-sizing: auto;
@@ -72,6 +73,7 @@
   font-weight: 400;
   font-style: italic;
 }
+
 /* Open Sans Light */
 .open-sans-light {
   font-family: "Open Sans", sans-serif;
@@ -126,6 +128,7 @@
   shape-outside: inset(0);
   margin-right: 16px;
 }
+
 /* Remove arrows in Chrome, Safari, Edge */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -138,8 +141,4 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;                /* Chrome, Safari */
 }

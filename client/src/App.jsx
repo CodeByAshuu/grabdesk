@@ -7,11 +7,11 @@ import Home from './pages/Home';
 import Checkout from './pages/Checkout';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
-import Studio from './pages/Studio';
+import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import './App.css'
 import Login from './pages/Login';
-import WishlistPage from './components/WishlistPage';
+import WishlistPage from './pages/WishlistPage';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './context/ToastContext';
 import Signup from './pages/Signup';
@@ -24,9 +24,10 @@ function App() {
 
   return (
     <>
-      <WishlistProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <WishlistProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               <Route path='/' element={<Landing />} />
               <Route path='/login' element={<Login />} />
@@ -38,14 +39,14 @@ function App() {
               <Route path='/cart' element={<Cart />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/contact' element={<Contact />} />
-              <Route path='/studio' element={<Studio />} />
-              <Route path='/admindashbord' element={<AdminDashbord/>}/>
+              <Route path='/blog' element={<Blog />} />
+              <Route path='/admindashbord' element={<AdminDashbord />} />
               <Route path='/wishlist' element={<WishlistPage />} />
               
             </Routes>
           </BrowserRouter>
-        </ToastProvider>
-      </WishlistProvider>
+        </WishlistProvider>
+      </ToastProvider>
 
 
     </>

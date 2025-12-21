@@ -1,3 +1,4 @@
+import React from 'react';
 
 const Icons = {
   Package: () => (
@@ -84,30 +85,50 @@ const Icons = {
   ),
 };
 const AdminProductCard = ({ product, onEdit, onDelete, onPreview }) => {
+  const [imgSrc, setImgSrc] = React.useState((product.images && product.images[0]) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23FFE9D5' width='150' height='150'/%3E%3Ctext fill='%235b3d25' font-family='Arial' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E");
+  const [imgIndex, setImgIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    setImgSrc((product.images && product.images[0]) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23FFE9D5' width='150' height='150'/%3E%3Ctext fill='%235b3d25' font-family='Arial' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E");
+    setImgIndex(0);
+  }, [product]);
+
+  const handleImageError = () => {
+    const nextIndex = imgIndex + 1;
+    if (product.images && nextIndex < product.images.length) {
+      setImgIndex(nextIndex);
+      setImgSrc(product.images[nextIndex]);
+    } else {
+      setImgSrc("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23FFE9D5' width='150' height='150'/%3E%3Ctext fill='%235b3d25' font-family='Arial' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E");
+    }
+  };
+
   return (
     <div className=" gowun-dodum-regular bg-[#FFE9D5]  border rounded-xl p-4 flex items-center justify-between  transition relative  border-[#452215] shadow-[4px_4px_0_#8F5E41]  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] cursor-pointer">
-      
+
       {/* Image + Basic Info */}
       <div className="flex items-center gap-4">
         <div className="w-24 h-24 rounded-full overflow-hidden border border-[#5b3d25]/20">
-          <img 
-            src={product.image || "https://via.placeholder.com/150"} 
+          <img
+            src={imgSrc}
+            onError={handleImageError}
             className="w-full h-full object-cover"
+            alt={product.name}
           />
         </div>
         <div>
           <p className="font-semibold text-lg lg:text-xl">{product.name}</p>
-          <p className="text-sm ">{product.price}</p>
+          <p className="text-sm ">₹{product.finalPrice?.toFixed(2) || product.basePrice?.toFixed(2) || '0.00'}</p>
         </div>
       </div>
 
       {/* Stock + Status */}
       <div className="hidden sm:block text-right">
         <p className="text-sm">Stock: {product.stock}</p>
-        <p className="text-sm">Status: {product.status}</p>
+        <p className="text-sm">Status: {product.isActive ? "Active" : "Inactive"}</p>
       </div>
 
-      
+
       <div className="flex gap-3">
         <button onClick={onEdit} className="text-[#5b3d25] hover:text-[#4a3120]">
           <Icons.Edit />

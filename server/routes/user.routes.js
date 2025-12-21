@@ -6,7 +6,16 @@ const {
     updateAddress,
     deleteAddress,
     getMessages,
-    markMessagesRead
+    markMessagesRead,
+    getCart,
+    addToCart,
+    updateCartItem,
+    removeFromCart,
+    clearCart,
+    getWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    clearWishlist
 } = require('../controllers/user.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -16,8 +25,19 @@ router.get('/me', getMe);
 router.get('/messages', getMessages);
 router.put('/messages/mark-read', markMessagesRead);
 
+router.get('/cart', getCart);
+router.post('/cart', addToCart);
+router.put('/cart/:productId', updateCartItem);
+router.delete('/cart/:productId', removeFromCart);
+router.delete('/cart', clearCart);
+
+router.get('/wishlist', getWishlist);
+router.post('/wishlist', addToWishlist);
+router.delete('/wishlist/:productId', removeFromWishlist);
+router.delete('/wishlist', clearWishlist);
+
 router.post('/address', addAddress);
-router.put('/address/:index', updateAddress); // Using index since addresses are array of objects w/o explicit IDs usually unless subdocument
+router.put('/address/:index', updateAddress);
 router.delete('/address/:index', deleteAddress);
 
 module.exports = router;

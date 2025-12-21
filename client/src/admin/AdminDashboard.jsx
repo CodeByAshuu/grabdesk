@@ -5,11 +5,11 @@ import ActivityLogs from "./ActivityLogs";
 import NotificationCenter from "./NotificationSystem";
 import OrderManagement from "./OrderManager";
 import ProductManagement from "./ProductManager";
-
 import UserManagement from "./UserManager";
 import Navbar from "../components/Navbar";
 import SidebarProfile from "../components/Sidebarprofile";
 import Button from "../components/Button";
+import api from "../api/axios";
 
 const Icons = {
   Package: () => (
@@ -101,40 +101,44 @@ const Icons = {
 const AdminManager = () => {
   const [activeSection, setActiveSection] = useState("products");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  
+
   // Measurement refs & state for auto-height
   const navbarRef = useRef(null);
   const headerRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(null);
 
   // Sample data for all sections
-  const [products, setProducts] = useState([
-    { id: 1, name: "Premium Leather Wallet", category: "Accessories", price: "₹89.99", stock: 24, status: "Active" },
-    { id: 2, name: "Handcrafted Wooden Watch", category: "Watches", price: "₹149.99", stock: 12, status: "Active" },
-    { id: 3, name: "Organic Cotton T-Shirt", category: "Clothing", price: "₹34.99", stock: 5, status: "Low Stock" },
-    { id: 4, name: "Artisan Ceramic Mug", category: "Home", price: "₹24.99", stock: 0, status: "Out of Stock" },
-  ]);
+  const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
-  const [orders, setOrders] = useState([
-    { id: "ORD-1001", customer: "John Smith", date: "2024-01-15", total: "₹189.50", status: "Pending", payment: "Paid" },
-    { id: "ORD-1002", customer: "Emma Wilson", date: "2024-01-14", total: "₹245.99", status: "Shipped", payment: "Paid" },
-    { id: "ORD-1003", customer: "Michael Brown", date: "2024-01-13", total: "₹89.99", status: "Delivered", payment: "Paid" },
-    { id: "ORD-1004", customer: "Sarah Johnson", date: "2024-01-12", total: "₹150.00", status: "Canceled", payment: "Refunded" },
-  ]);
+  // Fetch products from backend on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        const response = await api.get('/admin/products');
+        if (response.data.products) {
+          setProducts(response.data.products);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        // Keep empty array on error
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
 
-  const [users, setUsers] = useState([
-    { id: 1, name: "John Smith", email: "john@example.com", role: "Customer", status: "Active", lastLogin: "Today" },
-    { id: 2, name: "Admin User", email: "admin@store.com", role: "Admin", status: "Active", lastLogin: "Today" },
-    { id: 3, name: "Emma Wilson", email: "emma@example.com", role: "Customer", status: "Blocked", lastLogin: "2 days ago" },
-    { id: 4, name: "Moderator", email: "mod@store.com", role: "Moderator", status: "Active", lastLogin: "Yesterday" },
-  ]);
+    fetchProducts();
+  }, []);
 
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Accessories", productCount: 42, status: "Active" },
-    { id: 2, name: "Clothing", productCount: 89, status: "Active" },
-    { id: 3, name: "Home Decor", productCount: 31, status: "Active" },
-    { id: 4, name: "Watches", productCount: 18, status: "Active" },
-  ]);
+
+  const [orders, setOrders] = useState([]);
+
+  const [users, setUsers] = useState([]);
+
+
+  const [categories, setCategories] = useState([]);
+
 
   const [coupons, setCoupons] = useState([
     { id: 1, code: "WELCOME20", discount: "20%", validUntil: "2024-02-15", used: 124, status: "Active" },
@@ -143,8 +147,8 @@ const AdminManager = () => {
   ]);
 
   const [userData, setUserData] = useState({
-    name: "Admin User",
-    email: "admin@store.com",
+    name: "Admin",
+    email: "admin123@grabdesk.in",
     avatar: "",
     joinDate: "2024-01-01"
   });
@@ -156,10 +160,10 @@ const AdminManager = () => {
     { id: "orders", label: "Orders", icon: Icons.ShoppingCart },
     { id: "users", label: "Users", icon: Icons.Users },
     { id: "categories", label: "Categories", icon: Icons.Tag },
-    
+
     { id: "notifications", label: "Notifications", icon: Icons.Bell },
     { id: "activity", label: "Activity Logs", icon: Icons.Activity },
-   
+
   ];
 
   const renderSectionContent = () => {
@@ -204,14 +208,14 @@ const AdminManager = () => {
   }, []);
 
   return (
-    <div 
-      className=" pb-2 w-full overflow-hidden text-[#5b3d25]"
-        style={{
-          backgroundColor: "#442314",
-          backgroundImage:
-            "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
-          backgroundSize: "14px 14px",
-        }}
+    <div
+      className="pb-2 w-full max-w-[100vw] h-screen overflow-y-auto overflow-x-hidden text-[#5b3d25] flex flex-col"
+      style={{
+        backgroundColor: "#442314",
+        backgroundImage:
+          "radial-gradient(circle, rgba(110, 76, 42, 0.18) 8%, rgba(243, 234, 220, 0) 9%)",
+        backgroundSize: "14px 14px",
+      }}
     >
 
 
@@ -219,12 +223,12 @@ const AdminManager = () => {
         <h1 className="text-[#E3D5C3] boldonse-bold text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl wrap-break-word max-w-full mb-3 sm:mb-4 md:mb-8 px-2 sm:px-0">
           DASHBOARD
         </h1>
-        
+
         {/* MOBILE PROFILE BOX - Visible only on mobile */}
         <div className="lg:hidden mb-4 flex flex-col items-center">
           <div className=" text-[#E3D5C3] p-4 w-full max-w-sm">
             <div className="flex items-center gap-4">
-              <div className="w-[120px] h-[120px] rounded-full bg-[#5b3d25]/10 flex items-center justify-center overflow-hidden border-2 border-[#5b3d25]/20">
+              <div className="w-[120px] h-[120px] rounded-full bg-[#E3D5C3] flex items-center justify-center overflow-hidden border-2 border-[#5b3d25]/20">
                 {userData.avatar ? (
                   <img src={userData.avatar} alt={userData.name} className="w-full h-full object-cover" />
                 ) : (
@@ -234,9 +238,9 @@ const AdminManager = () => {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg text-[#5b3d25] truncate">{userData.name}</h3>
-                <p className="text-sm text-[#5b3d25]/70 truncate">{userData.email}</p>
-                <p className="text-xs text-[#5b3d25]/50 mt-1">Joined: {userData.joinDate}</p>
+                <h3 className="font-semibold text-lg  truncate">{userData.name}</h3>
+                <p className="text-sm  truncate">{userData.email}</p>
+
                 <div className="mt-2 px-2 py-1 bg-[#5b3d25]/10 text-[#5b3d25] rounded text-xs inline-block">
                   Admin
                 </div>
@@ -246,100 +250,98 @@ const AdminManager = () => {
         </div>
       </div>
 
-      
-      
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 h-full">
-          {/* MOBILE HORIZONTAL TABS - Improved for small screens */}
-          <div className="lg:hidden mb-4">
-            <div className="flex gap-1 mb-2 overflow-x-auto pb-3 scrollbar-hide nunito-exbold">
-              {sections.map(section => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 shrink-0 ${
-                    activeSection === section.id
-                      ? "bg-[#5b3d25] text-white"
-                      : "bg-[#5b3d25]/10 hover:bg-[#5b3d25]/20"
+
+
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 flex-1 flex flex-col">
+        {/* MOBILE HORIZONTAL TABS - Improved for small screens */}
+        <div className="lg:hidden mb-4">
+          <div className="flex gap-1 mb-2 overflow-x-auto pb-3 scrollbar-hide nunito-exbold">
+            {sections.map(section => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`flex items-center gap-1.5 px-3 bg-[#E3D5C3] py-2 rounded-lg transition-all duration-200 shrink-0 ${activeSection === section.id
+                  ? "bg-[#E3D5C3] text-[#452215] "
+                  : "bg-[#E3D5C3]/10 hover:bg-[#452215]/20 text-[#E3D5C3]"
                   }`}
-                >
-                  <section.icon className="w-4 h-4" />
-                  <span className="text-lg whitespace-nowrap">{section.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* SIDEBAR & MAIN CONTENT ROW - MUST HAVE h-full */}
-          <div className="flex flex-col lg:flex-row gap-4 sm:gap-5 md:gap-6 lg:gap-8 h-full ">
-            
-            {/* LEFT SIDEBAR - Desktop only - NO CHANGES */}
-            <div className="hidden lg:block lg:w-[200px] xl:w-[220px] shrink-0 sticky top-0 self-start ">
-              <div className="bg-[#FFE9D5] relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 mx-auto text-[#452215] cursor-pointer backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4  flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {/* Admin Profile Section */}
-                <div className="flex flex-col items-center">
-                  <SidebarProfile userData={userData} setUserData={setUserData} Icons={Icons} width={160} height={160}/>
-                </div>
-
-                {/* Navigation Items - Enhanced for wider sidebar */}
-                <h3 className="text-2xl font-bold mb-3 text-[#5b3d25] text-center lg:text-left">Management</h3>
-                <div className="space-y-1.5 flex-1 nunito-exbold">
-                  {sections.map(section => (
-                    <button
-                      key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all text-[18px] duration-200 ${
-                        activeSection === section.id
-                          ? "bg-[#5b3d25] text-white"
-                          : "hover:bg-[#5b3d25]/10 text-[#5b3d25]"
-                      }`}
-                      title={section.label}
-                    >
-                      <section.icon />
-                      <span className="truncate">{section.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Sidebar Footer */}
-                <div className="pt-4 mt-4 border-t border-[#5b3d25]/10 text-xs text-[#5b3d25]/50">
-                  <Button labell={"Logout"}/>
-                </div>
-              </div>
-            </div>
-
-            {/* MAIN CONTENT BOX - FIXED HEIGHT WITH HIDDEN SCROLLBAR */}
-            <div className="flex-1 min-h-0">
-              <div className="h-full  flex flex-col">
-                
-                {/* Content Header - Improved spacing for mobile */}
-                <div className="p-1.5 sm:p-2 border-b border-[#5b3d25]/10 shrink-0">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h2 className="text-lg sm:text-xl md:text-4xl font-semibold text-[#E3D5C3] nunito-exbold">
-                        {sections.find(s => s.id === activeSection)?.label || "Dashboard"}
-                      </h2>
-                      <p className="text-xs mt-1 gowun-dodum-regular">
-                        Manage your {sections.find(s => s.id === activeSection)?.label.toLowerCase()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* SCROLLABLE CONTENT AREA - FIXED HEIGHT, HIDDEN SCROLLBAR */}
-                <div className="flex-1 overflow-hidden">
-                  <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    <div className="p-3 sm:p-4 md:p-6">
-                      {renderSectionContent()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+              >
+                <section.icon className="w-4 h-4" />
+                <span className="text-lg whitespace-nowrap">{section.label}</span>
+              </button>
+            ))}
           </div>
         </div>
+
+        {/* SIDEBAR & MAIN CONTENT ROW - MUST HAVE h-full */}
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-5 md:gap-6 lg:gap-8 min-h-full">
+
+          {/* LEFT SIDEBAR - Desktop only - NO CHANGES */}
+          <div className="hidden lg:block lg:w-[200px] xl:w-[220px] shrink-0 sticky top-0 self-start ">
+            <div className="bg-[#FFE9D5] relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all duration-300 hover:shadow-[6px_6px_0_#8F5E41] hover:-translate-y-1 mx-auto text-[#452215] cursor-pointer backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4  flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {/* Admin Profile Section */}
+              <div className="flex flex-col items-center">
+                <SidebarProfile userData={userData} setUserData={setUserData} Icons={Icons} width={160} height={160} />
+              </div>
+
+              {/* Navigation Items - Enhanced for wider sidebar */}
+              <h3 className="text-2xl font-bold mb-3 text-[#5b3d25] text-center lg:text-left">Management</h3>
+              <div className="space-y-1.5 flex-1 nunito-exbold">
+                {sections.map(section => (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all text-[18px] duration-200 ${activeSection === section.id
+                      ? "bg-[#5b3d25] text-white"
+                      : "hover:bg-[#5b3d25]/10 text-[#5b3d25]"
+                      }`}
+                    title={section.label}
+                  >
+                    <section.icon />
+                    <span className="truncate">{section.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Sidebar Footer */}
+              <div className="pt-4 mt-4 border-t border-[#5b3d25]/10 text-xs text-[#5b3d25]/50">
+                <Button labell={"Logout"} />
+              </div>
+            </div>
+          </div>
+
+          {/* MAIN CONTENT BOX - FIXED HEIGHT WITH HIDDEN SCROLLBAR */}
+          <div className="flex-1">
+            <div className="flex flex-col">
+
+              {/* Content Header - Improved spacing for mobile */}
+              <div className="p-1.5 sm:p-2 border-b border-[#5b3d25]/10 shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-lg sm:text-xl md:text-4xl font-semibold text-[#E3D5C3] nunito-exbold">
+                      {sections.find(s => s.id === activeSection)?.label || "Dashboard"}
+                    </h2>
+                    <p className="text-xs mt-1 gowun-dodum-regular">
+                      Manage your {sections.find(s => s.id === activeSection)?.label.toLowerCase()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* SCROLLABLE CONTENT AREA - FIXED HEIGHT, HIDDEN SCROLLBAR */}
+              <div className="flex-1">
+                <div className="">
+                  <div className="p-3 sm:p-4 md:p-6">
+                    {renderSectionContent()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-    
+    </div>
+
   );
 };
 

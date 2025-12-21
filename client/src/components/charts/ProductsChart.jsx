@@ -12,7 +12,7 @@ import {
 
 const ProductsChart = ({ data }) => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="99%" height="100%" minWidth={0} minHeight={200}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="#cbb8a0" />
         <XAxis dataKey="name" stroke="#5b3d25" />

@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { io } from "socket.io-client";
+import api from "../api/axios"; // Import authenticated API instance
+
 
 const ActivityLogs = () => {
   const [logs, setLogs] = useState([
@@ -20,47 +23,76 @@ const ActivityLogs = () => {
   useEffect(scrollToBottom, [logs]); // scroll only when logs change
 
   useEffect(() => {
-    // --- WebSocket Connection (Replace URL with your backend WebSocket URL) ---
-    try {
-      wsRef.current = new WebSocket("ws://localhost:5000/activity");
-
-      wsRef.current.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-
-          // Expected format:
-          // { message: "Product added", type: "product", time: "12:30 PM" }
-
-          if (data.message) {
-            setLogs((prev) => [...prev, data]);
-          }
-        } catch (err) {
-          console.warn("Invalid WS Activity Log Format:", event.data);
+    // --- Fetch Initial Logs from Backend ---
+    const fetchInitialLogs = async () => {
+      try {
+        const response = await api.get('/admin/activity-logs');
+        if (response.data) {
+          const backendLogs = response.data;
+          // Append backend logs after dummy logs
+          setLogs((prev) => [...prev, ...backendLogs]);
         }
-      };
+      } catch (err) {
+        console.warn('Failed to fetch initial activity logs:', err);
+      }
+    };
 
-      wsRef.current.onerror = () => {
-        console.warn("WebSocket failed — falling back to dummy updates.");
-      };
+
+    fetchInitialLogs();
+
+    // --- Socket.IO Connection (replaces native WebSocket) ---
+    let socket = null;
+    try {
+      socket = io('http://localhost:5000/activity', {
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000
+      });
+
+      wsRef.current = socket;
+
+      socket.on('connect', () => {
+        console.log('Connected to activity logs via Socket.IO');
+      });
+
+      socket.on('newLog', (data) => {
+        // Expected format: { message, type, time }
+        if (data.message) {
+          setLogs((prev) => [...prev, data]);
+        }
+      });
+
+      socket.on('connect_error', (err) => {
+        console.warn('Socket.IO connection error:', err.message);
+      });
+
+      socket.on('disconnect', () => {
+        console.warn('Disconnected from Socket.IO — polling fallback active');
+      });
     } catch (err) {
-      console.warn("WebSocket not available:", err);
+      console.warn('Socket.IO not available:', err);
     }
 
-    // OPTIONAL: Polling fallback (only if needed)
-    const fallback = setInterval(() => {
-      setLogs((prev) => [
-        ...prev,
-        {
-          message: "Background sync check",
-          type: "system",
-          time: new Date().toLocaleTimeString(),
-        },
-      ]);
+    // --- Polling Fallback (enhanced with real backend endpoint) ---
+    const fallback = setInterval(async () => {
+      try {
+        const response = await api.get('/admin/activity-logs/latest');
+        if (response.data) {
+          const latestLogs = response.data;
+          if (latestLogs.length > 0) {
+            setLogs((prev) => [...prev, ...latestLogs]);
+          }
+        }
+      } catch (err) {
+        // Silent fail - fallback should not spam console
+      }
     }, 15000);
+
 
     return () => {
       clearInterval(fallback);
-      if (wsRef.current) wsRef.current.close();
+      if (socket) socket.disconnect();
     };
   }, []);
 

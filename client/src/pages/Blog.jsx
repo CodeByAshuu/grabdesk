@@ -1,12 +1,14 @@
 import React from "react";
 import FashionWebsite from "../components/FashionWebsite";
+import Navbar  from "../components/Navbar";
 
-function Studio() {
+function Blog() {
     return (
         <>
+            <Navbar />
             <FashionWebsite />
         </>
     );
 }
 
-export default Studio;
+export default Blog;

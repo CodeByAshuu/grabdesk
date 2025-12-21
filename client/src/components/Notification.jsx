@@ -115,10 +115,8 @@ function Notification({ onClose, initialMessages = [], onMessageRead }) {
         <div className="relative">
           <div
             ref={scrollContainerRef}
-            className="max-h-[480px] overflow-y-auto scrollbar-hide"
+            className="max-h-[480px] overflow-y-auto"
             style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
               WebkitOverflowScrolling: 'touch'
             }}
           >
@@ -147,8 +145,8 @@ function Notification({ onClose, initialMessages = [], onMessageRead }) {
                     >
                       <div className="flex gap-4 items-start">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${!notification.read
-                            ? 'bg-[#F0A322] text-white'
-                            : 'bg-[#d8cdbd] text-[#5b3d25]'
+                          ? 'bg-[#F0A322] text-white'
+                          : 'bg-[#d8cdbd] text-[#5b3d25]'
                           }`}>
                           {notification.icon}
                           {!notification.read && (
@@ -187,13 +185,6 @@ function Notification({ onClose, initialMessages = [], onMessageRead }) {
       </div>
 
       <style jsx>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

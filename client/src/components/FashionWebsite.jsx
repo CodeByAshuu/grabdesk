@@ -4,6 +4,7 @@ import { FaHeart } from 'react-icons/fa';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import Navbar from './Navbar';
+import Footer from './Footer';
 
 export default function FashionWebsite() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -50,9 +51,6 @@ export default function FashionWebsite() {
       <div className="text-xs py-2 px-4 text-center" style={{ backgroundColor: '#5a2f1f', color: '#FFE9D5' }}>
         Sign up and get 20% off your first order. Sign Up Now
       </div>
-
-      {/* Navigation */}
-      <Navbar />
 
       {/* Hero Section */}
       <div className="relative overflow-hidden" style={{ backgroundColor: '#FFE9D5' }}>
@@ -275,7 +273,7 @@ export default function FashionWebsite() {
           </div>
         </div>
       </div>
-
+      <Footer />
       {/* Footer */}
       <footer className="py-12" style={{ backgroundColor: '#452215', color: '#FFE9D5' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
