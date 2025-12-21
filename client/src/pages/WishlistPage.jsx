@@ -16,6 +16,11 @@ const WishlistHeader = ({ itemCount, onClearAll, onSortChange }) => {
           <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
             WISHLIST
           </h1>
+          <img
+            src="/page-emo/wishlist-emo1.png"
+            alt="Product Page Icon"
+            className="absolute top-18 lg:top-20 left-77 lg:left-110 w-22 h-22 sm:w-58 sm:h-58 mb-4 object-contain rotate-25"
+          />
         </div>
 
         <div className="flex gap-3">

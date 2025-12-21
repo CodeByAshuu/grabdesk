@@ -157,6 +157,11 @@ function Product() {
           <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
             PRODUCTS
           </h1>
+          <img
+            src="/page-emo/product-emo.png"
+            alt="Product Page Icon"
+            className="absolute top-18 lg:top-25 left-55 lg:left-145  w-22 h-22 sm:w-52 sm:h-52 mb-4 object-contain"
+          />
         </div>
 
 

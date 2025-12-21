@@ -225,6 +225,11 @@ function Checkout() {
                 <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                     CHECKOUT
                 </h1>
+                <img
+                    src="/page-emo/checkout-emo.png"
+                    alt="Product Page Icon"
+                    className="absolute top-20 lg:top-25 left-60 lg:left-155 w-22 h-22 sm:w-46 sm:h-46 mb-4 object-contain"
+                />
             </div>
 
             {/* Progress Indicator */}

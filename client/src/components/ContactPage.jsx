@@ -88,6 +88,11 @@ export default function ContactPage() {
         <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
           CONTACT US
         </h1>
+        <img
+            src="/page-emo/contact-emo.png"
+            alt="Product Page Icon"
+            className="absolute top-10 lg:top-5 left-65 lg:left-160 w-32 h-32 sm:w-82 sm:h-82 mb-4 object-contain"
+          />
       </div>
 
       <section className="max-w-5xl mx-auto space-y-16">
