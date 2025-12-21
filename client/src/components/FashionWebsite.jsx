@@ -5,6 +5,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import blogHero from '../assets/blog_hero.png';
 
 export default function FashionWebsite() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -35,7 +36,7 @@ export default function FashionWebsite() {
       title: "Elevate Your",
       subtitle: "Style!",
       tagline: "HELLO GORGEOUS",
-      image: "https://images.unsplash.com/photo-1492288991661-058aa541ff43?w=800&h=600&fit=crop"
+      image: blogHero
     },
     {
       title: "New Season",
