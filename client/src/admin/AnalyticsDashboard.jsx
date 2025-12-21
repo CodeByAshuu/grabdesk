@@ -229,7 +229,7 @@ const AnalyticsDashboard = () => {
         {/* SALES CHART */}
         <div className="bg-[#FFE9D5] gowun-dodum-regular border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] rounded-lg p-4 sm:p-6 ">
           <h3 className="font-semibold mb-4 text-sm sm:text-base">Sales Overview</h3>
-          <div className="h-48 sm:h-56 md:h-64 w-full">
+          <div className="h-48 sm:h-56 md:h-64 min-h-[300px] w-full">
             <SalesChart data={salesData.length ? salesData : []} />
           </div>
         </div>
@@ -237,7 +237,7 @@ const AnalyticsDashboard = () => {
         {/* TOP PRODUCTS CHART */}
         <div className="bg-[#FFE9D5] gowun-dodum-regular border  rounded-lg p-4 sm:p-6 relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
           <h3 className="font-semibold mb-4 text-sm sm:text-base">Top Products</h3>
-          <div className="h-48 sm:h-56 md:h-64 w-full">
+          <div className="h-48 sm:h-56 md:h-64 min-h-[300px] w-full">
             <ProductsChart data={productData.length ? productData : []} />
           </div>
         </div>
