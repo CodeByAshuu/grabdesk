@@ -1,4 +1,5 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AnalyticsDashboard from "./AnalyticsDashboard";
 import CategoryManagement from "./CategoryManagement";
 import ActivityLogs from "./ActivityLogs";
@@ -6,6 +7,7 @@ import NotificationCenter from "./NotificationSystem";
 import OrderManagement from "./OrderManager";
 import ProductManagement from "./ProductManager";
 import UserManagement from "./UserManager";
+import UserMessaging from "./UserMessaging";
 import Navbar from "../components/Navbar";
 import SidebarProfile from "../components/Sidebarprofile";
 import Button from "../components/Button";
@@ -63,6 +65,11 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
     </svg>
   ),
+  Mail: () => (
+    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  ),
   Edit: () => (
     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -99,6 +106,7 @@ const Icons = {
 
 
 const AdminManager = () => {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("products");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -106,6 +114,13 @@ const AdminManager = () => {
   const navbarRef = useRef(null);
   const headerRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(null);
+
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   // Sample data for all sections
   const [products, setProducts] = useState([]);
@@ -160,7 +175,7 @@ const AdminManager = () => {
     { id: "orders", label: "Orders", icon: Icons.ShoppingCart },
     { id: "users", label: "Users", icon: Icons.Users },
     { id: "categories", label: "Categories", icon: Icons.Tag },
-
+    { id: "messaging", label: "Messages", icon: Icons.Mail },
     { id: "notifications", label: "Notifications", icon: Icons.Bell },
     { id: "activity", label: "Activity Logs", icon: Icons.Activity },
 
@@ -178,6 +193,8 @@ const AdminManager = () => {
         return <UserManagement users={users} setUsers={setUsers} />;
       case "categories":
         return <CategoryManagement categories={categories} setCategories={setCategories} />;
+      case "messaging":
+        return <UserMessaging />;
       case "notifications":
         return <NotificationCenter />;
       case "activity":
@@ -304,7 +321,9 @@ const AdminManager = () => {
 
               {/* Sidebar Footer */}
               <div className="pt-4 mt-4 border-t border-[#5b3d25]/10 text-xs text-[#5b3d25]/50">
-                <Button labell={"Logout"} />
+                <div onClick={handleLogout}>
+                  <Button labell={"Logout"} />
+                </div>
               </div>
             </div>
           </div>
