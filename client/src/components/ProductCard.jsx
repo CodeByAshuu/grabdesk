@@ -68,6 +68,12 @@ function ProductCard(props) {
 
     const handleLikeClick = (e) => {
         e.stopPropagation();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            addToast("Please login to website", "error");
+            return;
+        }
+
         if (isLiked) {
             removeFromWishlist(props.id);
             addToast("Removed from wishlist", "info");
@@ -79,6 +85,12 @@ function ProductCard(props) {
 
     const handleBuyClick = async (e) => {
         e.stopPropagation();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            addToast("Please login to website", "error");
+            navigate('/login');
+            return;
+        }
 
         try {
             await api.post('/users/cart', {

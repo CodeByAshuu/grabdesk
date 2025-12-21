@@ -117,33 +117,12 @@ export default function FashionWebsite() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      const prod = {
-                        id: item.id,
-                        name: item.name,
-                        originalPriceString: item.price,
-                        price: typeof item.price === 'number' ? item.price : parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0,
-                        rating: item.rating || 4.0,
-                        images: [item.image],
-                        available: true,
-                      };
-
-                      if (isInWishlist(item.id)) {
-                        removeFromWishlist(item.id);
-                        addToast(`${item.name} removed from wishlist`, 'info');
-                      } else {
-                        addToWishlist(prod);
-                        addToast(`${item.name} added to wishlist`, 'success');
+                      const token = localStorage.getItem('token');
+                      if (!token) {
+                        addToast("Please login to website", "error");
+                        return;
                       }
-                    }}
-                    className="absolute top-4 right-4 p-2 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
-                    aria-label="Toggle wishlist"
-                    style={{ backgroundColor: 'rgba(209,154,44,0.95)', color: 'white' }}
-                  >
-                    <FaHeart className={`w-4 h-4 ${isInWishlist(item.id) ? 'text-red-500' : 'text-white'}`} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
+
                       const prod = {
                         id: item.id,
                         name: item.name,
@@ -235,93 +214,9 @@ export default function FashionWebsite() {
         </div>
       </div>
 
-      {/* Newsletter */}
-      <div style={{ backgroundColor: '#5a2f1f' }} className="py-16">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-3xl font-serif mb-4" style={{ color: '#FFE9D5' }}>Fashionable Today</h3>
-          <p className="mb-8" style={{ color: '#FFE9D5' }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          </p>
-          <div className="flex max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email..."
-              value={newsletterEmail}
-              onChange={(e) => setNewsletterEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-l-sm focus:outline-none bg-white text-[#452215] placeholder-gray-500 border border-[#d4a574]"
-            />
-            <button
-              onClick={() => {
-                const email = (newsletterEmail || '').trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!email) {
-                  addToast('Please enter your email', 'error');
-                  return;
-                }
-                if (!emailRegex.test(email)) {
-                  addToast('Please enter a valid email address', 'error');
-                  return;
-                }
-                setNewsletterEmail('');
-                addToast('Thanks for subscribing', 'success');
-              }}
-              className="px-6 py-3 rounded-r-sm hover:bg-[#6b4a3f] transition border border-l-0 border-[#d4a574]"
-              style={{ backgroundColor: '#452215', color: '#FFE9D5' }}
-            >
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </div>
+
       <Footer />
-      {/* Footer */}
-      <footer className="py-12" style={{ backgroundColor: '#452215', color: '#FFE9D5' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h4 className="font-serif text-xl mb-4 italic">Women's</h4>
-              <p className="text-sm text-gray-400">
-                Elevate your style with our curated collection of women's fashion.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold mb-4">Shop</h5>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition">New Arrivals</a></li>
-                <li><a href="#" className="hover:text-white transition">Dresses</a></li>
-                <li><a href="#" className="hover:text-white transition">Tops</a></li>
-                <li><a href="#" className="hover:text-white transition">Sale</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold mb-4">Customer Care</h5>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">Contact Us</a></li>
-                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">Shipping</a></li>
-                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">Returns</a></li>
-                <li><a href="/contact" onClick={(e)=>{e.preventDefault(); navigate('/contact')}} className="hover:text-white transition">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold mb-4">Follow Us</h5>
-              <div className="flex space-x-4">
-                <a href="#" className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
-                  <span className="text-xs">f</span>
-                </a>
-                <a href="#" className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
-                  <span className="text-xs">t</span>
-                </a>
-                <a href="#" className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-600 transition">
-                  <span className="text-xs">i</span>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="border-t pt-8 text-center text-sm" style={{ borderColor: '#8F5E41', color: '#d4a574' }}>
-            © 2025 Women's Fashion. All rights reserved.
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }

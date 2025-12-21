@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import { useToast } from "../context/ToastContext";
 import { Link } from "react-router-dom";
 
 function Footer() {
+    const [email, setEmail] = useState('');
+    const { addToast } = useToast();
     return (
         <footer className="w-full bg-[#f3eadc] text-[#5b3d25] pt-16 pb-8 px-6 border-t border-[#d4c5b0]">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
@@ -61,9 +64,22 @@ function Footer() {
                         <input
                             type="email"
                             placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="px-4 py-3 bg-transparent border border-[#5b3d25] focus:outline-none focus:border-[#f0a224] text-sm"
                         />
-                        <button className="px-6 py-3 bg-[#5b3d25] text-[#f3eadc] text-sm font-bold hover:bg-[#4a3020] transition-colors uppercase tracking-wider">
+                        <button
+                            onClick={() => {
+                                const val = (email || '').trim();
+                                if (!val) {
+                                    addToast('Please enter your email', 'error');
+                                    return;
+                                }
+                                setEmail('');
+                                addToast('Thanks for subscribing', 'success');
+                            }}
+                            className="px-6 py-3 bg-[#5b3d25] text-[#f3eadc] text-sm font-bold hover:bg-[#4a3020] transition-colors uppercase tracking-wider"
+                        >
                             Subscribe
                         </button>
                     </div>
