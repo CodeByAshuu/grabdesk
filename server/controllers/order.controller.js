@@ -47,8 +47,8 @@ exports.createOrder = async (req, res) => {
             deliveryMethod === 'express'
                 ? 15.0
                 : subtotal > 50
-                ? 0
-                : 5.99;
+                    ? 0
+                    : 5.99;
 
         const tax = subtotal * 0.085;
         const total = subtotal + shipping + tax;
@@ -102,7 +102,7 @@ exports.getMyOrders = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find({})
-            .populate('userId', 'name email')
+            .populate('user', 'name email')
             .sort({ createdAt: -1 });
 
         const normalizedOrders = orders.map(order => {
@@ -114,13 +114,13 @@ exports.getAllOrders = async (req, res) => {
                 id: order._id.toString(),
                 _id: order._id,
                 customer:
-                    order.userId?.name ||
-                    order.userId?.email ||
+                    order.user?.name ||
+                    order.user?.email ||
                     'Unknown Customer',
                 status: frontendStatus,
                 total:
-                    typeof order.total === 'number'
-                        ? `₹${order.total.toFixed(2)}`
+                    typeof order.pricing?.total === 'number'
+                        ? `₹${order.pricing.total.toFixed(2)}`
                         : '₹0.00',
                 payment: 'Paid',
                 date: order.createdAt
@@ -174,7 +174,7 @@ exports.updateOrderStatus = async (req, res) => {
             req.params.id,
             { status: backendStatus },
             { new: true, runValidators: true }
-        ).populate('userId', 'name email');
+        ).populate('user', 'name email');
 
         if (!order) {
             return res.status(404).json({
@@ -190,9 +190,9 @@ exports.updateOrderStatus = async (req, res) => {
             id: order._id.toString(),
             _id: order._id,
             customer:
-                order.userId?.name || order.userId?.email || 'Unknown',
+                order.user?.name || order.user?.email || 'Unknown',
             status: frontendStatus,
-            total: `₹${order.total.toFixed(2)}`,
+            total: `₹${order.pricing.total.toFixed(2)}`,
             payment: 'Paid',
             date: new Date(order.createdAt).toLocaleDateString('en-IN'),
             items: order.items,
