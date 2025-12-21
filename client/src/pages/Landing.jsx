@@ -2,6 +2,7 @@ import React from "react";
 import Hero from '../assets/hero-landing.png'
 import { Link } from "react-router-dom";
 import Hero2 from '../assets/hero2-landing.png'
+import Mission from '../assets/miss.png'
 import Paper from '../assets/paper.png'
 import Button from '../components/Button'
 import { ButtonLight } from "../components/ButtonLight";
@@ -30,7 +31,7 @@ function Landing() {
           <div className="absolute lg:-left-20 lg:bottom-32 -left-25 bottom-40 -rotate-90 uppercase tracking-[0.6em] text-[0.65rem] text-[#907056]">
             Laptops Mobile Phone
           </div>
-          <div className="absolute lg:bottom-40 lg:right-6 bottom-70 right-10 max-w-xs text-sm leading-relaxed text-[#7f5c3b]">
+          <div className="absolute lg:bottom-40 lg:right-6 bottom-70 right-25 max-w-xs text-sm leading-relaxed text-[#7f5c3b]">
             A mannequin muse styled with olive tailoring, gold accents, and a
             caramel satchel — the 2005 icon reimagined for today's creative
             desk scene.
@@ -73,9 +74,9 @@ function Landing() {
           <br />
           STATIONARY
         </div>
-        <div className="absolute lg:top-120 lg:right-16 top-120 right-4 flex gap-4 pointer-events-auto">
+        <div className="absolute lg:top-120 lg:right-16 top-120 right-13 flex gap-4 pointer-events-auto">
           <Link to="/product">
-            <ButtonLight label="Explore" className="lg:w-md w-sm" />
+            <ButtonLight label="Explore" className="lg:w-md w-md" />
           </Link>
         </div>
 
@@ -115,6 +116,11 @@ function Landing() {
           EXPERIENCE THAT FEELS PERSONAL,<br />
           EFFORTLESS, AND INTUITIVE.
         </div>
+        <img
+          src={Mission}
+          alt="Mission image"
+          className="absolute top-25 lg:top-0 right-60 lg:right-140 w-72 h-72 sm:w-88 sm:h-88 mb-4 object-contain"
+        />
         <div className="lg:text-xs text-[0.6rem] font-sans font-light">
           GrabDesk is designed to help users <br />
           discover products that match their taste,
