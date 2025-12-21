@@ -85,11 +85,11 @@ const Icons = {
   ),
 };
 const AdminProductCard = ({ product, onEdit, onDelete, onPreview }) => {
-  const [imgSrc, setImgSrc] = React.useState((product.images && product.images[0]) || "https://via.placeholder.com/150");
+  const [imgSrc, setImgSrc] = React.useState((product.images && product.images[0]) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23FFE9D5' width='150' height='150'/%3E%3Ctext fill='%235b3d25' font-family='Arial' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E");
   const [imgIndex, setImgIndex] = React.useState(0);
 
   React.useEffect(() => {
-    setImgSrc((product.images && product.images[0]) || "https://via.placeholder.com/150");
+    setImgSrc((product.images && product.images[0]) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23FFE9D5' width='150' height='150'/%3E%3Ctext fill='%235b3d25' font-family='Arial' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E");
     setImgIndex(0);
   }, [product]);
 
@@ -99,7 +99,7 @@ const AdminProductCard = ({ product, onEdit, onDelete, onPreview }) => {
       setImgIndex(nextIndex);
       setImgSrc(product.images[nextIndex]);
     } else {
-      setImgSrc("https://via.placeholder.com/150");
+      setImgSrc("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23FFE9D5' width='150' height='150'/%3E%3Ctext fill='%235b3d25' font-family='Arial' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E");
     }
   };
 
