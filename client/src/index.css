@@ -1,5 +1,5 @@
 :root {
-  --grabdesk-shadow: 
+  --grabdesk-shadow:
     12px 12px 0 #5b3d25,
     24px 24px 0 rgba(91, 61, 37, 0.45);
 }
@@ -19,6 +19,24 @@
 
 /* Hide scrollbar for IE, Edge and Firefox */
 * {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 3s ease-in-out infinite;
 }

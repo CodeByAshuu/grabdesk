@@ -136,6 +136,11 @@ function Cart() {
                     <h1 className="boldonse-bold text-[#E3D5C3] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                         CART
                     </h1>
+                    <img
+                        src="/page-emo/cart-emo.png"
+                        alt="Product Page Icon"
+                        className="absolute top-18 lg:top-25 left-26 lg:left-70 w-22 h-22 sm:w-46 sm:h-46 mb-4 object-contain"
+                    />
                 </div>
 
                 <div className="px-4 sm:px-6 lg:px-8 pb-12">

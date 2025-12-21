@@ -1080,14 +1080,19 @@ const Profile = () => {
         }
       `}</style>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 h-full flex flex-col">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12  h-full flex flex-col">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12 shrink-0">
           <h1 className="boldonse-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl wrap-break-word max-w-full mb-3 sm:mb-4">
             PROFILE
           </h1>
+          <img
+            src="/page-emo/profile-emo.png"
+            alt="Product Page Icon"
+            className="absolute top-16 lg:top-20 left-30 lg:left-80 w-22 h-22 sm:w-48 sm:h-48 mb-4 object-contain"
+          />
           {/* Horizontal Divider - Only visible on medium screens and up */}
-          <div className="hidden md:block w-full my-4 mt-6 lg:mt-8">
+          <div className="hidden md:block w-full my-4 mt-9 lg:mt-14">
             <div
               className="w-full border-t-2 border-[#5B3D25]"
               style={{
