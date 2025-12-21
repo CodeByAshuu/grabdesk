@@ -1,16 +1,14 @@
-import { Link } from "react-router-dom";
 import React from "react";
-import Navbar from "../components/Navbar";
+import FashionWebsite from "../components/FashionWebsite";
+import Navbar  from "../components/Navbar";
 
-function Blog(){
+function Blog() {
     return (
         <>
-        <Navbar/>
-        blog haiii
-        
-        
-
+            <Navbar />
+            <FashionWebsite />
         </>
-    )
+    );
 }
+
 export default Blog;

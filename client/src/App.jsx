@@ -17,6 +17,7 @@ import { ToastProvider } from './context/ToastContext';
 import Signup from './pages/Signup';
 import ScrollToTop from './components/ScrollToTop';
 import AdminDashbord from './admin/AdminDashboard';
+import FashionWebsite from './components/FashionWebsite';
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
               <Route path='/blog' element={<Blog />} />
               <Route path='/admindashbord' element={<AdminDashbord />} />
               <Route path='/wishlist' element={<WishlistPage />} />
+              
             </Routes>
           </BrowserRouter>
         </WishlistProvider>
