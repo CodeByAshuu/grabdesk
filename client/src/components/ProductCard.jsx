@@ -70,7 +70,7 @@ function ProductCard(props) {
         e.stopPropagation();
         const token = localStorage.getItem('token');
         if (!token) {
-            addToast("Please login to website", "error");
+            addToast("Please login to website", "error", 1000);
             return;
         }
 
@@ -87,7 +87,6 @@ function ProductCard(props) {
         e.stopPropagation();
         const token = localStorage.getItem('token');
         if (!token) {
-            addToast("Please login to website", "error");
             navigate('/login');
             return;
         }
