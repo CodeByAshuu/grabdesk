@@ -1,19 +1,23 @@
 const User = require('../models/User.model');
 const Product = require('../models/Product.model');
 const { notifyAdminActivity } = require('../utils/adminNotify');
+const { updatePersonalizedTags } = require('../utils/recommendation.utils');
 
 // @desc    Get current user profile (Extended)
 // @route   GET /api/users/me
 // @access  Private
 exports.getMe = async (req, res) => {
     try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ success: false, message: 'Not authorized' });
+        }
         const user = await User.findById(req.user.id).select('-passwordHash');
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
         res.json(user);
     } catch (error) {
-        console.error(error);
+        console.error('getMe error:', error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
@@ -207,8 +211,11 @@ exports.addToCart = async (req, res) => {
         await user.save();
 
         // NEW: Notify admin of cart activity (passive - doesn't block)
-        const product = await Product.findById(productId).select('name');
+        const product = await Product.findById(productId);
         if (product) {
+            // Update personalized tags on cart add (high intent)
+            updatePersonalizedTags(user, product, 'CART').catch(err => console.error('Personalization error:', err));
+
             notifyAdminActivity({
                 actionType: 'cart_add',
                 userId: user._id,
@@ -343,23 +350,29 @@ exports.clearCart = async (req, res) => {
 // @access  Private
 exports.getWishlist = async (req, res) => {
     try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ success: false, message: 'Not authorized' });
+        }
         const user = await User.findById(req.user.id).populate('wishlist');
-        const wishlistItems = user.wishlist
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        const wishlistItems = (user.wishlist || [])
             .filter(product => product !== null)
             .map(product => ({
                 id: product._id,
                 name: product.name,
-                price: product.finalPrice || product.price || 0,  // Add fallback for price
-                basePrice: product.originalPrice || product.basePrice || product.price || 0, // Add basePrice
-                priceNum: product.finalPrice || product.price || 0, // Add priceNum for ProductCard
+                price: product.finalPrice || product.price || 0,
+                basePrice: product.originalPrice || product.basePrice || product.price || 0,
+                priceNum: product.finalPrice || product.price || 0,
                 images: product.images,
-                rating: product.ratingAverage || product.rating || 0, // Ensure rating exists
+                rating: product.ratingAverage || product.rating || 0,
                 available: product.stock > 0,
                 originalPriceString: product.originalPriceString
             }));
         res.json(wishlistItems);
     } catch (error) {
-        console.error(error);
+        console.error('getWishlist error:', error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
@@ -375,6 +388,12 @@ exports.addToWishlist = async (req, res) => {
         if (!user.wishlist.some(id => id.toString() === productId)) {
             user.wishlist.push(productId);
             await user.save();
+
+            // Update personalized tags on wishlist add (medium intent)
+            const product = await Product.findById(productId);
+            if (product) {
+                updatePersonalizedTags(user, product, 'WISHLIST').catch(err => console.error('Personalization error:', err));
+            }
         }
 
         const updatedUser = await User.findById(req.user.id).populate('wishlist');

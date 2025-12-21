@@ -1,6 +1,7 @@
 const Product = require('../models/Product.model');
 const { processProductImages } = require('../utils/cloudinary');
 const { resolveProductCategories } = require('../utils/categoryMapper');
+const { updatePersonalizedTags } = require('../utils/recommendation.utils');
 
 // Helper function to generate SKU
 const generateSKU = (name, category) => {
@@ -97,6 +98,15 @@ exports.getProductById = async (req, res) => {
         const product = await Product.findById(req.params.id);
 
         if (product) {
+            // Update personalized tags on click (low intent)
+            // We don't await here to avoid blocking the response
+            if (req.user) {
+                const User = require('../models/User.model');
+                User.findById(req.user.id).then(user => {
+                    if (user) updatePersonalizedTags(user, product, 'CLICK');
+                }).catch(err => console.error('Personalization error:', err));
+            }
+
             res.json(product);
         } else {
             res.status(404).json({ success: false, message: 'Product not found' });
@@ -580,6 +590,88 @@ exports.updateProduct = async (req, res) => {
 
     } catch (error) {
         console.error('Update Product Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Get personalized product recommendations
+// @route   GET /api/products/recommended
+// @access  Private
+exports.getRecommendedProducts = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            // If called without auth, return empty array (or we could return 401, 
+            // but for graceful fallback, an empty array is safer for .map())
+            return res.status(401).json([]);
+        }
+
+        const User = require('../models/User.model');
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json([]);
+        }
+
+        const personalizedTags = user.personalizedTags || new Map();
+        const hasInteractions = personalizedTags.size > 0;
+
+        let products;
+
+        if (!hasInteractions) {
+            // COLD START: Fallback to top-rated products
+            products = await Product.find({ isActive: true, stock: { $gt: 0 } })
+                .sort({ ratingAverage: -1, createdAt: -1 })
+                .limit(8);
+        } else {
+            // PERSONALIZED RECOMMENDATIONS
+            // 1. Get top 5 tags
+            const topTags = Array.from(personalizedTags.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(entry => entry[0]);
+
+            // 2. Query products that contain any of these tags
+            // Matching against 'tags.value' (both attribute and category types)
+            const candidateProducts = await Product.find({
+                isActive: true,
+                stock: { $gt: 0 },
+                'tags.value': { $in: topTags }
+            });
+
+            // 3. Calculate match scores
+            const scoredProducts = candidateProducts.map(product => {
+                let matchScore = 0;
+                product.tags.forEach(pTag => {
+                    const tagValue = pTag.value.toLowerCase();
+                    if (personalizedTags.has(tagValue)) {
+                        const userWeight = personalizedTags.get(tagValue);
+                        // Score = user's interest weight * product's tag weight
+                        matchScore += userWeight * (pTag.weight || 1);
+                    }
+                });
+
+                return {
+                    ...product.toObject(),
+                    matchScore
+                };
+            });
+
+            // 4. Sort and Limit
+            products = scoredProducts
+                .sort((a, b) => {
+                    // Primary: matchScore (DESC)
+                    if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+                    // Secondary: ratingAverage (DESC)
+                    if (b.ratingAverage !== a.ratingAverage) return b.ratingAverage - a.ratingAverage;
+                    // Tertiary: createdAt (DESC)
+                    return b.createdAt - a.createdAt;
+                })
+                .slice(0, 8);
+        }
+
+        res.json(products);
+    } catch (error) {
+        console.error('Recommendation Error:', error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
