@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import api from "../api/axios";
 import Nike1 from "../assets/Nike1.png";
 import Nike2 from "../assets/Nike2.png";
 import Nike3 from "../assets/Nike3.png";
@@ -15,47 +16,7 @@ import home from "../assets/Home-slider/home.jpg";
 import Button from "../components/Button";
 import Banner from "../components/Banner";
 
-// Mock Data
-const categories = [
-  {
-    name: "Electronic",
-    image: "/trending-cat/cat-electronic.avif",
-  },
-  {
-    name: "Home",
-    image: "/trending-cat/cat-furniture.avif",
-  },
-  {
-    name: "Fashion",
-    image: "/trending-cat/cat-fashion.jpg",
-  },
-  {
-    name: "Beauty",
-    image: "/trending-cat/cat-beauty.avif",
-  },
-  {
-    name: "Fitness",
-    image: "/trending-cat/cat-fitness.avif",
-  },
-  {
-    name: "Books",
-    image: "/trending-cat/cat-books.jpg",
-  },
-];
-
-const recommendations = [
-  { id: 1, name: "Vintage Lamp", price: "₹ 4,500", rating: 4.8, image: Nike1, Nike2, Nike3 },
-  { id: 2, name: "Ergo Chair", price: "₹ 12,000", rating: 4.9, image: Nike2 },
-  { id: 3, name: "Wooden Desk", price: "₹ 25,000", rating: 4.7, image: Nike3 },
-  {
-    id: 4,
-    name: "Leather Notebook",
-    price: "₹ 1,200",
-    rating: 4.6,
-    image: Nike1,
-  },
-  { id: 5, name: "Brass Pen", price: "₹ 850", rating: 4.5, image: Nike2 },
-];
+// Mock Data (Categories and Top Deals)
 
 const topDeals = [
   {
@@ -106,6 +67,45 @@ function Home() {
   ];
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+
+  const categories = [
+    { name: "Electronic", image: "/trending-cat/cat-electronic.avif" },
+    { name: "Home", image: "/trending-cat/cat-furniture.avif" },
+    { name: "Fashion", image: "/trending-cat/cat-fashion.jpg" },
+    { name: "Beauty", image: "/trending-cat/cat-beauty.avif" },
+    { name: "Fitness", image: "/trending-cat/cat-fitness.avif" },
+    { name: "Books", image: "/trending-cat/cat-books.jpg" },
+  ];
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const { data } = await api.get('/products/recommended');
+
+        // Temporarily log response for debugging as requested
+        console.log('Recommendation API Response:', data);
+        console.log('Response type:', typeof data);
+        console.log('Is Array?', Array.isArray(data));
+        console.log('First 100 chars:', typeof data === 'string' ? data.substring(0, 100) : 'N/A');
+
+        if (Array.isArray(data)) {
+          setRecommendedProducts(data);
+        } else {
+          console.error('Expected array for recommendations, got:', typeof data);
+          setRecommendedProducts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        setRecommendedProducts([]); // Ensure it's an array even on error
+      } finally {
+        setLoadingRecommendations(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -223,21 +223,30 @@ function Home() {
 
             {/* Grid Container */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-16 justify-items-center">
-              {[...recommendations, ...recommendations, ...recommendations.slice(0, 2)].map((item, index) => (
-                <div
-                  key={`${item.id}-${index}`}
-                  className="w-full flex justify-center"
-                >
-                  <ProductCard
-                    id={item.id}
-                    images={[item.image, item.image, item.image]}
-                    tagg="FOR YOU"
-                    rating={item.rating}
-                    namee={item.name}
-                    pricee={item.price}
-                  />
-                </div>
-              ))}
+              {loadingRecommendations ? (
+                // Loading Skeleton/Placeholder
+                [...Array(4)].map((_, i) => (
+                  <div key={i} className="w-full h-80 bg-[#5b3d25]/20 animate-pulse rounded-xl"></div>
+                ))
+              ) : (Array.isArray(recommendedProducts) && recommendedProducts.length > 0) ? (
+                recommendedProducts.map((product) => (
+                  <div
+                    key={product._id}
+                    className="w-full flex justify-center"
+                  >
+                    <ProductCard
+                      id={product._id}
+                      images={product.images && product.images.length > 0 ? product.images : [Nike1, Nike1, Nike1]}
+                      tagg="FOR YOU"
+                      rating={product.ratingAverage}
+                      namee={product.name}
+                      pricee={product.finalPrice ? `₹ ${product.finalPrice.toLocaleString()}` : "Price N/A"}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="col-span-full text-center text-[#dab590]">No recommendations found.</p>
+              )}
             </div>
           </div>
         </section>

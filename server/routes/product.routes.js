@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getProducts, getProductById, addProduct, bulkCreateProducts, deleteProduct } = require('../controllers/product.controller');
+const { getProducts, getProductById, addProduct, bulkCreateProducts, deleteProduct, getRecommendedProducts } = require('../controllers/product.controller');
 const { protect } = require('../middleware/auth.middleware');
 
 // Public routes
 router.get('/', getProducts);
+router.get('/recommended', protect, getRecommendedProducts);
 router.get('/:id', getProductById);
 
 // Admin routes

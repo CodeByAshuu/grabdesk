@@ -2,6 +2,7 @@ const Order = require('../models/Order.model');
 const Product = require('../models/Product.model');
 const User = require('../models/User.model');
 const { notifyAdminActivity } = require('../utils/adminNotify');
+const { updatePersonalizedTags } = require('../utils/recommendation.utils');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -80,6 +81,18 @@ exports.createOrder = async (req, res) => {
             entityId: createdOrder._id.toString(),
             entityName: `Order #${createdOrder._id.toString().slice(-6)}`
         }).catch(err => console.error('Admin notify error:', err));
+
+        // Update personalized tags on purchase (very high intent)
+        // items contains product objects already fetched in the loop above
+        const fullUser = await User.findById(req.user.id);
+        if (fullUser) {
+            for (const item of items) {
+                const product = await Product.findById(item.product || item.productId);
+                if (product) {
+                    await updatePersonalizedTags(fullUser, product, 'PURCHASE');
+                }
+            }
+        }
 
         // Clear user cart safely
         await User.findByIdAndUpdate(req.user.id, { $set: { cart: [] } });
