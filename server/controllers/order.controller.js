@@ -1,6 +1,7 @@
 const Order = require('../models/Order.model');
 const Product = require('../models/Product.model');
 const User = require('../models/User.model');
+const { notifyAdminActivity } = require('../utils/adminNotify');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -68,6 +69,17 @@ exports.createOrder = async (req, res) => {
         });
 
         const createdOrder = await order.save();
+
+        // NEW: Notify admin of new order (passive - doesn't block)
+        const user = await User.findById(req.user.id).select('name email');
+        notifyAdminActivity({
+            actionType: 'order_placed',
+            userId: req.user.id,
+            username: user?.name || user?.email,
+            userEmail: user?.email,
+            entityId: createdOrder._id.toString(),
+            entityName: `Order #${createdOrder._id.toString().slice(-6)}`
+        }).catch(err => console.error('Admin notify error:', err));
 
         // Clear user cart safely
         await User.findByIdAndUpdate(req.user.id, { $set: { cart: [] } });

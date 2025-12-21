@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Notification from "./Notification";
+import { io } from "socket.io-client";
+import NotificationPanel from "./Notification";
 import api from "../api/axios";
 import { getInitials } from "../utils/stringUtils";
 
@@ -31,7 +32,63 @@ function Navbar() {
     fetchUserData();
   }, []);
 
-  // Poll for updates (optional, or rely on page refreshes/actions)
+  // Real-time Socket.IO listener for admin messages
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const socket = io('http://localhost:5000');
+
+    // Listen for admin messages targeted to this user
+    socket.on(`admin-message:${user._id}`, (newMessage) => {
+      console.log('Received admin message:', newMessage);
+
+      // Update user state with new message
+      setUser(prevUser => ({
+        ...prevUser,
+        messages: [...(prevUser.messages || []), newMessage]
+      }));
+
+      // Increment unread count
+      setUnreadCount(prev => prev + 1);
+
+      // Optional: Show browser notification
+      if (window.Notification && window.Notification.permission === 'granted') {
+        new window.Notification('New Message from Admin', {
+          body: newMessage.title,
+          icon: '/favicon.ico'
+        });
+      }
+    });
+
+    // NEW: Listen for announcements (broadcast to all users)
+    socket.on('announcement:new', (announcement) => {
+      console.log('Received announcement:', announcement);
+
+      // Update user state with announcement
+      setUser(prevUser => ({
+        ...prevUser,
+        messages: [...(prevUser.messages || []), announcement]
+      }));
+
+      // Increment unread count
+      setUnreadCount(prev => prev + 1);
+
+      // Show browser notification for announcements
+      if (window.Notification && window.Notification.permission === 'granted') {
+        new window.Notification('📢 New Announcement', {
+          body: announcement.description,
+          icon: '/favicon.ico',
+          tag: 'announcement' // Prevents duplicate notifications
+        });
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user?._id]);
+
+  // Poll for updates (fallback for offline scenarios)
   useEffect(() => {
     const interval = setInterval(fetchUserData, 30000); // Check every 30s
     return () => clearInterval(interval);
@@ -268,7 +325,7 @@ function Navbar() {
       {/* Notification Component */}
       {notificationOpen && (
         <div className="fixed top-20 right-6 z-50">
-          <Notification
+          <NotificationPanel
             onClose={() => setNotificationOpen(false)}
             initialMessages={user?.messages || []}
             onMessageRead={fetchUserData}

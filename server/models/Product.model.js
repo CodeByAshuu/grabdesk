@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+// Import allowed values for validation
+const ALLOWED_CATEGORIES = [
+    'Electronics', 'Fashion', 'Home & Living', 'Beauty & Personal Care',
+    'Sports & Fitness', 'Books & Stationery', 'Grocery', 'Toys & Baby Products',
+    'Storage', 'Furniture', 'Kitchen', 'Automotive', 'Health', 'Office Supplies'
+];
+
+const ALLOWED_BRANDS = [
+    'Apple', 'Samsung', 'Nike', 'Adidas', 'Puma', 'Sony',
+    'LG', 'Microsoft', 'Canon', 'Dell', 'HP', 'Lenovo', 'Grabdesk'
+];
+
 const tagSchema = new mongoose.Schema({
     type: {
         type: String,
@@ -59,15 +71,29 @@ const productSchema = new mongoose.Schema({
     // Categorization
     category: {
         type: String,
-        default: '',
+        default: 'Electronics',
+        // No enum here - allows existing products with any category
+        // Validation enforced in controller for NEW products only
         index: true
+    },
+    // Multi-category support (NEW - for products in multiple categories)
+    categories: {
+        type: [String],
+        default: function () {
+            // Auto-populate from single category if not set
+            return this.category ? [this.category] : ['Electronics'];
+        }
+        // No validator - allows flexibility for existing data
     },
     // Tags for Personalization
     tags: [tagSchema],
     // Product Attributes
     brand: {
         type: String,
-        default: ''
+        default: 'Grabdesk',
+        // No enum - allows custom brand names
+        // Case normalization handled in controller
+        trim: true
     },
     model: {
         type: String,

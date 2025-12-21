@@ -12,6 +12,9 @@ const NotificationCenter = () => {
   const [announcementModal, setAnnouncementModal] = useState(false);
   const [announcementText, setAnnouncementText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [emailConfigModal, setEmailConfigModal] = useState(false);
+  const [smsConfigModal, setSmsConfigModal] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState(null);
 
   // Fetch notifications from backend on mount
   useEffect(() => {
@@ -113,6 +116,36 @@ const NotificationCenter = () => {
     }
   };
 
+  // NEW: Handle Email Configuration
+  const handleEmailConfig = async () => {
+    setEmailConfigModal(true);
+
+    // Fetch current settings
+    try {
+      const response = await api.get('/admin/notification-settings');
+      if (response.data.success) {
+        setNotificationSettings(response.data.settings);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
+  // NEW: Handle SMS Configuration
+  const handleSmsConfig = async () => {
+    setSmsConfigModal(true);
+
+    // Fetch current settings
+    try {
+      const response = await api.get('/admin/notification-settings');
+      if (response.data.success) {
+        setNotificationSettings(response.data.settings);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-5 md:space-y-6 gowun-dodum-regular px-3 sm:px-4 md:px-0">
 
@@ -159,12 +192,12 @@ const NotificationCenter = () => {
               <div className="flex items-center gap-2">
                 <span
                   className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs rounded whitespace-nowrap ${notification.type === "order"
-                      ? "bg-blue-100 text-[#5B6E8C]"
-                      : notification.type === "stock"
-                        ? "bg-[#F7EFE6] text-[#D18B1F]"
-                        : notification.type === "user"
-                          ? "bg-green-100 text-[#3E7C59]"
-                          : "bg-gray-100 text-[#9E3A2E]"
+                    ? "bg-blue-100 text-[#5B6E8C]"
+                    : notification.type === "stock"
+                      ? "bg-[#F7EFE6] text-[#D18B1F]"
+                      : notification.type === "user"
+                        ? "bg-green-100 text-[#3E7C59]"
+                        : "bg-gray-100 text-[#9E3A2E]"
                     }`}
                 >
                   {notification.type}
@@ -198,7 +231,9 @@ const NotificationCenter = () => {
                 Configure email templates
               </p>
             </div>
-            <button className="px-4 py-2 rounded-lg  text-xs sm:text-sm w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer">
+            <button
+              onClick={handleEmailConfig}
+              className="px-4 py-2 rounded-lg  text-xs sm:text-sm w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer">
               Configure
             </button>
           </div>
@@ -210,7 +245,9 @@ const NotificationCenter = () => {
                 Set up SMS alerts
               </p>
             </div>
-            <button className="px-4 py-2 rounded-lg  text-xs sm:text-sm w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer">
+            <button
+              onClick={handleSmsConfig}
+              className="px-4 py-2 rounded-lg  text-xs sm:text-sm w-full xs:w-auto bg-[#F0A322] active:translate-y-1  border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]  duration-300  hover:-translate-y-1 cursor-pointer">
               Set Up
             </button>
           </div>
@@ -266,6 +303,64 @@ const NotificationCenter = () => {
               animation: scaleIn 0.25s ease-out;
             }
           `}</style>
+        </div>
+      )}
+
+      {/* Email Configuration Modal */}
+      {emailConfigModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+          onClick={() => setEmailConfigModal(false)}>
+          <div className="bg-white w-full max-w-md rounded-xl p-5 shadow-xl animate-scaleIn"
+            onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-[#5b3d25] mb-3">
+              📧 Email Notification Settings
+            </h3>
+            <p className="text-sm text-[#5b3d25]/70 mb-4">
+              Configure email templates and providers for sending notifications to users.
+            </p>
+            <div className="bg-[#f5f5f5] p-3 rounded-lg mb-4">
+              <div className="text-sm font-semibold text-[#5b3d25] mb-2">Current Status</div>
+              <div className="text-sm text-[#5b3d25]/80">
+                {notificationSettings?.emailEnabled ? '✅ Enabled' : '❌ Disabled'}
+              </div>
+              <div className="text-xs text-[#5b3d25]/60 mt-1">
+                Provider: {notificationSettings?.emailProvider || 'None'}
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button onClick={() => setEmailConfigModal(false)}
+                className="px-4 py-2 border border-[#5b3d25] rounded-lg hover:bg-gray-50">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SMS Configuration Modal */}
+      {smsConfigModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+          onClick={() => setSmsConfigModal(false)}>
+          <div className="bg-white w-full max-w-md rounded-xl p-5 shadow-xl animate-scaleIn"
+            onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-[#5b3d25] mb-3">
+              📱 SMS Notification Settings
+            </h3>
+            <p className="text-sm text-[#5b3d25]/70 mb-4">
+              Configure SMS alerts and provider settings for real-time notifications.
+            </p>
+            <div className="bg-[#f5f5f5] p-3 rounded-lg mb-4">
+              <div className="text-sm font-semibold text-[#5b3d25] mb-2">Current Status</div>
+              <div className="text-sm text-[#5b3d25]/80">
+                {notificationSettings?.smsEnabled ? '✅ Enabled' : '❌ Disabled'}
+              </div>
+              <div className="text-xs text-[#5b3d25]/60 mt-1">
+                Provider: {notificationSettings?.smsProvider || 'None'}
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button onClick={() => setSmsConfigModal(false)}
+                className="px-4 py-2 border border-[#5b3d25] rounded-lg hover:bg-gray-50">Close</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

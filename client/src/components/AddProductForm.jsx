@@ -1,15 +1,28 @@
 import React, { useState } from "react";
 
+// Allowed categories and brands (must match backend)
+const ALLOWED_CATEGORIES = [
+  'Electronics', 'Fashion', 'Home & Living', 'Beauty & Personal Care',
+  'Sports & Fitness', 'Books & Stationery', 'Grocery', 'Toys & Baby Products',
+  'Storage', 'Furniture', 'Kitchen', 'Automotive', 'Health', 'Office Supplies'
+];
+
+const ALLOWED_BRANDS = [
+  'Apple', 'Samsung', 'Nike', 'Adidas', 'Puma', 'Sony',
+  'LG', 'Microsoft', 'Canon', 'Dell', 'HP', 'Lenovo', 'Grabdesk'
+];
+
 const AddProductForm = ({ isOpen, onClose, onAdd }) => {
   const [images, setImages] = useState([null, null, null]); // must have 3
   const [form, setForm] = useState({
     name: "",
-    category: "",
+    category: "Electronics", // Keep for backward compatibility
+    categories: ["Electronics"], // NEW: Support multiple categories
     description: "",
     basePrice: "",
     discountPercent: 0,
     stock: "",
-    brand: "Grabdesk",
+    brand: "Grabdesk", // Default to valid brand
     model: "",
     color: "",
     material: "",
@@ -38,6 +51,21 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
     } else {
       setForm({ ...form, [name]: value });
     }
+  };
+
+  // Handle category checkbox toggle
+  const handleCategoryToggle = (category) => {
+    setForm(prev => {
+      const newCategories = prev.categories.includes(category)
+        ? prev.categories.filter(c => c !== category)
+        : [...prev.categories, category];
+
+      return {
+        ...prev,
+        categories: newCategories,
+        category: newCategories[0] || 'Electronics' // Sync primary category
+      };
+    });
   };
 
   const handleImageUpload = (e, index) => {
@@ -83,7 +111,8 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
       finalPrice: parseFloat(calculateFinalPrice()),
       stock: parseInt(form.stock) || 0,
       isActive: true,
-      category: form.category,
+      category: form.categories[0] || form.category, // Primary category
+      categories: form.categories.length > 0 ? form.categories : [form.category], // All categories
       tags: form.tags,
       brand: form.brand,
       model: form.model,
@@ -100,7 +129,8 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
     // Reset form
     setForm({
       name: "",
-      category: "",
+      category: "Electronics",
+      categories: ["Electronics"], // Reset to default
       description: "",
       basePrice: "",
       discountPercent: 0,
@@ -162,8 +192,8 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
 
           {/* RIGHT SIDE — FORM FIELDS */}
           <div className="space-y-3">
-            {/* First Row: Name and Category */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* First Row: Product Name */}
+            <div>
               <input
                 name="name"
                 value={form.name}
@@ -172,14 +202,26 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
                 onChange={handleChange}
                 required
               />
-              <input
-                name="category"
-                value={form.category}
-                className="w-full border border-[#5b3d25]/30 rounded-lg p-2"
-                placeholder="Category *"
-                onChange={handleChange}
-                required
-              />
+            </div>
+
+            {/* Categories Selection (Checkboxes) */}
+            <div className="border border-[#5b3d25]/30 rounded-lg p-3 bg-[#f5f5f5]">
+              <label className="block text-sm font-semibold text-[#5b3d25] mb-2">
+                Categories * (Select all that apply)
+              </label>
+              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                {ALLOWED_CATEGORIES.map(cat => (
+                  <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-white/50 p-1 rounded">
+                    <input
+                      type="checkbox"
+                      checked={form.categories.includes(cat)}
+                      onChange={() => handleCategoryToggle(cat)}
+                      className="w-4 h-4 text-[#8F5E41] bg-white border-[#5b3d25]/30 rounded focus:ring-[#8F5E41]"
+                    />
+                    <span className="text-sm text-[#5b3d25]">{cat}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Second Row: Base Price, Discount, Final Price */}
@@ -208,7 +250,7 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
               />
               <input
                 type="text"
-                value={`Final: $${calculateFinalPrice()}`}
+                value={`Final: ₹${calculateFinalPrice()}`}
                 className="w-full border border-[#5b3d25]/30 rounded-lg p-2 bg-gray-100"
                 placeholder="Final Price"
                 readOnly
@@ -227,13 +269,22 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
                 onChange={handleChange}
                 required
               />
-              <input
-                name="brand"
-                value={form.brand}
-                className="w-full border border-[#5b3d25]/30 rounded-lg p-2"
-                placeholder="Brand"
-                onChange={handleChange}
-              />
+              <div className="relative">
+                <input
+                  name="brand"
+                  value={form.brand}
+                  list="brand-suggestions"
+                  className="w-full border border-[#5b3d25]/30 rounded-lg p-2"
+                  placeholder="Brand (e.g., Apple, Nike...)"
+                  onChange={handleChange}
+                />
+                <datalist id="brand-suggestions">
+                  {ALLOWED_BRANDS.map(brand => (
+                    <option key={brand} value={brand} />
+                  ))}
+                </datalist>
+                <p className="text-[10px] text-[#5b3d25]/60 mt-1">Type or select from suggestions</p>
+              </div>
             </div>
 
             {/* Fourth Row: Model, Color, Material */}

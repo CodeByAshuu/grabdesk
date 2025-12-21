@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getAllUsers, toggleUserStatus, resetUserPassword } = require('../controllers/user.controller');
+const { getAllUsers, toggleUserStatus, resetUserPassword, sendMessageToUser } = require('../controllers/user.controller');
 const { getAllOrders, updateOrderStatus } = require('../controllers/order.controller');
 const { getAllCategories, addCategory, updateCategory, deleteCategory } = require('../controllers/category.controller');
 const { getAllNotifications, toggleNotificationRead, deleteNotification, createAnnouncement } = require('../controllers/notification.controller');
+const { getNotificationSettings, updateEmailSettings, updateSmsSettings } = require('../controllers/notificationSettings.controller');
 const { getAllActivityLogs, getLatestActivityLogs, createActivityLog } = require('../controllers/activityLog.controller');
 const { bulkCreateProducts, addProduct } = require('../controllers/product.controller');
 const { protect } = require('../middleware/auth.middleware');
@@ -15,6 +16,9 @@ router.use(protect);
 router.get('/users', getAllUsers);
 router.patch('/users/:id/status', toggleUserStatus);
 router.post('/users/:id/reset-password', resetUserPassword);
+
+// Admin messaging route
+router.post('/send-message', sendMessageToUser);
 
 // Order management routes
 router.get('/orders', getAllOrders);
@@ -31,6 +35,11 @@ router.get('/notifications', getAllNotifications);
 router.patch('/notifications/:id/read', toggleNotificationRead);
 router.delete('/notifications/:id', deleteNotification);
 router.post('/notifications/announcement', createAnnouncement);
+
+// Notification settings routes (Email/SMS configuration)
+router.get('/notification-settings', getNotificationSettings);
+router.put('/notification-settings/email', updateEmailSettings);
+router.put('/notification-settings/sms', updateSmsSettings);
 
 // Activity log routes
 router.get('/activity-logs', getAllActivityLogs);
@@ -50,4 +59,5 @@ router.get('/analytics/sales-history', getSalesHistory);
 router.get('/analytics/top-products', getTopProducts);
 
 module.exports = router;
+
 

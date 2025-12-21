@@ -33,6 +33,26 @@ activityNamespace.on('connection', (socket) => {
   });
 });
 
+// NEW: Main namespace for user/admin connections
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
+  // Join admin room if user is admin (based on handshake query or auth)
+  socket.on('join-admin-room', (userData) => {
+    if (userData && userData.role === 'admin') {
+      socket.join('admin-room');
+      console.log('Admin joined admin-room:', socket.id);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// Make io available globally for admin notifications
+global.io = io;
+
 // Make io available to controllers via app
 app.set('io', io);
 

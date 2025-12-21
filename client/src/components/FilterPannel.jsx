@@ -24,7 +24,8 @@ const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
 
   const categories = [
     'Electronics', 'Fashion', 'Home & Living', 'Beauty & Personal Care',
-    'Sports & Fitness', 'Books & Stationery', 'Grocery', 'Toys & Baby Products'
+    'Sports & Fitness', 'Books & Stationery', 'Grocery', 'Toys & Baby Products',
+    'Storage', 'Furniture', 'Kitchen', 'Automotive', 'Health', 'Office Supplies'
   ];
 
   const brands = [

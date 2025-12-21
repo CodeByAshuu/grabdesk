@@ -1,5 +1,6 @@
 const User = require('../models/User.model');
 const jwt = require('jsonwebtoken');
+const { notifyAdminActivity } = require('../utils/adminNotify');
 const bcrypt = require('bcryptjs');
 
 // Generate JWT
@@ -60,6 +61,16 @@ exports.signup = async (req, res) => {
                     })
                 });
             }
+
+            // NEW: Notify admin of new user registration (passive)
+            notifyAdminActivity({
+                actionType: 'user_joined',
+                userId: user._id,
+                username: user.name,
+                userEmail: user.email,
+                entityId: user._id.toString(),
+                entityName: user.name
+            }).catch(err => console.error('Admin notify error:', err));
 
             res.status(201).json({
                 success: true,

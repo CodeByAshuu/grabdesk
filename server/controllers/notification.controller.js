@@ -1,4 +1,5 @@
 const Notification = require('../models/Notification.model');
+const User = require('../models/User.model');
 
 // Helper function to format time
 const formatTime = (date) => {
@@ -98,13 +99,44 @@ exports.createAnnouncement = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Announcement message is required' });
         }
 
+        const trimmedMessage = message.trim();
+
+        // Save in admin notifications (existing behavior)
         const notification = new Notification({
             type: 'system',
-            message: message.trim(),
+            message: trimmedMessage,
             read: false
         });
 
         await notification.save();
+
+        // NEW: Broadcast to all users
+        const users = await User.find({}).select('_id');
+
+        if (users.length > 0) {
+            const announcementForUsers = {
+                title: 'Announcement',
+                description: trimmedMessage,
+                read: false,
+                createdAt: new Date()
+            };
+
+            // Bulk update all users
+            const bulkOps = users.map(user => ({
+                updateOne: {
+                    filter: { _id: user._id },
+                    update: { $push: { messages: announcementForUsers } }
+                }
+            }));
+
+            await User.bulkWrite(bulkOps);
+
+            // Emit Socket.io event to all connected users
+            const io = req.app.get('io');
+            if (io) {
+                io.emit('announcement:new', announcementForUsers);
+            }
+        }
 
         const normalizedNotification = {
             id: notification._id.toString(),
@@ -117,7 +149,11 @@ exports.createAnnouncement = async (req, res) => {
             updatedAt: notification.updatedAt
         };
 
-        res.status(201).json({ success: true, message: 'Announcement created successfully', notification: normalizedNotification });
+        res.status(201).json({
+            success: true,
+            message: `Announcement sent to ${users.length} users`,
+            notification: normalizedNotification
+        });
     } catch (error) {
         console.error('Create Announcement Error:', error);
         res.status(500).json({ success: false, message: 'Server error' });

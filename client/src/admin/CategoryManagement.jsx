@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api/axios";
+import { io } from 'socket.io-client';
 
 const Icons = {
   Plus: () => (
@@ -36,6 +37,50 @@ const CategoryManagement = ({ categories, setCategories }) => {
     };
 
     fetchCategories();
+  }, [setCategories]);
+
+  // NEW: Real-time Socket.io sync (NO UI CHANGES)
+  useEffect(() => {
+    const socket = io('http://localhost:5000');
+
+    // Refetch categories helper (for product changes)
+    const refetchCategories = async () => {
+      try {
+        const response = await api.get('/admin/categories');
+        if (response.data) {
+          setCategories(response.data);
+        }
+      } catch (error) {
+        console.error('Error refetching categories:', error);
+      }
+    };
+
+    // Category events - update state directly
+    socket.on('category:created', (category) => {
+      setCategories(prev => {
+        const exists = prev.find(c => c.id === category.id);
+        return exists ? prev : [...prev, category];
+      });
+    });
+
+    socket.on('category:updated', (category) => {
+      setCategories(prev =>
+        prev.map(c => c.id === category.id ? category : c)
+      );
+    });
+
+    socket.on('category:deleted', ({ id }) => {
+      setCategories(prev => prev.filter(c => c.id !== id));
+    });
+
+    // Product events - refresh counts from backend
+    socket.on('product:created', refetchCategories);
+    socket.on('product:updated', refetchCategories);
+    socket.on('product:deleted', refetchCategories);
+
+    return () => {
+      socket.disconnect();
+    };
   }, [setCategories]);
 
   // ------------------------------
