@@ -165,8 +165,30 @@ const AdminManager = () => {
     name: "Admin",
     email: "admin123@grabdesk.in",
     avatar: "",
+    profilePhotoUrl: "",
     joinDate: "2024-01-01"
   });
+
+  // Fetch admin user data on mount
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const response = await api.get('/users/me');
+        if (response.data) {
+          setUserData(prev => ({
+            ...prev,
+            name: response.data.name || prev.name,
+            email: response.data.email || prev.email,
+            avatar: response.data.profilePhotoUrl || '',
+            profilePhotoUrl: response.data.profilePhotoUrl || ''
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching admin data:', error);
+      }
+    };
+    fetchAdminData();
+  }, []);
 
   // Section navigation buttons
   const sections = [

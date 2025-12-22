@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import api from '../api/axios';
 
 const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
   const [filters, setFilters] = useState({
@@ -21,6 +22,8 @@ const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
   });
 
   const collapseOrder = useRef([]); // Track the order of collapsed sections
+  const [allProducts, setAllProducts] = useState([]); // Store all products from backend
+  const [availableBrands, setAvailableBrands] = useState([]); // Dynamically derived brands
 
   const categories = [
     'Electronics', 'Fashion', 'Home & Living', 'Beauty & Personal Care',
@@ -28,10 +31,56 @@ const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
     'Storage', 'Furniture', 'Kitchen', 'Automotive', 'Health', 'Office Supplies'
   ];
 
-  const brands = [
-    'Apple', 'Samsung', 'Nike', 'Adidas', 'Puma', 'Sony',
-    'LG', 'Microsoft', 'Canon', 'Dell', 'HP', 'Lenovo'
-  ];
+  // Fetch all products from backend to derive brands
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await api.get('/products?pageNumber=1&pageSize=1000'); // Fetch large page to get all products
+        const { products } = response.data;
+        setAllProducts(products || []);
+      } catch (error) {
+        console.error('Failed to fetch products for brand filter:', error);
+        setAllProducts([]);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Derive available brands from products, filtered by selected categories
+  useEffect(() => {
+    if (!allProducts || allProducts.length === 0) {
+      setAvailableBrands([]);
+      return;
+    }
+
+    let productsToFilter = allProducts;
+
+    // If categories are selected, filter products by those categories
+    if (filters.categories && filters.categories.length > 0) {
+      productsToFilter = allProducts.filter(product => {
+        // Check both single category and categories array
+        if (product.categories && Array.isArray(product.categories)) {
+          return product.categories.some(cat => filters.categories.includes(cat));
+        }
+        return filters.categories.includes(product.category);
+      });
+    }
+
+    // Extract unique brands from filtered products
+    const brandsSet = new Set();
+    productsToFilter.forEach(product => {
+      if (product.brand && product.brand.trim()) {
+        brandsSet.add(product.brand.trim());
+      }
+    });
+
+    // Convert to sorted array
+    const brandsArray = Array.from(brandsSet).sort((a, b) =>
+      a.toLowerCase().localeCompare(b.toLowerCase())
+    );
+
+    setAvailableBrands(brandsArray);
+  }, [allProducts, filters.categories]);
 
   const ratings = [
     { value: 4, label: '4★ & above' },
@@ -145,7 +194,7 @@ const FilterPanel = ({ open, onFilterChange, initialFilters }) => {
   };
 
   // Filter brands based on search
-  const filteredBrands = brands.filter(brand =>
+  const filteredBrands = availableBrands.filter(brand =>
     brand.toLowerCase().includes(filters.brandSearch.toLowerCase())
   );
 

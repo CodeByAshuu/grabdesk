@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
@@ -62,11 +62,11 @@ function Product() {
 
   const [activeFilters, setActiveFilters] = useState(initialFilters);
 
-  // Handle filter changes from FilterPanel
-  const handleFilterChange = (filters) => {
+  // Handle filter changes from FilterPanel (memoized to prevent infinite loops)
+  const handleFilterChange = useCallback((filters) => {
     console.log('Applied filters:', filters);
     setActiveFilters(filters);
-  };
+  }, []);
 
   // Apply search and filters to products
   const getFilteredProducts = () => {
@@ -74,11 +74,17 @@ function Product() {
 
     // Apply search filter
     if (search.trim()) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(search.toLowerCase()) ||
-        product.category.toLowerCase().includes(search.toLowerCase()) ||
-        product.brand.toLowerCase().includes(search.toLowerCase())
-      );
+      filtered = filtered.filter(product => {
+        const searchLower = search.toLowerCase();
+        const nameMatch = product.name.toLowerCase().includes(searchLower);
+        const categoryMatch = product.category.toLowerCase().includes(searchLower);
+        const brandMatch = product.brand.toLowerCase().includes(searchLower);
+
+        // Check tags array
+        const tagMatch = product.tag && product.tag.toLowerCase().includes(searchLower);
+
+        return nameMatch || categoryMatch || brandMatch || tagMatch;
+      });
     }
 
     // Apply category filter (supports both single and multi-category products)
@@ -93,11 +99,14 @@ function Product() {
       });
     }
 
-    // Apply brand filter
+    // Apply brand filter (case-insensitive)
     if (activeFilters.brands && activeFilters.brands.length > 0) {
-      filtered = filtered.filter(product =>
-        activeFilters.brands.includes(product.brand)
-      );
+      filtered = filtered.filter(product => {
+        const productBrand = (product.brand || '').toLowerCase();
+        return activeFilters.brands.some(filterBrand =>
+          filterBrand.toLowerCase() === productBrand
+        );
+      });
     }
 
     // Apply price range filter

@@ -1,5 +1,10 @@
 const cloudinary = require('cloudinary').v2;
 
+// Fix for "self-signed certificate in certificate chain" error in development
+if (process.env.NODE_ENV !== 'production') {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 // Configure Cloudinary with environment variables
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -75,12 +80,8 @@ const processProductImages = async (images) => {
         images.map(async (image) => {
             // If it's a base64 image, upload to Cloudinary
             if (isBase64Image(image)) {
-                try {
-                    return await uploadToCloudinary(image);
-                } catch (error) {
-                    console.error('Failed to upload image, keeping original');
-                    return image; // Fallback to original on error
-                }
+                // No try-catch - let errors propagate to controller
+                return await uploadToCloudinary(image);
             }
             // If it's already a URL (Unsplash, Cloudinary, etc.), keep it
             return image;
@@ -90,9 +91,59 @@ const processProductImages = async (images) => {
     return processedImages;
 };
 
+/**
+ * Upload profile picture with optimized compression for avatars
+ * @param {String} base64Image - Base64 encoded image
+ * @returns {Promise<Object>} - { url: String, publicId: String }
+ */
+const uploadProfilePicture = async (base64Image) => {
+    try {
+        const result = await cloudinary.uploader.upload(base64Image, {
+            folder: 'profile_pictures',
+            resource_type: 'image',
+            quality: 'auto',
+            fetch_format: 'auto',
+            transformation: [
+                { width: 300, height: 300, crop: 'fill', gravity: 'face' },  // Face-focused crop
+                { quality: 'auto:good' }  // Good quality with compression
+            ]
+        });
+
+        return {
+            url: result.secure_url,
+            publicId: result.public_id
+        };
+    } catch (error) {
+        console.error('Profile Picture Upload Error:', error);
+        throw new Error('Failed to upload profile picture');
+    }
+};
+
+/**
+ * Delete image from Cloudinary by public_id
+ * @param {String} publicId - Cloudinary public_id
+ * @returns {Promise<Object>} - Deletion result
+ */
+const deleteFromCloudinary = async (publicId) => {
+    try {
+        if (!publicId) {
+            return { success: false, message: 'No public ID provided' };
+        }
+
+        const result = await cloudinary.uploader.destroy(publicId);
+        return result;
+    } catch (error) {
+        console.error('Cloudinary Delete Error:', error);
+        // Don't throw - deletion failure shouldn't block upload
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     uploadToCloudinary,
     uploadMultipleToCloudinary,
     isBase64Image,
-    processProductImages
+    processProductImages,
+    uploadProfilePicture,
+    deleteFromCloudinary
 };

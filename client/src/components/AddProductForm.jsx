@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 
-// Allowed categories and brands (must match backend)
+// Allowed categories (must match backend)
 const ALLOWED_CATEGORIES = [
   'Electronics', 'Fashion', 'Home & Living', 'Beauty & Personal Care',
   'Sports & Fitness', 'Books & Stationery', 'Grocery', 'Toys & Baby Products',
   'Storage', 'Furniture', 'Kitchen', 'Automotive', 'Health', 'Office Supplies'
 ];
 
-const ALLOWED_BRANDS = [
+// Suggested brands (can type any brand)
+const SUGGESTED_BRANDS = [
   'Apple', 'Samsung', 'Nike', 'Adidas', 'Puma', 'Sony',
   'LG', 'Microsoft', 'Canon', 'Dell', 'HP', 'Lenovo', 'Grabdesk'
 ];
@@ -279,11 +280,11 @@ const AddProductForm = ({ isOpen, onClose, onAdd }) => {
                   onChange={handleChange}
                 />
                 <datalist id="brand-suggestions">
-                  {ALLOWED_BRANDS.map(brand => (
+                  {SUGGESTED_BRANDS.map(brand => (
                     <option key={brand} value={brand} />
                   ))}
                 </datalist>
-                <p className="text-[10px] text-[#5b3d25]/60 mt-1">Type or select from suggestions</p>
+                <p className="text-[10px] text-[#5b3d25]/60 mt-1">Type any brand or select from suggestions</p>
               </div>
             </div>
 

@@ -33,6 +33,7 @@ const Profile = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -231,6 +232,59 @@ const Profile = () => {
       email: userData.email,
       phone: userData.phone === "Not set" ? "" : userData.phone
     });
+  };
+
+  // Profile picture upload handler
+  const handleAvatarUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      setUploadingAvatar(true);
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Image = reader.result;
+
+        // Optimistic update
+        const tempAvatar = base64Image;
+        setUserData(prev => ({ ...prev, avatar: tempAvatar }));
+
+        try {
+          // Upload to Cloudinary
+          const response = await api.post('/users/profile-picture', {
+            image: base64Image
+          });
+
+          if (response.data.success) {
+            // Update with permanent URL
+            setUserData(prev => ({
+              ...prev,
+              avatar: response.data.profilePhotoUrl,
+              profilePhotoUrl: response.data.profilePhotoUrl
+            }));
+          }
+        } catch (error) {
+          console.error('Upload failed:', error);
+          alert('Failed to upload profile picture. Please try again.');
+          // Revert on error
+          await fetchProfileData();
+        } finally {
+          setUploadingAvatar(false);
+        }
+      };
+
+      reader.onerror = () => {
+        setUploadingAvatar(false);
+        alert('Failed to read image file');
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Avatar processing error:', error);
+      setUploadingAvatar(false);
+      alert('Error processing image');
+    }
   };
 
   // Address Handlers
@@ -1109,14 +1163,21 @@ const Profile = () => {
           <div className="lg:w-1/3 flex flex-col items-center overflow-y-auto lg:overflow-visible lg:shrink-0">
             <div className="relative mb-4 sm:mb-6">
               <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden border-4 border-[#5b3d25] flex items-center justify-center bg-white text-[#5b3d25]">
+                {/* Loading overlay */}
+                {uploadingAvatar && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 rounded-full">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                  </div>
+                )}
+
                 {/* Check if we should show avatar or initials */}
-                {(userData.avatar) ? (
+                {(userData.avatar || userData.profilePhotoUrl) ? (
                   <img
-                    src={userData.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3eadc'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='30' fill='%235b3d25' text-anchor='middle' dy='.3em'%3E%3F%3C/text%3E%3C/svg%3E"}
+                    src={userData.avatar || userData.profilePhotoUrl || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f3eadc'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='30' fill='%235b3d25' text-anchor='middle' dy='.3em'%3E%3F%3C/text%3E%3C/svg%3E"}
                     alt="Profile"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      // Replace with initials agar image nhi hai
+                      // Replace with initials if image fails
                       e.target.outerHTML = `<span class="text-4xl sm:text-5xl lg:text-8xl font-bold text-[#5b3d25]">${getInitials(userData.name)}</span>`;
                     }}
                   />
@@ -1126,7 +1187,19 @@ const Profile = () => {
                   </span>
                 )}
               </div>
-              <button className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-[#5b3d25] text-white p-1.5 sm:p-2 rounded-full hover:bg-[#4a3120] transition-colors">
+              <input
+                id="profileAvatarUpload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleAvatarUpload(e.target.files?.[0])}
+                disabled={uploadingAvatar}
+              />
+              <button
+                onClick={() => !uploadingAvatar && document.getElementById('profileAvatarUpload').click()}
+                disabled={uploadingAvatar}
+                className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-[#5b3d25] text-white p-1.5 sm:p-2 rounded-full hover:bg-[#4a3120] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Icons.Edit2 />
               </button>
             </div>

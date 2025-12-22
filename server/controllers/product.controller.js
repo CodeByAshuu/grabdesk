@@ -49,25 +49,27 @@ const normalizeBrandName = (brandInput) => {
         .join(' ');
 };
 
-// @desc    Fetch all products
-// @route   GET /api/products
-// @access  Public
 exports.getProducts = async (req, res) => {
     try {
         const pageSize = 28; // Products per page
         const page = Number(req.query.pageNumber) || 1;
 
+        // Enhanced search: searches name, tags, brand, category AND categories array
         const keyword = req.query.keyword
             ? {
-                name: {
-                    $regex: req.query.keyword,
-                    $options: 'i',
-                },
+                $or: [
+                    { name: { $regex: req.query.keyword, $options: 'i' } },
+                    { 'tags.value': { $regex: req.query.keyword, $options: 'i' } },
+                    { brand: { $regex: req.query.keyword, $options: 'i' } },
+                    { category: { $regex: req.query.keyword, $options: 'i' } },
+                    { categories: { $regex: req.query.keyword, $options: 'i' } }
+                ]
             }
             : {};
 
         const count = await Product.countDocuments({ ...keyword });
         const products = await Product.find({ ...keyword })
+            .sort({ createdAt: -1 })  // Sort newest first
             .limit(pageSize)
             .skip(pageSize * (page - 1));
 
@@ -151,18 +153,13 @@ exports.addProduct = async (req, res) => {
             });
         }
 
-        // Validate brand (must be from allowed list)
-        const ALLOWED_BRANDS = [
+        // Brand validation - ALLOWED_BRANDS are suggestions, but any brand is accepted
+        const SUGGESTED_BRANDS = [
             'Apple', 'Samsung', 'Nike', 'Adidas', 'Puma', 'Sony',
             'LG', 'Microsoft', 'Canon', 'Dell', 'HP', 'Lenovo', 'Grabdesk'
         ];
-        const trimmedBrand = brand?.trim() || 'Grabdesk';
-        if (!ALLOWED_BRANDS.includes(trimmedBrand)) {
-            return res.status(400).json({
-                success: false,
-                message: `Invalid brand. Must be one of: ${ALLOWED_BRANDS.join(', ')}`
-            });
-        }
+        // No validation - any brand is allowed, will be normalized below
+
 
         // Validate and prepare name
         const trimmedName = name.trim();
@@ -328,7 +325,12 @@ exports.bulkCreateProducts = async (req, res) => {
     try {
         const { products } = req.body;
 
+        console.log('Bulk upload request received');
+        console.log('Products array:', products ? `${products.length} items` : 'undefined/null');
+
         if (!products || !Array.isArray(products) || products.length === 0) {
+            console.error('Bulk upload failed: No products provided');
+            console.error('Received req.body:', JSON.stringify(req.body).substring(0, 200));
             return res.status(400).json({
                 success: false,
                 message: 'No products provided. Please provide an array of products.'
@@ -351,21 +353,25 @@ exports.bulkCreateProducts = async (req, res) => {
                 const discountPercent = Number(row.discountPercent || 0);
 
                 if (!name) {
+                    console.log(`Row ${i + 1}: Missing name`);
                     failures.push({ row: i + 1, data: row, error: 'Missing required field: name' });
                     continue;
                 }
 
                 if (isNaN(basePrice) || basePrice <= 0) {
+                    console.log(`Row ${i + 1}: Invalid price for "${name}"`, priceValue);
                     failures.push({ row: i + 1, data: row, error: 'Invalid or missing price. Price must be a positive number.' });
                     continue;
                 }
 
                 if (isNaN(stock) || stock < 0) {
+                    console.log(`Row ${i + 1}: Invalid stock for "${name}"`, row.stock);
                     failures.push({ row: i + 1, data: row, error: 'Invalid or missing stock. Stock must be a non-negative number.' });
                     continue;
                 }
 
                 if (discountPercent < 0 || discountPercent > 100) {
+                    console.log(`Row ${i + 1}: Invalid discount for "${name}"`, discountPercent);
                     failures.push({ row: i + 1, data: row, error: 'Invalid discount percent. Must be between 0 and 100.' });
                     continue;
                 }
@@ -411,10 +417,18 @@ exports.bulkCreateProducts = async (req, res) => {
                 const ratingAverage = row.ratingAverage ? Number(row.ratingAverage) : 0;
                 const ratingCount = row.ratingCount ? Number(row.ratingCount) : 0;
 
+                // Auto-populate categories array from category if not provided
+                let productCategories = row.categories || [];
+                if (!productCategories || productCategories.length === 0) {
+                    productCategories = category ? [category] : ['Electronics'];
+                }
+
                 const productData = {
                     name, description, basePrice, discountPercent, finalPrice, stock, sku,
                     isActive: row.isActive !== undefined ? (row.isActive === true || row.isActive === 'true') : true,
-                    category, tags,
+                    category,
+                    categories: productCategories,
+                    tags,
                     brand: row.brand?.toString().trim() || '',
                     model: row.model?.toString().trim() || '',
                     color: row.color?.toString().trim() || '',
@@ -426,26 +440,42 @@ exports.bulkCreateProducts = async (req, res) => {
                 validProducts.push(productData);
 
             } catch (error) {
+                console.error(`Row ${i + 1} processing error:`, error.message);
+                console.error('Row data:', JSON.stringify(row).substring(0, 150));
                 failures.push({ row: i + 1, data: row, error: error.message || 'Unknown error processing this row' });
             }
         }
 
+        console.log(`Validation complete: ${validProducts.length} valid, ${failures.length} failed`);
+        if (failures.length > 0) {
+            console.log('Failures:', JSON.stringify(failures, null, 2));
+        }
+
         let insertedProducts = [];
         if (validProducts.length > 0) {
+            console.log(`Attempting to insert ${validProducts.length} products into database...`);
             try {
                 insertedProducts = await Product.insertMany(validProducts, { ordered: false });
+                console.log(`Successfully inserted ${insertedProducts.length} products`);
             } catch (error) {
+                console.error('Database insertion error:', error.message);
+                console.error('Error name:', error.name);
                 if (error.writeErrors) {
+                    console.log(`Write errors occurred: ${error.writeErrors.length} errors`);
                     insertedProducts = error.insertedDocs || [];
                     error.writeErrors.forEach(writeError => {
                         const failedProduct = validProducts[writeError.index];
+                        console.error(`Failed to insert product at index ${writeError.index}:`, writeError.errmsg);
                         failures.push({ row: writeError.index + 1, data: failedProduct, error: writeError.errmsg || 'Database write error' });
                     });
                 } else {
+                    console.error('Full error:', error);
                     throw error;
                 }
             }
         }
+
+        console.log(`Insert complete: ${insertedProducts.length} inserted, ${failures.length} total failures`);
 
         const totalRows = products.length;
         const successCount = insertedProducts.length;
@@ -567,25 +597,35 @@ exports.updateProduct = async (req, res) => {
                     return res.status(500).json({ success: false, message: 'Image upload failed' });
                 }
             } else {
+                // Process images
                 processedImages = images;
             }
         }
 
-        product.name = name || product.name;
-        product.basePrice = basePriceNum || product.basePrice;
-        product.discountPercent = discountPercentNum;
-        product.finalPrice = (product.basePrice - (product.basePrice * (product.discountPercent / 100)));
-        product.stock = stockNumber !== undefined ? stockNumber : product.stock;
-        product.description = description || product.description;
-        product.images = processedImages;
+        // Build update object
+        const updateData = {
+            name: name || product.name,
+            basePrice: basePriceNum || product.basePrice,
+            discountPercent: discountPercentNum,
+            finalPrice: basePriceNum ? (basePriceNum - (basePriceNum * (discountPercentNum / 100))) : product.finalPrice,
+            stock: stockNumber !== undefined ? stockNumber : product.stock,
+            description: description || product.description,
+            images: processedImages
+        };
 
         // Optional fields
-        if (category) product.category = category;
-        if (brand) product.brand = normalizeBrandName(brand); // Normalize brand
-        if (tags) product.tags = tags;
-        if (sizeAvailable) product.sizeAvailable = sizeAvailable;
+        if (category) updateData.category = category;
+        if (brand) updateData.brand = normalizeBrandName(brand);
+        if (tags) updateData.tags = tags;
+        if (sizeAvailable) updateData.sizeAvailable = sizeAvailable;
 
-        const updatedProduct = await product.save();
+        // Use findByIdAndUpdate to avoid version conflicts
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
         res.json({ success: true, product: updatedProduct });
 
     } catch (error) {

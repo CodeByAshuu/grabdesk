@@ -17,6 +17,7 @@ const {
     removeFromWishlist,
     clearWishlist
 } = require('../controllers/user.controller');
+const { uploadProfilePictureHandler } = require('../controllers/user.controller_PROFILE');
 const { protect } = require('../middleware/auth.middleware');
 
 router.use(protect);
@@ -24,6 +25,9 @@ router.use(protect);
 router.get('/me', getMe);
 router.get('/messages', getMessages);
 router.put('/messages/mark-read', markMessagesRead);
+
+// Profile picture upload
+router.post('/profile-picture', uploadProfilePictureHandler);
 
 router.get('/cart', getCart);
 router.post('/cart', addToCart);

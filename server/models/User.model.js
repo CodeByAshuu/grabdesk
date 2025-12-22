@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    cloudinaryPublicId: {
+        type: String,
+        default: ''
+    },
     addresses: {
         type: [Object],
         default: []

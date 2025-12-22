@@ -233,7 +233,7 @@ const ProductManagement = ({ products, setProducts }) => {
 
             if (response.data.success) {
               // Refetch all products from backend to ensure data consistency
-              const fetchResponse = await api.get('/products');
+              const fetchResponse = await api.get('/admin/products');
               if (fetchResponse.data.products) {
                 setProducts(fetchResponse.data.products);
               }

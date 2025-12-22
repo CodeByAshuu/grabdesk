@@ -1,19 +1,72 @@
-import React from "react";
+import React, { useState } from "react";
+import api from "../api/axios";
 
-const SidebarProfile = ({ 
-  userData, 
-  setUserData, 
-  Icons, 
+const SidebarProfile = ({
+  userData,
+  setUserData,
+  Icons,
   size = 130,
   width,
-  height 
+  height
 }) => {
+  const [uploading, setUploading] = useState(false);
 
   // Fallback if Icons or Icons.Edit is missing
   const EditIcon = Icons?.Edit ? Icons.Edit : () => <></>;
 
   const finalWidth = width || size;
   const finalHeight = height || size;
+
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Image = reader.result;
+
+        // Immediate UI update for responsiveness (optimistic update)
+        const tempAvatar = base64Image;
+        setUserData(prev => ({ ...prev, avatar: tempAvatar }));
+
+        try {
+          // Upload to backend (Cloudinary)
+          const response = await api.post('/users/profile-picture', {
+            image: base64Image
+          });
+
+          if (response.data.success) {
+            // Update with Cloudinary URL (permanent)
+            setUserData(prev => ({
+              ...prev,
+              avatar: response.data.profilePhotoUrl,
+              profilePhotoUrl: response.data.profilePhotoUrl
+            }));
+          }
+        } catch (error) {
+          console.error('Upload failed:', error);
+          // On error, revert to old avatar or leave optimistic update
+          alert('Failed to upload profile picture. Please try again.');
+        } finally {
+          setUploading(false);
+        }
+      };
+
+      reader.onerror = () => {
+        setUploading(false);
+        alert('Failed to read image file');
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Profile picture processing error:', error);
+      setUploading(false);
+      alert('Error processing image');
+    }
+  };
 
   return (
     <div className="flex flex-col items-center mb-6 w-full">
@@ -33,9 +86,16 @@ const SidebarProfile = ({
           height: finalHeight,
         }}
       >
-        {userData.avatar ? (
+        {/* Loading Overlay */}
+        {uploading && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          </div>
+        )}
+
+        {userData.avatar || userData.profilePhotoUrl ? (
           <img
-            src={userData.avatar}
+            src={userData.avatar || userData.profilePhotoUrl}
             alt="Profile"
             className="w-full h-full object-cover"
             onError={(e) => {
@@ -45,8 +105,8 @@ const SidebarProfile = ({
               viewBox='0 0 150 150'%3E%3Crect width='150' height='150' fill='%235b3d25'/%3E
               %3Ctext x='50%25' y='50%25' font-family='Arial' font-size='40' fill='white' 
               text-anchor='middle' dy='.3em'%3E${userData.name
-                .charAt(0)
-                .toUpperCase()}%3C/text%3E%3C/svg%3E`;
+                  .charAt(0)
+                  .toUpperCase()}%3C/text%3E%3C/svg%3E`;
             }}
           />
         ) : (
@@ -55,9 +115,10 @@ const SidebarProfile = ({
           </div>
         )}
 
-        {/* SAFE EDIT BUTTON */}
+        {/* EDIT BUTTON */}
         <button
-          onClick={() => document.getElementById("avatarUpload").click()}
+          onClick={() => !uploading && document.getElementById("avatarUpload").click()}
+          disabled={uploading}
           className="
             absolute 
             bottom-1 
@@ -69,6 +130,8 @@ const SidebarProfile = ({
             hover:bg-[#4a3120]
             transition
             shadow
+            disabled:opacity-50
+            disabled:cursor-not-allowed
           "
         >
           <EditIcon />
@@ -80,20 +143,8 @@ const SidebarProfile = ({
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setUserData((prev) => ({
-              ...prev,
-              avatar: reader.result,
-            }));
-            localStorage.setItem("profileImage", reader.result);
-          };
-          reader.readAsDataURL(file);
-        }}
+        onChange={(e) => handleImageUpload(e.target.files?.[0])}
+        disabled={uploading}
       />
 
       {/* User Info */}
