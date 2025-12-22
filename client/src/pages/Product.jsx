@@ -274,7 +274,11 @@ function Product() {
             {/* Results Count */}
             <div className="mb-4 sm:mb-6 px-2">
               <p className="text-[#E3D5C3] gowun-dodum-regular text-sm sm:text-base">
-                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+                {(activeFilters.categories?.length > 0 || search || activeFilters.brands?.length > 0 || activeFilters.rating || activeFilters.discount) && products.length !== filteredProducts.length
+                  ? ` found (out of ${products.length} total)`
+                  : ' found'
+                }
                 {search && ` for "${search}"`}
               </p>
             </div>
@@ -316,8 +320,8 @@ function Product() {
                   ))}
                 </div>
 
-                {/* Pagination */}
-                {pages > 1 && (
+                {/* Pagination - Only show if backend has multiple pages AND no active filters */}
+                {pages > 1 && !search && !activeFilters.categories?.length && !activeFilters.brands?.length && !activeFilters.rating && !activeFilters.discount && (
                   <div className="flex justify-center mt-12 gap-2">
                     {[...Array(pages).keys()].map((x) => (
                       <button

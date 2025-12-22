@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getProducts, getProductById, addProduct, bulkCreateProducts, deleteProduct, getAllProductsAdmin } = require('../controllers/product.controller');
+const { getProducts, getProductById, addProduct, bulkCreateProducts, deleteProduct, getAllProductsAdmin, getRecommendedProducts } = require('../controllers/product.controller');
 const { protect } = require('../middleware/auth.middleware');
 
 // Public routes
