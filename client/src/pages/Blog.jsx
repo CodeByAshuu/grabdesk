@@ -1,14 +1,12 @@
-import React from "react";
-import FashionWebsite from "../components/FashionWebsite";
-import Navbar  from "../components/Navbar";
+import React from 'react';
 
-function Blog() {
+const Blog = () => {
     return (
-        <>
-            <Navbar />
-            <FashionWebsite />
-        </>
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-6">Our Blog</h1>
+            <p className="text-gray-600">Coming soon...</p>
+        </div>
     );
-}
+};
 
 export default Blog;
