@@ -51,7 +51,7 @@ const normalizeBrandName = (brandInput) => {
 
 exports.getProducts = async (req, res) => {
     try {
-        const pageSize = 28; // Products per page
+        const pageSize = 27; // Products per page
         const page = Number(req.query.pageNumber) || 1;
 
         // Enhanced search: searches name, tags, brand, category AND categories array

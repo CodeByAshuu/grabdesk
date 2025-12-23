@@ -71,15 +71,15 @@ export default function FashionWebsite() {
         <img
             src="/page-emo/blog-emo.png"
             alt="Product Page Icon"
-            className="absolute top-18 lg:top-32 right-55 lg:right-56  w-22 h-22 sm:w-52 sm:h-52 mb-4 object-contain"
+            className="absolute top-33 lg:top-32 right-5 lg:right-56  w-22 h-22 sm:w-52 sm:h-52 mb-4 object-contain"
           />
         <p className="text-lg md:text-xl text-[#8F5E41] max-w-2xl mx-auto italic font-serif">
           "Elegance is not standing out, but being remembered."
         </p>
         <div className="mt-8 flex justify-center gap-4 items-center">
-          <div className="h-[1px] w-12 bg-[#5a2f1f]"></div>
+          <div className="h-1px w-12 bg-[#5a2f1f]"></div>
           <span className="text-xs tracking-[0.4em] uppercase font-bold text-[#5a2f1f]">Volume III, Issue II</span>
-          <div className="h-[1px] w-12 bg-[#5a2f1f]"></div>
+          <div className="h-1px w-12 bg-[#5a2f1f]"></div>
         </div>
       </section>
 
@@ -135,7 +135,7 @@ export default function FashionWebsite() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-12 gap-y-20">
             {regularPosts.map((post) => (
               <div key={post.id} className="group cursor-pointer">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-2xl mb-8 shadow-lg group-hover:shadow-2xl transition-all duration-500">
+                <div className="relative aspect-16/10 overflow-hidden rounded-2xl mb-8 shadow-lg group-hover:shadow-2xl transition-all duration-500">
                   <img
                     src={post.image}
                     alt={post.title}
