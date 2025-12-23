@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaHeart } from 'react-icons/fa';
-import { useWishlist } from '../context/WishlistContext';
-import { useToast } from '../context/ToastContext';
+import { useWishlist } from '../context/WishlistContext';   
+import { useToast } from '../context/ToastContext';   //Used to show messages
 import Navbar from './Navbar';
 import Footer from './Footer';
 
@@ -10,7 +10,7 @@ export default function FashionWebsite() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { addToast } = useToast();
+  const { addToast } = useToast();    //Used to show notifications
 
   const casualWear = [
     { id: 1, name: 'Casual Wear', price: '$99.00', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop' },
@@ -47,7 +47,6 @@ export default function FashionWebsite() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FFF6EE' }}>
 
-      {/* ✅ Navbar */}
       <Navbar />
 
       {/* Top Bar */}

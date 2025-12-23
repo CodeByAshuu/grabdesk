@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "../context/ToastContext";    // custom hook
 import { Link } from "react-router-dom";
 
 function Footer() {
     const [email, setEmail] = useState('');
-    const { addToast } = useToast();
+    const { addToast } = useToast();          // to show notifications
     return (
         <footer className="w-full bg-[#f3eadc] text-[#5b3d25] pt-16 pb-8 px-6 border-t border-[#d4c5b0]">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">

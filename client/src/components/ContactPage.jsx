@@ -3,12 +3,13 @@ import { useState } from "react";
 const PhoneIcon = ({ className = "w-5 h-5" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.86 19.86 0 0 1 3 5.18 2 2 0 0 1 5 3h3a2 2 0 0 1 2 1.72c.12 1.05.4 2.07.83 3.03a2 2 0 0 1-.45 2.11L9.91 11.09a16 16 0 0 0 6 6l1.23-1.23a2 2 0 0 1 2.11-.45c.96.43 1.98.71 3.03.83A2 2 0 0 1 22 16.92z" />
+    {/* defines the shape of the phone handset */}
   </svg>
 );
 
 const MailIcon = ({ className = "w-5 h-5" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M4 4h16v16H4z" />
+    <path d="M4 4h16v16H4z" />     {/* represent mail envelop body */}
     <polyline points="22,6 12,13 2,6" />
   </svg>
 );
@@ -22,7 +23,7 @@ const LocationIcon = ({ className = "w-5 h-5" }) => (
 
 import Navbar from "./Navbar";
 
-export default function ContactPage() {
+  const ContactPage = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -55,8 +56,8 @@ export default function ContactPage() {
     setLoading(true);
     try {
       const response = await fetch("https://formspree.io/f/mgvglkjr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST",    // sending data to server
+        headers: { "Content-Type": "application/json" },  //sending data in JSON format
         body: JSON.stringify(formData),
       });
 
@@ -99,7 +100,7 @@ export default function ContactPage() {
 
         {/* Locations grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-xl bg-[#2a1a15]/30 border border-[#6b4a3f] hover:shadow-lg transition">
+          <div className="p-6 rounded-xl bg-[#2a1a15]/30 border border-[#6b4a3f] hover:shadow-lg transition">   {/* opacity 30% */}
             <h2 className="text-2xl md:text-3xl font-bold text-orange-400 mb-4">LPU</h2>
             <div className="space-y-3 text-sm text-[#f5e6d3]">
               <div className="flex items-center gap-3">
@@ -233,3 +234,5 @@ export default function ContactPage() {
     </section>
   );
 }
+
+export default ContactPage;
