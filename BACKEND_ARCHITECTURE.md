@@ -55,41 +55,8 @@ Here is a breakdown of every package installed in the backend (`server/package.j
 
 ---
 
-## 3. Function-Level Breakdown
-
-### `auth.controller.js` -> `signup`
-- **Purpose**: Create a new user account.
-- **Input**: `name`, `email`, `password`, `phone`.
-- **Process**:
-    1.  Validate all fields are present.
-    2.  Check DB: Does email already exist? (If yes, error).
-    3.  **Security**: Hash the password using `bcrypt` (adds salt so it's unreadable).
-    4.  Create User in DB.
-    5.  **Event**: Emit `newLog` via Socket.IO to alert admins of a new signup.
-    6.  **Token**: Generate a JWT so the user is immediately logged in.
-- **Output**: JSON object with user info and the JWT token.
-
-### `product.controller.js` -> `getProducts`
-- **Purpose**: Show a list of products to the user.
-- **Input**: Query parameters (`pageNumber`, `keyword`).
-- **Process**:
-    1.  Build a **search query** (`$or` logic) to match the keyword against Name, Brand, Category, or Tags.
-    2.  Count total matching documents (for pagination).
-    3.  Query DB with `limit(28)` and `skip(...)` to get only the current page's data.
-    4.  **Enrichment**: Adds "resolved" category paths to the data (runtime calculation).
-- **Output**: JSON object with `products`, `page`, and `pages` (total pages).
-
-### `product.controller.js` -> `addProduct` (Admin)
-- **Purpose**: Add a single improved item to the store.
-- **Input**: Huge object (name, price, stock, images, tags, etc.).
-- **Process**:
-    1.  **Strict Validation**: Checks basic fields (name, price > 0). checks Category against a rigid `ALLOWED_CATEGORIES` list.
-    2.  **Normalization**: Fixes Brand casing (e.g., "apple" -> "Apple").
-    3.  **SKU Generation**: Creates a unique ID like `IPH-EL-123456`.
-    4.  **Image Processing**: Uploads base64 images to Cloudinary.
-    5.  **Save**: Writes to MongoDB.
-    6.  **Notify**: Tells all connected clients "Product Created".
-- **Output**: The saved product object.
+## 3. Function-Level Breakdown (Simplified)
+*See Section 12 for the detailed step-by-step logic.*
 
 ---
 
@@ -283,28 +250,58 @@ router.post('/admin/products', protect, addProduct);
     2.  If `protect` says OK, run `addProduct`.
     3.  If `protect` fails, `addProduct` never runs.
 
-### 11.5. Constants & Cloudinary Syntax
+---
 
-#### `shared/constants/productConstants.js`
-```javascript
-export const ALLOWED_CATEGORIES = ['Electronics', ...];
-```
--   **`export const`**: Makes this array key available as an ES Module export.
--   **Purpose**: Single source of truth for categories.
+## 12. Detailed Function Logic (How It Works)
 
-#### `server/utils/cloudinary.js`
-```javascript
-const cloudinary = require('cloudinary').v2;
+This section explains the exact step-by-step lifecycle of the most important functions in the backend.
 
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    // ...
-});
+### 12.1. `createOrder` (in `order.controller.js`)
+**Why?** Used when a user clicks "Place Order" on the checkout page.
+-   **Trigger**: `POST /api/orders` (Protected Route)
+-   **Input**: `req.body` contains `{ items, shippingAddress, deliveryMethod }`.
+-   **How it Works**:
+    1.  **Validation**: Checks if `items` array is empty or `shippingAddress` is missing. Returns 400 if so.
+    2.  **Security Rewrite**: It does **NOT** trust the price sent from the frontend. It loops through `items` and fetches the *real* price from the Database (`Product.findById`).
+    3.  **Calculation**: Multiplies `realPrice * quantity` to get `subtotal`. It also calculates tax and shipping costs server-side.
+    4.  **Database Write**: Creates a new `Order` document with `status: 'pending'` and saves it.
+    5.  **Notifications**:
+        -   Calls `notifyAdminActivity` to save a log ("New Order Placed") and broadcast it to Admins via Socket.IO.
+        -   Updates the user's "Personalized Tags" with high intent (because they bought the item).
+    6.  **Cleanup**: Empties the user's cart in the database (`User.findByIdAndUpdate` with empty cart).
+-   **Output**: JSON `{ success: true, orderId: "..." }`.
 
-const result = await cloudinary.uploader.upload(base64Image, {
-    folder: 'products',
-    transformation: [{ width: 800, crop: 'limit' }]
-});
-```
--   **`uploader.upload`**: The function to send files to the cloud.
--   **`transformation`**: Optimization settings (auto-resize).
+### 12.2. `updateOrderStatus` (in `order.controller.js`)
+**Why?** Used by Admins to mark an order as "Shipped" or "Delivered".
+-   **Trigger**: `PATCH /api/admin/orders/:id/status`
+-   **Input**: `req.params.id` (Order ID) and `req.body.status` (e.g., "shipped").
+-   **How it Works**:
+    1.  **Validation**: Checks if the status is one of the allowed values (`pending`, `shipped`, `delivered`, etc.).
+    2.  **Database Update**: Finds the order by ID and updates the `status` field. `new: true` ensures we get the *updated* version back.
+    3.  **Real-Time Update**: Emits a `newLog` event via Socket.IO so the "Activity Logs" on the admin dashboard update instantly without a refresh.
+-   **Output**: JSON with the updated order object.
+
+### 12.3. `bulkCreateProducts` (in `product.controller.js`)
+**Why?** Used to upload 50+ products at once via CSV.
+-   **Trigger**: `POST /api/admin/products/bulk`
+-   **Input**: An array of product objects (parsed from CSV on frontend).
+-   **How it Works**:
+    1.  **Loop**: Iterates through every single product in the array.
+    2.  **Sanitization**: Trims strings, ensures prices are positive numbers, and auto-generates a SKU if missing.
+    3.  **Error Collection**: If one product is invalid (e.g., negative price), it adds it to a `failures` array but *keeps going* for the others.
+    4.  **Bulk Insert**: Uses `Product.insertMany(validProducts, { ordered: false })`. The `ordered: false` is crucial—it means "If product #5 fails, still try to insert product #6".
+    5.  **Reporting**: returns a detailed report of how many succeeded and exactly which rows failed and why.
+-   **Output**: JSON `{ success: true, insertedProducts: [...], failures: [...] }`.
+
+### 12.4. `getRecommendedProducts` (in `product.controller.js`)
+**Why?** Shows "Products you might like" on the home page.
+-   **Trigger**: `GET /api/products/recommended`
+-   **How it Works**:
+    1.  **User Profile**: Fetches the user's `personalizedTags` (a map of what they like, e.g., `{"Gaming": 5, "Nike": 2}`).
+    2.  **Candidate Search**: Finds all products that match *any* of the user's top 5 tags.
+    3.  **Scoring Algorithm**:
+        -   For each product, it calculates a `matchScore`.
+        -   `Score = UserInterest * TagWeight`.
+    4.  **Sorting**: Sorts the results by `matchScore` (Descending).
+    5.  **Fallback**: If the user is new (no tags), it just returns the top-rated products or newest arrivals.
+-   **Output**: JSON array of 8-10 highly relevant products.
