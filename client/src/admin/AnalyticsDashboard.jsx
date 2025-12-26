@@ -113,17 +113,23 @@ const AnalyticsDashboard = () => {
     totalSales: 0,
     totalOrders: 0,
     activeUsers: 0,
-    lowStock: 0,
+    topProduct: 0,
+    topProductName: 'N/A',
   });
 
   const [salesData, setSalesData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [viewMode, setViewMode] = useState('monthly'); // 'monthly' or 'daily'
 
-  const fetchData = async () => {
+  const fetchData = async (mode = viewMode) => {
     try {
+      const salesEndpoint = mode === 'daily'
+        ? '/admin/analytics/daily-sales'
+        : '/admin/analytics/sales-history';
+
       const [statsRes, historyRes, productsRes] = await Promise.all([
         api.get('/admin/analytics/stats'),
-        api.get('/admin/analytics/sales-history'),
+        api.get(salesEndpoint),
         api.get('/admin/analytics/top-products')
       ]);
 
@@ -157,6 +163,11 @@ const AnalyticsDashboard = () => {
       newSocket.disconnect();
     };
   }, []); // Empty dependency array = run once on mount
+
+  // Refetch when view mode changes
+  useEffect(() => {
+    fetchData(viewMode);
+  }, [viewMode]);
 
   return (
     <div className="space-y-6">
@@ -205,19 +216,19 @@ const AnalyticsDashboard = () => {
           <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">Registered Members</p>
         </div>
 
-        {/* Low Stock */}
+        {/* Most Sold Product */}
         <div className="bg-[#FFE9D5] rounded-lg sm:rounded-xl p-4 sm:p-6 relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] cursor-pointer border">
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">Low Stock Items</p>
-              <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">{stats.lowStock}</p>
+              <p className="text-xs sm:text-sm text-[#5b3d25]/70 truncate">Most Sold Product</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#5b3d25] truncate">{stats.topProduct}</p>
             </div>
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#5b3d25]/10 rounded-full flex items-center justify-center shrink-0 ml-2">
-              <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.Attention /></span>
+              <span className="text-[#5b3d25] text-sm sm:text-base"><Icons.Tag /></span>
             </div>
           </div>
-          <p className={`text-xs sm:text-sm mt-1 sm:mt-2 truncate ${stats.lowStock > 0 ? 'text-red-600' : 'text-green-600'}`}>
-            {stats.lowStock > 0 ? 'Need attention' : 'Inventory Healthy'}
+          <p className="text-xs sm:text-sm text-green-600 mt-1 sm:mt-2 truncate">
+            {stats.topProductName}
           </p>
         </div>
 
@@ -228,18 +239,36 @@ const AnalyticsDashboard = () => {
 
         {/* SALES CHART */}
         <div className="bg-[#FFE9D5] gowun-dodum-regular border relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215] rounded-lg p-4 sm:p-6 ">
-          <h3 className="font-semibold mb-4 text-sm sm:text-base">Sales Overview</h3>
-          <div className="h-48 sm:h-56 md:h-64 min-h-[300px] w-full">
-            <SalesChart data={salesData.length ? salesData : []} />
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-sm sm:text-base">Sales Overview</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('monthly')}
+                className={`px-3 py-1 text-xs sm:text-sm rounded border transition-all ${viewMode === 'monthly'
+                    ? 'bg-[#5b3d25] text-white border-[#5b3d25]'
+                    : 'bg-white text-[#5b3d25] border-[#5b3d25] hover:bg-[#5b3d25]/10'
+                  }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setViewMode('daily')}
+                className={`px-3 py-1 text-xs sm:text-sm rounded border transition-all ${viewMode === 'daily'
+                    ? 'bg-[#5b3d25] text-white border-[#5b3d25]'
+                    : 'bg-white text-[#5b3d25] border-[#5b3d25] hover:bg-[#5b3d25]/10'
+                  }`}
+              >
+                Daily
+              </button>
+            </div>
           </div>
+          <SalesChart data={salesData} />
         </div>
 
         {/* TOP PRODUCTS CHART */}
         <div className="bg-[#FFE9D5] gowun-dodum-regular border  rounded-lg p-4 sm:p-6 relative  border-[#452215] shadow-[4px_4px_0_#8F5E41] transition-all  hover:shadow-[6px_6px_0_#8F5E41] text-[#452215]">
           <h3 className="font-semibold mb-4 text-sm sm:text-base">Top Products</h3>
-          <div className="h-48 sm:h-56 md:h-64 min-h-[300px] w-full">
-            <ProductsChart data={productData.length ? productData : []} />
-          </div>
+          <ProductsChart data={productData.length ? productData : []} />
         </div>
 
       </div>

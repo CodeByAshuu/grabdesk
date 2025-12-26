@@ -20,8 +20,23 @@ exports.getDashboardStats = async (req, res) => {
         // 3. Active Users
         const activeUsers = await User.countDocuments({ status: 'Active' });
 
-        // 4. Low Stock Items (Threshold < 5)
-        const lowStock = await Product.countDocuments({ stock: { $lt: 5 } });
+        // 4. Most Sold Product
+        const topProductAgg = await Order.aggregate([
+            { $match: { status: { $ne: 'cancelled' } } },
+            { $unwind: "$items" },
+            {
+                $group: {
+                    _id: "$items.product",
+                    name: { $last: "$items.name" },
+                    sales: { $sum: "$items.quantity" }
+                }
+            },
+            { $sort: { sales: -1 } },
+            { $limit: 1 }
+        ]);
+
+        const topProduct = topProductAgg.length > 0 ? topProductAgg[0].sales : 0;
+        const topProductName = topProductAgg.length > 0 ? topProductAgg[0].name : 'N/A';
 
         res.json({
             success: true,
@@ -29,7 +44,8 @@ exports.getDashboardStats = async (req, res) => {
                 totalSales,
                 totalProducts,
                 activeUsers,
-                lowStock
+                topProduct,
+                topProductName
             }
         });
     } catch (error) {
@@ -84,6 +100,52 @@ exports.getSalesHistory = async (req, res) => {
     }
 };
 
+// @desc    Get daily sales history for chart (Last 30 days)
+// @route   GET /api/admin/analytics/daily-sales
+// @access  Admin
+exports.getDailySalesHistory = async (req, res) => {
+    try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+        const history = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: thirtyDaysAgo },
+                    status: { $ne: 'cancelled' }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        day: { $dayOfMonth: "$createdAt" },
+                        month: { $month: "$createdAt" },
+                        year: { $year: "$createdAt" }
+                    },
+                    sales: { $sum: "$pricing.total" }
+                }
+            },
+            { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } }
+        ]);
+
+        // Format for frontend (e.g., "Dec 25", "Dec 26")
+        const formattedHistory = history.map(item => {
+            const date = new Date(item._id.year, item._id.month - 1, item._id.day);
+            const monthStr = date.toLocaleString('default', { month: 'short' });
+            return {
+                month: `${monthStr} ${item._id.day}`,
+                sales: item.sales
+            };
+        });
+
+        res.json({ success: true, history: formattedHistory });
+    } catch (error) {
+        console.error('Daily Sales History Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
 // @desc    Get top selling products
 // @route   GET /api/admin/analytics/top-products
 // @access  Admin
@@ -94,8 +156,8 @@ exports.getTopProducts = async (req, res) => {
             { $unwind: "$items" },
             {
                 $group: {
-                    _id: "$items.productId",
-                    name: { $first: "$items.name" }, // Assuming name is stored in items
+                    _id: "$items.product",
+                    name: { $last: "$items.name" },
                     sales: { $sum: "$items.quantity" }
                 }
             },
