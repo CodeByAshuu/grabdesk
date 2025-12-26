@@ -8,9 +8,11 @@ const { getNotificationSettings, updateEmailSettings, updateSmsSettings } = requ
 const { getAllActivityLogs, getLatestActivityLogs, createActivityLog } = require('../controllers/activityLog.controller');
 const { bulkCreateProducts, addProduct } = require('../controllers/product.controller');
 const { protect } = require('../middleware/auth.middleware');
+const { adminOnly } = require('../middleware/admin.middleware');
 
 // Protect all admin routes
 router.use(protect);
+router.use(adminOnly);
 
 // User management routes
 router.get('/users', getAllUsers);

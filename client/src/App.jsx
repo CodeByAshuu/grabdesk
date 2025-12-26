@@ -18,6 +18,7 @@ import Signup from './pages/Signup';
 import ScrollToTop from './components/ScrollToTop';
 import AdminDashbord from './admin/AdminDashboard';
 import FashionWebsite from './components/FashionWebsite';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 function App() {
@@ -35,13 +36,33 @@ function App() {
               <Route path='/home' element={<Home />} />
               <Route path='/product' element={<Product />} />
               <Route path='/product/:id' element={<ProductDetail />} />
-              <Route path='/checkout' element={<Checkout />} />
-              <Route path='/cart' element={<Cart />} />
-              <Route path='/profile' element={<Profile />} />
+              <Route path='/checkout' element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              } />
+              <Route path='/cart' element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              } />
+              <Route path='/profile' element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
               <Route path='/contact' element={<Contact />} />
               <Route path='/blog' element={<Blog />} />
-              <Route path='/admindashbord' element={<AdminDashbord />} />
-              <Route path='/wishlist' element={<WishlistPage />} /> 
+              <Route path='/admindashbord' element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminDashbord />
+                </ProtectedRoute>
+              } />
+              <Route path='/wishlist' element={
+                <ProtectedRoute>
+                  <WishlistPage />
+                </ProtectedRoute>
+              } />
             </Routes>
           </BrowserRouter>
         </WishlistProvider>
