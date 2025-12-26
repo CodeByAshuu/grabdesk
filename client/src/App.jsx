@@ -41,8 +41,7 @@ function App() {
               <Route path='/contact' element={<Contact />} />
               <Route path='/blog' element={<Blog />} />
               <Route path='/admindashbord' element={<AdminDashbord />} />
-              <Route path='/wishlist' element={<WishlistPage />} />
-              
+              <Route path='/wishlist' element={<WishlistPage />} /> 
             </Routes>
           </BrowserRouter>
         </WishlistProvider>

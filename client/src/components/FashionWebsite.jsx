@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaHeart } from 'react-icons/fa';
-import { useWishlist } from '../context/WishlistContext';
-import { useToast } from '../context/ToastContext';
-import Navbar from './Navbar';
 import Footer from './Footer';
-import blogHero from '../assets/blog_hero.png';
-import banner from '../assets/banner/b17.jpg'
-import { Link } from "react-router-dom";
-import Button from '../components/Button'
-import { ButtonLight } from './ButtonLight';
 
 export default function FashionWebsite() {
   const navigate = useNavigate();
