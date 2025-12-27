@@ -115,7 +115,7 @@ function Checkout() {
         let shippingAddress;
 
         if (showNewAddressForm) {
-            // Validate new address form
+            // Validatingg
             if (!formData.street || !formData.city || !formData.zipCode) {
                 alert("Please fill in all address fields.");
                 return;

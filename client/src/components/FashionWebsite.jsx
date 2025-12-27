@@ -1,135 +1,182 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaHeart } from 'react-icons/fa';
-import { useWishlist } from '../context/WishlistContext';   
-import { useToast } from '../context/ToastContext';   //Used to show messages
-import Navbar from './Navbar';
 import Footer from './Footer';
 
 export default function FashionWebsite() {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { addToast } = useToast();    //Used to show notifications
 
-  const casualWear = [
-    { id: 1, name: 'Casual Wear', price: '$99.00', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop' },
-    { id: 2, name: 'Elegant Dress', price: '$129.00', image: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=500&fit=crop' },
-    { id: 3, name: 'Elegant Dress', price: '$119.00', image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&h=500&fit=crop' },
-    { id: 4, name: 'Workwear', price: '$149.00', image: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=400&h=500&fit=crop' },
-    { id: 5, name: 'Season Trends', price: '$139.00', image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=500&fit=crop' }
-  ];
-
-  const customerTrends = [
-    { id: 1, name: 'Soul Wave', price: '$69.00', rating: 4, image: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=300&h=400&fit=crop' },
-    { id: 2, name: 'Soot Sweater', price: '$89.00', rating: 5, image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=300&h=400&fit=crop' },
-    { id: 3, name: 'Winter Warm', price: '$99.00', rating: 4, image: 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=300&h=400&fit=crop' },
-    { id: 4, name: 'Spring Yellow', price: '$79.00', rating: 5, image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=300&h=400&fit=crop' },
-    { id: 5, name: 'Little Topaz', price: '$109.00', rating: 4, image: 'https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=300&h=400&fit=crop' },
-    { id: 6, name: 'Brown Coat', price: '$129.00', rating: 5, image: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=300&h=400&fit=crop' }
-  ];
-
-  const heroSlides = [
+  const blogPosts = [
     {
-      title: "Elevate Your",
-      subtitle: "Style!",
-      tagline: "HELLO GORGEOUS",
-      image: "https://images.unsplash.com/photo-1492288991661-058aa541ff43?w=800&h=600&fit=crop"
+      id: 1,
+      title: "The Art of Minimalist Dressing",
+      excerpt: "Discover how to build a timeless wardrobe with fewer, better pieces that reflect your unique personality.",
+      date: "Dec 22, 2025",
+      category: "STYLE GUIDE",
+      image: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&h=500&fit=crop",
+      featured: true
     },
     {
-      title: "New Season",
-      subtitle: "Arrivals",
-      tagline: "FRESH & STYLISH",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=600&fit=crop"
+      id: 2,
+      title: "Seasonal Color Palette: Winter 2025",
+      excerpt: "From deep burgundies to icy blues, explore the colors defining this season's most iconic looks.",
+      date: "Dec 18, 2025",
+      category: "TRENDS",
+      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&h=800&fit=crop"
+    },
+    {
+      id: 3,
+      title: "Sustainable Fabrics You Should Know",
+      excerpt: "An in-depth look at the innovative materials shaping the future of eco-conscious fashion.",
+      date: "Dec 15, 2025",
+      category: "SUSTAINABILITY",
+      image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600&h=800&fit=crop"
+    },
+    {
+      id: 4,
+      title: "How to Style Oversized Blazers",
+      excerpt: "Master the art of proportions with our guide to making the oversized blazer work for any occasion.",
+      date: "Dec 10, 2025",
+      category: "TUTORIAL",
+      image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=800&fit=crop"
+    },
+    {
+      id: 5,
+      title: "The Return of Vintage Accessories",
+      excerpt: "Why 90s minimalism and 70s flair are making a massive comeback in the accessory world.",
+      date: "Dec 05, 2025",
+      category: "VINTAGE",
+      image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=800&fit=crop"
     }
   ];
 
+  const featuredPost = blogPosts.find(post => post.featured);
+  const regularPosts = blogPosts.filter(post => !post.featured);
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FFF6EE' }}>
+    <div className="min-h-screen text-[#5b3d25]" style={{ backgroundColor: '#f3eadc' }}>
+      {/* Editorial Header */}
+      <section className="py-20 px-6 max-w-7xl mx-auto text-center">
+        <h1 className="boldonse-bold text-5xl md:text-8xl mb-6 tracking-tight uppercase">
+          BLOG & <span className="text-[#f0a224]">STYLE</span>
+        </h1>
+        <img
+            src="/page-emo/blog-emo.png"
+            alt="Product Page Icon"
+            className="absolute top-33 lg:top-32 right-5 lg:right-56  w-22 h-22 sm:w-52 sm:h-52 mb-4 object-contain"
+          />
+        <p className="text-lg md:text-xl text-[#8F5E41] max-w-2xl mx-auto italic font-serif">
+          "Elegance is not standing out, but being remembered."
+        </p>
+        <div className="mt-8 flex justify-center gap-4 items-center">
+          <div className="h-1px w-12 bg-[#5a2f1f]"></div>
+          <span className="text-xs tracking-[0.4em] uppercase font-bold text-[#5a2f1f]">Volume III, Issue II</span>
+          <div className="h-1px w-12 bg-[#5a2f1f]"></div>
+        </div>
+      </section>
 
-      <Navbar />
-
-      {/* Top Bar */}
-      <div
-        className="text-xs py-2 px-4 text-center"
-        style={{ backgroundColor: '#5a2f1f', color: '#FFE9D5' }}
-      >
-        Sign up and get 20% off your first order. Sign Up Now
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative overflow-hidden" style={{ backgroundColor: '#FFE9D5' }}>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-8 items-center min-h-[600px]">
-            <div className="py-12">
-              <p className="text-sm tracking-[0.3em] text-gray-600 mb-4">
-                {heroSlides[currentSlide].tagline}
-              </p>
-              <h2 className="text-6xl font-serif mb-2">
-                {heroSlides[currentSlide].title}
-              </h2>
-              <h2 className="text-6xl font-serif italic mb-8">
-                {heroSlides[currentSlide].subtitle}
-              </h2>
-              <button
-                onClick={() => navigate('/product')}
-                className="px-8 py-3 rounded-sm mb-4"
-                style={{ backgroundColor: '#5a2f1f', color: '#FFE9D5' }}
-              >
-                SHOP NOW
-              </button>
-            </div>
-
-            <div className="relative h-[600px]">
-              <img
-                src={heroSlides[currentSlide].image}
-                alt="Model"
-                className="absolute right-0 h-full w-auto object-cover"
-              />
+      {/* Featured Post */}
+      {featuredPost && (
+        <section className="px-6 mb-20">
+          <div className="max-w-7xl mx-auto group cursor-pointer overflow-hidden rounded-3xl bg-white shadow-xl hover:shadow-2xl transition-all duration-500">
+            <div className="grid md:grid-cols-2">
+              <div className="relative h-[400px] md:h-[550px] overflow-hidden">
+                <img
+                  src={featuredPost.image}
+                  alt={featuredPost.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+                />
+                <div className="absolute top-6 left-6 bg-[#f0a224] text-[#442314] px-4 py-1 text-xs font-bold tracking-widest uppercase">
+                  Featured
+                </div>
+              </div>
+              <div className="p-12 flex flex-col justify-center">
+                <span className="text-[#f0a224] font-bold tracking-[0.2em] text-xs mb-4 uppercase">{featuredPost.category}</span>
+                <h2 className="boldonse-bold text-4xl md:text-6xl mb-6 leading-tight group-hover:text-[#f0a224] transition-colors line-clamp-2">
+                  {featuredPost.title}
+                </h2>
+                <p className="text-[#8F5E41] mb-8 text-lg font-serif italic leading-relaxed">
+                  {featuredPost.excerpt}
+                </p>
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="text-sm text-gray-500 font-medium">{featuredPost.date}</span>
+                  <button className="text-[#5a2f1f] font-bold tracking-widest text-sm hover:translate-x-2 transition-transform uppercase flex items-center gap-2">
+                    Read Article <span className="text-xl">→</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      )}
 
-      {/* Casual Wear */}
-      <div className="py-16">
-        <h3 className="text-3xl font-serif text-center mb-12">CASUAL WEAR</h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-7xl mx-auto px-4">
-          {casualWear.map(item => (
-            <div key={item.id} className="group cursor-pointer">
-              <div className="relative rounded-lg overflow-hidden mb-4">
-                <img src={item.image} alt={item.name} />
-
-                <button
-                  onClick={() => {
-                    if (isInWishlist(item.id)) {
-                      removeFromWishlist(item.id);
-                      addToast('Removed from wishlist', 'info');
-                    } else {
-                      addToWishlist({ ...item, price: Number(item.price.replace('$','')) });
-                      addToast('Added to wishlist', 'success');
-                    }
-                  }}
-                  className="absolute top-4 right-4 bg-yellow-500 p-2 rounded-full"
-                >
-                  <FaHeart className={isInWishlist(item.id) ? 'text-red-500' : 'text-white'} />
+      {/* Article Grid */}
+      <section className="px-6 py-20 bg-white/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-16 border-b border-[#5a2f1f]/10 pb-6">
+            <h3 className="boldonse-bold text-3xl uppercase tracking-widest">Latest Stories</h3>
+            <div className="flex gap-4">
+              {['All', 'Trends', 'Style', 'Life'].map(cat => (
+                <button key={cat} className="text-xs font-bold tracking-widest uppercase hover:text-[#f0a224] transition-colors">
+                  {cat}
                 </button>
-              </div>
-
-              <h4 className="text-center">{item.name}</h4>
-              <p className="text-center text-sm">{item.price}</p>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-12 gap-y-20">
+            {regularPosts.map((post) => (
+              <div key={post.id} className="group cursor-pointer">
+                <div className="relative aspect-16/10 overflow-hidden rounded-2xl mb-8 shadow-lg group-hover:shadow-2xl transition-all duration-500">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <div className="px-2">
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-[#f0a224] font-bold tracking-widest text-[10px] uppercase border border-[#f0a224] px-2 py-0.5 rounded">
+                      {post.category}
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{post.date}</span>
+                  </div>
+                  <h4 className="boldonse-bold text-3xl md:text-3xl mb-4 leading-tight group-hover:text-[#f0a224] transition-colors">
+                    {post.title}
+                  </h4>
+                  <p className="text-[#8F5E41] text-sm leading-relaxed mb-6 line-clamp-2 gowun-dodum-regular">
+                    {post.excerpt}
+                  </p>
+                  <button className="text-[#5a2f1f] font-bold tracking-widest text-xs uppercase flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                    Keep Reading <span className="text-lg">→</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Customer Trends */}
-      <div className="py-16">
-        <h3 className="text-3xl font-serif text-center mb-12">CUSTOMER TRENDS</h3>
-      </div>
+      {/* Newsletter / Call to Action */}
+      <section className="py-24 px-6 text-center bg-[#442314] text-[#f3eadc]">
+        <div className="max-w-3xl mx-auto">
+          <h3 className="boldonse-bold text-4xl mb-6">Stay in the Loop</h3>
+          <p className="mb-10 text-[#dab590] gowun-dodum-regular">
+            Subscribe to our newsletter for exclusive editorial content, trend reports, and a touch of elegance in your inbox.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <input
+              type="email"
+              placeholder="Your email address"
+              className="bg-transparent border border-[#dab590]/30 px-6 py-4 rounded-lg focus:outline-none focus:border-[#f0a224] transition-colors sm:w-80"
+            />
+            <button className="bg-[#f0a224] text-[#442314] font-bold px-10 py-4 rounded-lg hover:bg-white transition-all tracking-widest uppercase text-sm">
+              Subscribe
+            </button>
+          </div>
+        </div>
+      </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

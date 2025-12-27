@@ -64,10 +64,10 @@ const WishlistPage = () => {
         sorted.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));    //missing ratings
         break;
       case 'name':
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        sorted.sort((a, b) => a.name.localeCompare(b.name));   //string comparison
         break;
       default:
         break;
@@ -78,7 +78,7 @@ const WishlistPage = () => {
   const items = getSortedItems();
 
   const handleClearAll = () => {
-    if (window.confirm('Are you sure you want to clear your entire wishlist?')) {
+    if (window.confirm('Are you sure you want to clear your entire wishlist?')) {    //confirmation dialog
       clearWishlist();
     }
   };

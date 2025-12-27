@@ -8,9 +8,11 @@ const { getNotificationSettings, updateEmailSettings, updateSmsSettings } = requ
 const { getAllActivityLogs, getLatestActivityLogs, createActivityLog } = require('../controllers/activityLog.controller');
 const { bulkCreateProducts, addProduct } = require('../controllers/product.controller');
 const { protect } = require('../middleware/auth.middleware');
+const { adminOnly } = require('../middleware/admin.middleware');
 
 // Protect all admin routes
 router.use(protect);
+router.use(adminOnly);
 
 // User management routes
 router.get('/users', getAllUsers);
@@ -53,9 +55,10 @@ router.post('/products/bulk', bulkCreateProducts);
 router.put('/products/:id', require('../controllers/product.controller').updateProduct);
 
 // Analytics routes
-const { getDashboardStats, getSalesHistory, getTopProducts } = require('../controllers/analytics.controller');
+const { getDashboardStats, getSalesHistory, getDailySalesHistory, getTopProducts } = require('../controllers/analytics.controller');
 router.get('/analytics/stats', getDashboardStats);
 router.get('/analytics/sales-history', getSalesHistory);
+router.get('/analytics/daily-sales', getDailySalesHistory);
 router.get('/analytics/top-products', getTopProducts);
 
 module.exports = router;

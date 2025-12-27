@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 function ImageSlider({ images }) {
   const [current, setCurrent] = useState(0);
 
-  // Auto Slide
+  // Auto Slide - 3 sec ke liye
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
