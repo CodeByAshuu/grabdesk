@@ -1,139 +1,104 @@
-# GrabDesk – Personalized Online Store
+# 🛒 GrabDesk – Your Personalized Fashion Destination
 
-GrabDesk is a full-stack e-commerce web application built using the MERN stack.  
-It offers a personalized shopping experience by recommending products based on user preferences, browsing history, and purchase patterns.  
-The platform integrates standard e-commerce functionalities such as authentication, product management, cart operations, and checkout flow, along with a recommendation engine for improved user engagement.
+![GrabDesk Hero](./client/public/screenshots/hero.png)
 
----
-
-## Table of Contents
-1. [Overview](#overview)
-2. [Features](#features)
-3. [Tech Stack](#tech-stack)
-4. [Folder Structure](#folder-structure)
-5. [Installation and Setup](#installation-and-setup)
-6. [Future Enhancements](#future-enhancements)
-7. [License](#license)
+**GrabDesk** is a modern, full-stack e-commerce platform built using the **MERN (MongoDB, Express, React, Node.js)** stack. It's designed to provide a premium, editorial shopping experience with a focus on personalized product recommendations and an intuitive admin management system.
 
 ---
 
-## Overview
+## ✨ Key Features
 
-GrabDesk enables users to browse, search, and purchase products through an intuitive and responsive interface.  
-The platform includes both user-facing and administrative functionalities.  
-Users receive dynamic product recommendations generated from interaction data, enhancing the overall shopping experience.
+### 🛍️ For Shoppers
+- **Personalized Discovery**: Smart recommendation engine that suggests products based on your browsing and purchase history.
+- **Dynamic Search & Filters**: Highly responsive filtering system for category, price, and brand.
+- **Seamless Checkout**: A streamlined multi-step checkout process with cart persistence.
+- **Wishlist & History**: Save your favorites and track your previous orders with ease.
+- **Premium UI**: Smooth animations, glassmorphism elements, and a clean editorial design.
 
----
-
-## Features
-
-### User Module
-- User registration and authentication (JWT-based security)
-- Profile management and order history tracking
-- Wishlist and saved items functionality
-
-### Shopping Module
-- Product listing with advanced search and filtering options
-- Product details view with reviews and related items
-- Cart management and secure checkout
-- Real-time cart updates and order confirmation
-
-### Recommendation Engine
-- Personalized product suggestions based on:
-  - Browsing and purchase history
-  - Product similarity and category tags
-  - Trending and popular items among users
-
-### Admin Module
-- Add, update, or remove products from the catalog
-- Manage user accounts and orders
-- Access analytical dashboards for sales and activity tracking
+### 🛡️ For Admins
+- **Insightful Dashboard**: Real-time sales analytics and user activity visualization.
+- **Catalog Management**: Full CRUD operations for products with bulk-upload capabilities.
+- **Order Tracking**: Manage order statuses from pending to delivered in a single interface.
+- **Activity Logs**: Stay updated on every significant system event through live notifications.
 
 ---
 
-## Tech Stack
+## 🖼️ Visual Previews
 
-| Layer | Technology |
-|--------|-------------|
-| **Frontend** | React.js, Tailwind CSS or Material UI, Motion, Framer |
-| **Backend** | Node.js, Express.js |
-| **Database** | MongoDB (Mongoose), Supabase |
-| **Authentication** | JSON Web Token (JWT), bcrypt |
-| **Hosting / Deployment** | Vercel (Frontend), Render (Backend), MongoDB Atlas (Database) |
+| Product Catalog | Admin Dashboard |
+| :---: | :---: |
+| ![Products](./client/public/screenshots/products.png) | ![Admin](./client/public/screenshots/admin.png) |
 
 ---
 
-## Folder Structure
+## 🛠️ Technology Stack
 
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React, Vite, Tailwind CSS, Framer Motion, Axios, Context API |
+| **Backend** | Node.js, Express.js, Socket.IO (Real-time updates) |
+| **Database** | MongoDB (Mongoose), Cloudinary (Image Hosting) |
+| **Security** | JWT Authentication, Bcrypt (Password Hashing) |
+| **Deployment** | Vercel (Frontend), Render (Backend), MongoDB Atlas |
+
+---
+
+## 📂 Architecture Overview
+
+For a deep dive into how the system is built, please refer to our detailed documentation:
+
+- 🏗️ **[Frontend Architecture](./Frontend_architecture.md)**: Details on component structure, state management, and design principles.
+- ⚙️ **[Backend Architecture](./BACKEND_ARCHITECTURE.md)**: Deep dive into API endpoints, database schemas, and server-side logic.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Node.js (v16+)
+- MongoDB Atlas account or local MongoDB instance
+- Cloudinary Account (for image uploads)
+
+### 2. Installation
 ```bash
-├── client/ # React Frontend
-│ ├── src/
-│ │ ├── admin/
-│ │ ├── assets/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ └── App.js
-│ └── package.json
-├── server/ # Express Backend
-│ ├── routes/
-│ ├── controllers/
-│ ├── models/
-│ └── server.js
-├── .env
-├── .gitignore
-├── package.json
-└── README.md
+# Clone the repository
+git clone https://github.com/your-username/grabdesk.git
+cd grabdesk
+
+# Install dependencies for both client and server
+npm install
+cd client && npm install
+cd ../server && npm install
+```
+
+### 3. Environment Setup
+Create a `.env` file in the `/server` directory:
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_CLOUD_NAME=your_name
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+PORT=5000
+```
+
+### 4. Running the App
+```bash
+# Run server (from /server)
+npm run server
+
+# Run client (from /client)
+npm run dev
 ```
 
 ---
 
-## Installation and Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/grabdesk.git
-   cd grabdesk
-   ```
-
-2. **Install Dependencies**
-    ```bash
-    cd client
-    npm install
-    cd ../server
-    npm install
-    ```
-
-3. **Set up environment variables**
-Create a `.env` file in ./server folder and add:
-    ```bash
-    MONGO_URI=your_mongodb_uri
-    JWT_SECRET=your_secret_key
-    PORT=5000
-    ```
-
-4. **Run Development Server**
-   ```bash
-   cd server
-   node server.js
-   cd ../client
-   npm run dev
-   ```
-
-## Future Enhancements
-
-- AI-driven recommendation engine (TensorFlow.js / ML model)
-- Voice-based product search
-- Advanced analytics dashboard for admins
-- Real-time order tracking
-
-## License
-
-This project is licensed under the <b>MIT License</b>.
-You are free to use, modify, and distribute this project for both personal and commercial purposes.
+## 🤝 Authors
+- **Sagar, Harshit, Banisha**
+- Project: GrabDesk - Personalized Online Shopping Platform.
 
 ---
 
-Author: Sagar, Harshit, Banisha</br>
-Project: GrabDesk - Personalized Online Shopping Platform.</br>
-Stack: MERN (MongoDB, Express.js, React.js, Node.js) , Tailwind CSS.</br>
+## 📜 License
+This project is licensed under the **MIT License**. Check the [LICENSE](./LICENSE) file for details.
 

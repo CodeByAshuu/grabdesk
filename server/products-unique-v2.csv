@@ -1,0 +1,6 @@
+name,category,price,stock,tags,images,isActive,brand,model,color,material,ratingAverage,ratingCount
+"Smart LED Desk Lamp","Electronics",55,120,"Lighting,Smart,Desk,Office","https://images.unsplash.com/photo-1534073828943-f801091bb18c",true,"Grabdesk","GD-LAMP-01","Cloud White","Aluminum/Plastic",4.7,145
+"Ergonomic Office Chair","Furniture",249,30,"Furniture,Office,Ergonomic,Chair","https://images.unsplash.com/photo-1505797149-43b0076649d6",true,"Grabdesk","GD-CHAIR-X1","Shadow Grey","Mesh/Steel",4.9,92
+"Professional Chef's Knife","Kitchen",89,60,"Kitchen,Chef,Forged,Cooking","https://images.unsplash.com/photo-1593618998160-e34014e67546",true,"Grabdesk","GD-KNIFE-08","Silver Steel","High-Carbon Steel",4.8,110
+"High-Performance Running Shoes","Sports & Fitness",120,85,"Footwear,Running,Athletic,Sports","https://images.unsplash.com/photo-1542291026-7eec264c27ff",true,"Grabdesk","GD-SHOE-RUN","Volt Orange","Synthetic/Mesh",4.6,220
+"Handcrafted Leather Journal","Books & Stationery",40,110,"Stationery,Leather,Handmade,Journal","https://images.unsplash.com/photo-1544816155-12df9643f363",true,"Grabdesk","GD-JOURNAL-01","Classic Brown","Top-Grain Leather",4.9,75

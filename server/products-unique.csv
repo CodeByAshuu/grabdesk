@@ -1,0 +1,6 @@
+name,category,price,stock,tags,images,isActive,brand,model,color,material,ratingAverage,ratingCount
+"Eco-Friendly Yoga Mat","Sports & Fitness",45,100,"Yoga,Mat,Eco-friendly,Fitness","https://images.unsplash.com/photo-1592432676556-38174f073511",true,"Grabdesk","GD-YOGA-01","Forest Green","TPE",4.8,120
+"Noise Cancelling Headphones","Electronics",199,50,"Audio,Wireless,Noise-cancelling,Music","https://images.unsplash.com/photo-1505740420928-5e560c06d30e",true,"Grabdesk","GD-HP-500","Midnight Black","Plastics/Leather",4.9,250
+"Minimalist Ceramic Vase","Home & Living",35,80,"Decor,Handmade,Vase,Ceramic","https://images.unsplash.com/photo-1581783898377-1c85bf937427",true,"Grabdesk","GD-VASE-02","Sand White","Ceramic",4.7,85
+"Organic Cotton T-Shirt","Fashion",25,200,"Apparel,Organic,Cotton,Basic","https://images.unsplash.com/photo-1521572267360-ee0c2909d518",true,"Grabdesk","GD-TSHIRT-01","Soft Beige","Organic Cotton",4.6,310
+"Stainless Steel Water Bottle","Kitchen",20,150,"Hydro,Flask,Insulated,Bottle","https://images.unsplash.com/photo-1602143399827-bd95efef2940",true,"Grabdesk","GD-BTL-750","Arctic Blue","Stainless Steel",4.8,190
